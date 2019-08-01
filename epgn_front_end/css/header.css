@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+a,
+img {
+    border: 0;
+}
+
+body {
+    font: 12px/180% Arial, Helvetica, sans-serif, "������";
+}
+
+/* header */
+header {
+    width: 80%;
+    height: 50px;
+    background: #6a8bbc;
+    color: #fff;
+    text-align: center;
+    ;
+    /* padding-top: 20px; */
+    font-size: 30px;
+    margin: 30px 0 20px 10%
+}
+
+/* select */
+
+.select {
+    /* float: right; */
+    padding: 5px 10px;
+    border: #ddd 1px solid;
+    border-radius: 4px;
+    width: 70%;
+    /* margin-left: 14%; */
+    font-size: 14px
+}
+
+.select li {
+    list-style: none;
+    padding: 10px 0 5px 100px
+}
+
+.select .select-list {
+    border-bottom: #eee 1px dashed
+}
+
+.select dl {
+    zoom: 1;
+    position: relative;
+    line-height: 24px;
+}
+
+.select dl:after {
+    content: " ";
+    display: block;
+    clear: both;
+    height: 0;
+    overflow: hidden
+}
+
+.select dt {
+    width: 100px;
+    margin-bottom: 5px;
+    position: absolute;
+    top: 0;
+    left: -100px;
+    text-align: right;
+    color: #666;
+    height: 24px;
+    line-height: 24px
+}
+
+.select dd {
+    float: left;
+    display: inline;
+    margin: 0 0 5px 5px;
+}
+
+.select a {
+    display: inline-block;
+    white-space: nowrap;
+    height: 24px;
+    padding: 0 10px;
+    text-decoration: none;
+    color: #039;
+    border-radius: 2px;
+}
+
+.select a:hover {
+    color: #3399CC;
+    background-color: #f3edc2
+}
+
+.select .selected a {
+    color: #fff;
+    background-color: #3399CC
+}
+
+.select-result dt {
+    font-weight: bold
+}
+
+.select-no {
+    color: #999
+}
+
+.select .select-result a {
+    padding-right: 20px;
+    background: rgb(57, 170, 226) url("../image/close.gif") right 9px no-repeat
+}
+
+.select .select-result a:hover {
+    background-position: right -15px
+}

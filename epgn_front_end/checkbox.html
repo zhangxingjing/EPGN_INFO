@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>checkbox</title>
+</head>
+
+<body>
+    <input type="checkbox" lay-filter="c_all" name="" lay-skin="primary">
+
+    <tr v-for="item in userarr">
+        <td>
+            <input type="checkbox" class="checkboxitem" name="" :value="item.id" lay-skin="primary">
+        </td>
+        <td>
+            <img class="adminlistimg" :src="changeurl(item.avatar)" alt="">
+        </td>
+    </tr>
+    <script>
+        //全选
+        form.on('checkbox(c_all)', function (data) {
+            var a = data.elem.checked;
+            if (a == true) {
+                $(".checkboxitem").prop("checked", true);
+                form.render('checkbox');
+            } else {
+                $(".checkboxitem").prop("checked", false);
+                form.render('checkbox');
+            }
+        })
+        cancelall() {
+            var check_arr = [];
+            $('.checkboxitem:checked').each(function () {
+                check_arr.push($(this).val());
+            });
+            console.log("选中的", check_arr)
+        }
+    </script>
+</body>
+
+</html>

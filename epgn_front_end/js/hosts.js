@@ -1,0 +1,1 @@
+var host = 'http://api.epgn.site:8000';

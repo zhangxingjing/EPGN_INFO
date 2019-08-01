@@ -102,9 +102,10 @@ def upload(request):
     EPG = request.POST.get('EPG')
     other = request.POST.get('other')
 
-    # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
+    save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
+    # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
     # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-    save_path = "/home/pysuper/Music/"  # work
+    # save_path = "/home/pysuper/Music/"  # work
 
     # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
     car_model = Platform.objects.get(id=car_model_id).name

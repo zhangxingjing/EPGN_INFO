@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # 注册CORS
-    'corsheaders',
+    # 'corsheaders',
 
     # 注册试图函数的子应用
     'users.apps.UsersConfig',
@@ -73,7 +73,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'epgn'  # 数据库名字
+        'NAME': 'epgn'  # 新建数据库
     }
 }
 

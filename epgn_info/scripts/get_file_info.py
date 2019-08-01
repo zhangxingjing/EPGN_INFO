@@ -1,8 +1,6 @@
-# coding: utf-8
 import os
 import re
 import shutil
-
 import pymysql
 from openpyxl import load_workbook
 
@@ -135,10 +133,7 @@ class FilePath():
         path_1 = "/media/sf_E_DRIVE/FileInfo"
         path_2 = "E:\\MQB A0\\AGA&ANS"
 
-
-
         print(path_1 + '/', path_2 + "\\")
-
 
 
 class GetFile():

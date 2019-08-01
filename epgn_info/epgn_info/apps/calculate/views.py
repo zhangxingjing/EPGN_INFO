@@ -1,4 +1,3 @@
-import re
 import json
 from django.views import View
 from django.shortcuts import render

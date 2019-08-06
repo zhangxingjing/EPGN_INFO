@@ -1,6 +1,6 @@
 from . import views
 from django.conf.urls import url
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import SimpleRouter, DefaultRouter
 
 urlpatterns = [
     # 检索 ==> 表格重载
@@ -39,7 +39,8 @@ urlpatterns = [
     url(r'^contrast/$', views.SaveContrastView.as_view()),
 
     # 用户查看使用文档
-    url(r'^word/$', views.word)
+    url(r'^word/$', views.word),
+
 ]
 
 # 使用rest_framework中的SimpleRouter方法,优化功率查询时候的url
@@ -47,3 +48,7 @@ urlpatterns = [
 # router.register('propulsionpower_num', views.PropulsionPowerView, base_name='propulsionpower_num')
 #
 # urlpatterns += router.urls
+router = SimpleRouter()
+# 搜索引擎的URL
+router.register('fileinfo/search', views.FileSearchViewSet, base_name='fileinfo_search')
+urlpatterns += router.urls

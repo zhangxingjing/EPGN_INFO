@@ -3,7 +3,7 @@ import json
 import time
 from urllib import parse
 
-from django.db.models import Q
+from drf_haystack.viewsets import HaystackViewSet
 
 from .serializers import *
 from django.core import serializers
@@ -380,3 +380,10 @@ class SaveContrastView(APIView):
 
         serializer = ContrasCartSerializer(cars, many=True)
         return Response(serializer)
+
+
+# 使用elasticsearch搜索引擎
+class FileSearchViewSet(HaystackViewSet):
+    """Fileinfo搜索"""
+    index_models = [Fileinfo]
+    serializer_class = FileIndexSerializer

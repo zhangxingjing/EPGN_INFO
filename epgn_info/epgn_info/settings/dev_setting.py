@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     # 注册CORS
     # 'corsheaders',
 
+    # 注册全文检索
+    'haystack',
+
     # 注册试图函数的子应用
     'users.apps.UsersConfig',
     'fileinfo.apps.FileInfoConfig',
@@ -73,7 +76,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'epgn'  # 新建数据库
+        'NAME': 'epgn_info'  # 新建数据库
     }
 }
 
@@ -187,6 +190,19 @@ LOGGING = {
     }
 }
 
+# Haystack
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'epgn_info',  # 指定elasticsearch建立的索引库的名称
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
@@ -235,3 +251,10 @@ STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'ep
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
 AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', ]
+
+
+
+"""
+docker run -dti --network=host --name=elasticsearch -v /home/spider/Documents/study_info/elasticsearch-2.4.6/config:/usr/share/elasticsearch/config delron/elasticsearch-ik:2.4.6-1.0
+
+"""

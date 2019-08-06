@@ -1,4 +1,7 @@
+import os
 import re
+from pprint import pprint
+
 import numpy as np
 from numpy.dual import fft
 from scipy.fftpack.basic import fft
@@ -9,8 +12,7 @@ from scipy.signal.windows import hann
 def parse_data(content, img_name, raw_data):
     fs = 44100  # Sampling frequency
     spectrum_size = 8192  # 谱线数
-    window_data = len(raw_data) // (spectrum_size // 2)  # 计算数据块数量
-    print(window_data)
+    window_data = len(raw_data) // (spectrum_size // 2) - 1  # 计算数据块数量
     pp = np.zeros((window_data, spectrum_size // 2 + 1))  # 预分配 fft_vs_time 矩阵
     f = ''
     for i in range(window_data):
@@ -19,6 +21,7 @@ def parse_data(content, img_name, raw_data):
         wn = hann(n)  # 汉宁窗
         xx = x * wn  # 分块数据加窗
         y = fft(xx)
+
         f = fs * np.arange(n // 2 + 1) / n  # 频域取FFT结果的前一半
         p = np.abs(y / n)  # FFT结果取模值
         p1 = p[:n // 2 + 1]  # FFT结果取前半部分
@@ -34,24 +37,21 @@ def parse_data(content, img_name, raw_data):
     dbA = db
     dbA[:sampleNumUnderTen] = db[:sampleNumUnderTen] - 70.4
     dbA[sampleNumUnderTen:] += 10 * np.log10(A[sampleNumUnderTen:])
-
+    plt.figure()
     plt.semilogx(f, dbA)
     plt.xlim(10, 20000)
     plt.ylim(-20, 70)
     plt.xlabel('fs/Hz')
     plt.ylabel('dB(A)')
     plt.grid(b=bool, which='both')
-
     img_path = "./image/{}.png".format(img_name)
     plt.savefig(img_path)
-
+    plt.close()
     return img_path
 
 
 def rms(sig, window_size=None):
-    """
-    计算均方根值，判断，调用
-    """
+    """计算均方根值，判断，调用"""
     npa = np.array
     fun = lambda a, size: np.sqrt(np.sum([a[size - i - 1:len(a) - i] ** 2 for i in range(size - 1)]) / size)
     if len(sig.shape) == 2:
@@ -63,9 +63,7 @@ def rms(sig, window_size=None):
 
 
 def filterA(f, content, img_name, plotFilter=None):
-    """
-    设置对数坐标图和线性坐标图，并计算A值
-    """
+    """设置对数坐标图和线性坐标图，并计算A值"""
     c1 = 3.5041384e16
     c2 = 20.598997 ** 2
     c3 = 107.65265 ** 2
@@ -101,11 +99,11 @@ def filterA(f, content, img_name, plotFilter=None):
 
 
 # 获取文件绝对路径, 处理当前这个数据
-def return_data():
+def return_data(content):
     # 接收前端返回的文件名， 在这里拼接成文件路径
     # file_path = dir_path + content
-    content = 'F2 trotte run02 ( 0.00-11.60 s).asc'
-    file_path = '/media/pysuper/文件/大众/file/Practice_Data/F2 trotte run02 ( 0.00-11.60 s).asc'
+    # content = 'F2 trotte run01 ( 0.00- 3.60 s).asc'
+    file_path = '/home/spider/Music/大众/file/Practice_Data/' + content
     file_head_content = ""
     data_content = ""
     file = open(file_path, "r", encoding="utf-8", errors="ignore")
@@ -142,7 +140,7 @@ def return_data():
     # 开始处理图像显示的问题   # 在上面把所有的数据都放在了字符创里面，在下面使用的时候，是无法读取的
     content_line_list = data_content.split('\n')  # 所有数据都读完了
     for read_line in content_line_list:
-        content_list = read_line.split(' ')  # 一行数据的字符串列表
+        content_list = read_line.split('\t')  # 一行数据的字符串列表
         items = []
         for contents in content_list:
             try:
@@ -150,11 +148,11 @@ def return_data():
             except:
                 continue
         try:  # 读到最后一行的时候就没有数据了
-            raw_time.append(items[1])
-            raw_vl_data.append(items[2])
-            raw_vr_data.append(items[3])
-            raw_hl_data.append(items[4])
-            raw_hr_data.append(items[5])
+            raw_time.append(items[0])
+            raw_vl_data.append(items[1])
+            raw_vr_data.append(items[2])
+            raw_hl_data.append(items[3])
+            raw_hr_data.append(items[4])
         except:
             continue
     vl = "vl"
@@ -175,3 +173,18 @@ def return_data():
 
     return file_path, channel_dict, img_path
 
+
+# 测试指定文件夹中文件，所有通道是否正确
+# print(len(os.listdir('/home/spider/Music/大众/file/Practice_Data/')))
+# for file_name in os.listdir('/home/spider/Music/大众/file/Practice_Data/'):
+#     print(file_name, "=" * 20)
+#     try:
+#         file_path, channel_dict, img_path = return_data(file_name)
+#         for channel, value in zip(channel_dict["key"], channel_dict["value"]):
+#             print(channel, ":", value)
+#     except Exception as error:
+#         print(file_name, error)
+
+# file_path, channel_dict, img_path = return_data('F2 trotte run01 ( 0.00- 3.60 s).asc')
+# pprint(channel_dict)
+# pprint(img_path)

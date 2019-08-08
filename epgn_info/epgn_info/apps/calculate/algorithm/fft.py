@@ -1,12 +1,12 @@
 import os
 import re
-from pprint import pprint
-
 import numpy as np
 from numpy.dual import fft
 from scipy.fftpack.basic import fft
 from matplotlib import pyplot as plt
 from scipy.signal.windows import hann
+
+from epgn_info.settings.dev_setting import BASE_DIR
 
 
 def parse_data(content, img_name, raw_data):
@@ -44,7 +44,7 @@ def parse_data(content, img_name, raw_data):
     plt.xlabel('fs/Hz')
     plt.ylabel('dB(A)')
     plt.grid(b=bool, which='both')
-    img_path = "./image/{}.png".format(img_name)
+    img_path = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "epgn_front_end/image/{}.png".format(img_name))
     plt.savefig(img_path)
     plt.close()
     return img_path
@@ -93,7 +93,7 @@ def filterA(f, content, img_name, plotFilter=None):
         plt.xlim([0, 44.1e3 / 2])
 
         # 在这里返回当前图片的存储路径
-        img_path = "../image/{}.png".format(content[:-4] + img_name)
+        img_path = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), "epgn_front_end/image/{}.png".format(content[:-4] + img_name))
         plt.savefig(img_path)
     return A
 

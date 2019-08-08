@@ -52,11 +52,11 @@ ROOT_URLCONF = 'epgn_info.urls'
 # 模板文件
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',   # Django自带的模板渲染引擎
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # 配置HTML文件存放目录
+        'APP_DIRS': True,   # app内部的Templates是否启用
         'OPTIONS': {
-            'context_processors': [
+            'context_processors': [ # 模板中间件
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -68,7 +68,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'epgn_info.wsgi.application'
 
-# 数据库
+# 配置数据库
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -105,7 +105,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-# 配置缓存
+# 配置缓存 ==> 要使用redis的话，要修改配置文件中的访问地址，再重启服务器
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -143,6 +143,7 @@ CACHES = {
         }
     },
 }
+
 # session保存到缓存当中
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # 指明session保存的session这个redis库中
@@ -190,8 +191,7 @@ LOGGING = {
     }
 }
 
-# Haystack
-
+# Haystack 对接elasticsearch搜索引擎
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
@@ -218,7 +218,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
 }
 
-#
+# 用户认证
 JWT_AUTH = {
     # token过期时间
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
@@ -251,10 +251,3 @@ STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'ep
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
 AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', ]
-
-
-
-"""
-docker run -dti --network=host --name=elasticsearch -v /home/spider/Documents/study_info/elasticsearch-2.4.6/config:/usr/share/elasticsearch/config delron/elasticsearch-ik:2.4.6-1.0
-
-"""

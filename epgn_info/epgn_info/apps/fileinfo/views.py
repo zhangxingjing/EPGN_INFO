@@ -1,8 +1,12 @@
 import os
 import json
 import time
+from collections import OrderedDict
 from urllib import parse
 
+import collections
+from django.db.models import Q
+from django.shortcuts import render
 from drf_haystack.viewsets import HaystackViewSet
 
 from .serializers import *
@@ -16,7 +20,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
-# 查询检索 + 分页查询 ==> 表格重载
+# 查询检索 + 分页查询 ==> 表格重载  ==> 使用模糊搜索
 def file(request):
     # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
     carmodel = request.GET.get("carmodel", None)
@@ -35,10 +39,11 @@ def file(request):
 
     print(carmodel, propulsion, power, discipline, parts, key_word)
     search_dict = {}
-    # 完全手动查询数据库
     if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
+        # 如果用户什么都没有搜，显示所有
         items = Fileinfo.objects.all()
     else:
+        # 如果用户搜索了，先获取上面几个的查询结 ==> 有没有key_word
         if carmodel:
             search_dict["carmodel"] = carmodel
         if propulsion:
@@ -49,9 +54,19 @@ def file(request):
             search_dict["direction"] = discipline
         if parts:
             search_dict["parts"] = parts
-        if key_word:
-            search_dict["status"] = key_word
+
+        # 如果没有key_word， items就是这个值
         items = Fileinfo.objects.filter(**search_dict)
+
+        # 如果key_word存在，再从上面搜索的QuerySet中搜索
+        if key_word:
+            print(key_word.replace(' ', ''))
+            key_word = key_word.replace(' ', '')
+            items = Fileinfo.objects.filter(**search_dict).filter(Q(produce__icontains=key_word) |
+                                                                  Q(author__icontains=key_word) |
+                                                                  Q(status__icontains=key_word) |
+                                                                  Q(file_name__icontains=key_word) |
+                                                                  Q(other_need__icontains=key_word))
 
     # 这里是使用什么方法分页查询数据的
     paginator = Paginator(items, limit)
@@ -284,15 +299,17 @@ class PlatformCarModelView(ViewSet):
     def platform(self, request):
         # 获取所有平台
         # 使用序列化器序列化输出
-        platform = Platform.objects.all()
-        data = []
-        for i in platform:
-            if i.parent_id:
-                item = {}
-                item["id"] = i.id
-                item["name"] = i.name
-                data.append(item)
-        return Response(data)
+        # platform = Platform.objects.all()
+        # data = []
+        # for i in platform:
+        #     if i.parent_id:
+        #         item = {}
+        #         item["id"] = i.id
+        #         item["name"] = i.name
+        #         data.append(item)
+        platform = Platform.objects.filter(parent=None)
+        platform_num = PlatformSerializer(platform, many=True)
+        return Response(platform_num.data)
 
     def car_model(self, request, pk):
         # 获取所有动力总成
@@ -387,3 +404,9 @@ class FileSearchViewSet(HaystackViewSet):
     """Fileinfo搜索"""
     index_models = [Fileinfo]
     serializer_class = FileIndexSerializer
+
+
+# 把数据渲染到base.html
+def parse_base(request):
+    a = {"asd": "模板渲染"}
+    return render(request, 'base.html', a)

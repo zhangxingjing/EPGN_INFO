@@ -1,6 +1,35 @@
 // 顶部筛选
 $(document).ready(function () {
 
+
+		var oUl = document.getElementById('select4');
+		var Lis = oUl.getElementsByTagName('dd');
+		for(var i = 0;i<Lis.length;i++){
+			 Lis[i].index = i;
+			Lis[i].onclick = function(){
+
+
+				
+			// alert("sec"+this.index )
+			var app = document.getElementById('secSection');
+			var qq = app.getElementsByTagName('div');
+			// for(qq in app){
+			// 	qq.length
+			// }
+		
+			$('#secSection').children('div').addClass("sec");
+			// qq[this.index-2].classList.add("sec")
+			// qq[this.index-1].classList.add("sec")
+			qq[this.index-1].classList.remove("sec")
+			
+			}
+		}
+	// $("select4 dd").click(function(){
+
+	// 	$(this).removeClass("sec").siblings().addClass("sec");
+
+	// })	
+
 	// 这里定义点击的时候, 把点击的标签添加到下面的已选择里面
 	$("#select1 dd").click(function () {
 		$(this).addClass("selected").siblings().removeClass("selected");
@@ -10,8 +39,16 @@ $(document).ready(function () {
 			var copyThisA = $(this).clone();
 			if ($("#carmodel").length > 0) {
 				$("#carmodel a").html($(this).text());
+				$("#carmodel").on("click",function () {
+					$(this).remove();
+					$('#select1 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			} else {
 				$(".select-result dl").append(copyThisA.attr("id", "carmodel"));
+				$("#carmodel").on("click",function () {
+					$(this).remove();
+					$('#select1 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			}
 		}
 	});
@@ -24,8 +61,17 @@ $(document).ready(function () {
 			var copyThisC = $(this).clone();
 			if ($("#propulsion").length > 0) {
 				$("#propulsion a").html($(this).text());
+			$("#propulsion").on("click",function () {
+				$(this).remove();
+				$('#select2 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+			})
+
 			} else {
 				$(".select-result dl").append(copyThisC.attr("id", "propulsion"));
+				$("#propulsion").on("click",function () {
+					$(this).remove();
+					$('#select2 dd.select-all').addClass("selected").siblings().removeClass("selected")
+				})
 			}
 		}
 	});
@@ -38,36 +84,66 @@ $(document).ready(function () {
 			var copyThisC = $(this).clone();
 			if ($("#power").length > 0) {
 				$("#power a").html($(this).text());
+				$("#power").on("click",function () {
+					$(this).remove();
+					$('#select3 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			} else {
 				$(".select-result dl").append(copyThisC.attr("id", "power"));
+				$("#power").on("click",function () {
+					$(this).remove();
+					$('#select3 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			}
 		}
 	});
 
 	$("#select4 dd").click(function () {
 		$(this).addClass("selected").siblings().removeClass("selected");
+		$("#parts").remove();
+		$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");
 		if ($(this).hasClass("select-all")) {
 			$("#discipline").remove();
 		} else {
 			var copyThisC = $(this).clone();
 			if ($("#discipline").length > 0) {
 				$("#discipline a").html($(this).text());
+				$("#discipline").on("click",function () {
+					$(this).remove();
+					$('#select4 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			} else {
 				$(".select-result dl").append(copyThisC.attr("id", "discipline"));
+				$("#discipline").on("click",function () {
+					$(this).remove();
+					$('#select4 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			}
 		}
 	});
 
 	$("#select5 dd").click(function () {
+		$('#secSection div').children('dd').removeClass("selected");
 		$(this).addClass("selected").siblings().removeClass("selected");
 		if ($(this).hasClass("select-all")) {
 			$("#parts").remove();
+			$('#secSection div').children('dd').removeClass("selected");
 		} else {
 			var copyThisC = $(this).clone();
+			$('.sec5').removeClass("selected");
+			
 			if ($("#parts").length > 0) {
 				$("#parts a").html($(this).text());
+				$("#parts").on("click",function () {
+					$(this).remove();
+					$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			} else {
 				$(".select-result dl").append(copyThisC.attr("id", "parts"));
+				$("#parts").on("click",function () {
+					$(this).remove();
+					$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");	
+				})
 			}
 		}
 	});

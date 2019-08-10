@@ -38,7 +38,7 @@ insert into `tb_direction` values ('010312', '(Square&Lab)Leerlauf R Gang mit AC
 insert into `tb_direction` values ('010313', '(Square&Lab)St-Sp', '0103');
 
 insert into `tb_direction` values ('0104', '转向柱固有频率', '01');
-insert into `tb_direction` values ('010301', 'Lenkred Frequencoy', '0104');
+insert into `tb_direction` values ('010401', 'Lenkred Frequencoy', '0104');
 
 insert into `tb_direction` values ('02', '辅助总成声学', NULL);
 insert into `tb_direction` values ('0204', '风扇(整车)', '02');

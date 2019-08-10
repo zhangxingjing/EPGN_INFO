@@ -18,6 +18,81 @@
     <script src="js/header.js"></script>
     <script src="js/axios-0.18.0.min.js"></script>
     <script src="js/jquery.cookie.js"></script>
+    <style>
+
+.sec {
+    display: none 
+}
+.dataContrastList {
+    position: fixed;
+    float:right;
+    top: 30%;
+    right: 4%;
+    width: 230px;
+    height: 280px;
+    z-index: 1000;
+    background:#B0E0E6;
+    overflow: scroll;
+   
+}
+.list-title {
+    font-size: 22px;
+    font-weight: bold;
+    text-align: left;
+    color:#1E9FFF;
+    margin-top: 15px;
+    padding-left: 10px
+}
+.data-download {
+   border-left: 1px solid black !important
+}
+.data-list {
+    font-size: 16px;
+    text-align: left;
+    margin-top: 8px;
+    color: #333;
+    padding-left: 10px;
+    {#margin-bottom: 100px;#}
+}
+.bulletbox-button {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    {#position: absolute;#}
+    {#bottom: 0px;#}
+    height: 35px;
+    line-height: 35px;
+    font-size: 16px;
+    color: white;
+    background: #1E9FFF;
+}
+.bulletbox-button button{
+    text-align: center;
+    width: 50%;
+    border: 0px;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+    background: rgba(255,255, 255, .6);
+    color: white;
+}
+::-webkit-scrollbar {
+            width: 4px;    
+            height: 4px;
+        }
+::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.2);
+        }
+::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 0;
+            background: rgba(0,0,0,0.1);
+        }
+    
+    
+    </style>
 </head>
 
 <body class="layui-layout-body" layadmin-themealias="default">
@@ -142,8 +217,9 @@
                                 <i class="layui-icon layui-icon-search"></i>
                                 <cite>检索</cite>
                                 <span class="layui-nav-more"></span></a>
-                            <dl class="layui-nav-child">
-                                <dd data-name="console" class="layui-this">
+                            <dl class="layui-nav-child" id="platforms">
+                                <dd data-name="console" v-for="platform in platforms"><a href="mqb27.html">{{ platform.name }}</a></dd>
+                                <!--<dd data-name="console" class="layui-this">
                                     <a href="mqb27.html">MQB 27</a>
                                 </dd>
                                 <dd data-name="console">
@@ -175,7 +251,7 @@
                                 </dd>
                                 <dd data-name="console">
                                     <a href="pq35.html">PQ 35</a>
-                                </dd>
+                                </dd>-->
 
                             </dl>
                         </li>
@@ -206,59 +282,21 @@
                                 <dl id="select1">
                                     <dt>车型：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <!-- <dd v-for="car_model in car_models"><a href="#">{{ car_model.name }}</a></dd> -->
-                                    <!-- <dd v-for="car_model in car_models" v-bind="car_model.id"><a href="#">Lamando PA</a></dd> -->
-                                    <dd><a href="#">T-Cross</a></dd>
-                                    <dd><a href="#">Polo NF</a></dd>
-                                    <dd><a href="#">Entry NB</a></dd>
+                                    <dd v-for="car_model in car_models"><a href="#">{{ car_model.name }}</a></dd>
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select2">
                                     <dt>动力总成：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <!-- <dd v-for="propulsion in propulsions"><a href="#">{{ propulsion.num }}</a></dd> -->
-                                    <dd><a href="#">1.4L</a></dd>
-                                    <dd><a href="#">1.5L</a></dd>
-                                    <dd><a href="#">1.6L</a></dd>
-                                    <dd><a href="#">3.0L</a></dd>
-                                    <dd><a href="#">1.2T</a></dd>
-                                    <dd><a href="#">1.4T</a></dd>
-                                    <dd><a href="#">1.8T</a></dd>
-                                    <dd><a href="#">2.0T</a></dd>
-                                    <dd><a href="#">2.5T</a></dd>
-                                    <dd><a href="#">3.0T</a></dd>
-                                    <dd><a href="#">APP310 Base+</a></dd>
-                                    <dd><a href="#">AKA150 Base-</a></dd>
-                                    <dd><a href="#">APP290</a></dd>
-                                    <dd><a href="#">HEM80</a></dd>
+                                    <dd v-for="propulsion in propulsions"><a href="#">{{ propulsion.num }}</a></dd>
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select3">
                                     <dt>功率：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <!-- <dd v-for="power in powers"><a href="#">{{ power.num }}</a></dd> -->
-                                    <dd><a href="#">66 KW</a></dd>
-                                    <dd><a href="#">75 KW</a></dd>
-                                    <dd><a href="#">79 KW</a></dd>
-                                    <dd><a href="#">81 KW</a></dd>
-                                    <dd><a href="#">83 kw</a></dd>
-                                    <dd><a href="#">85 kw</a></dd>
-                                    <dd><a href="#">96 kw</a></dd>
-                                    <dd><a href="#">100 KW</a></dd>
-                                    <dd><a href="#">110 kw</a></dd>
-                                    <dd><a href="#">125 KW</a></dd>
-                                    <dd><a href="#">132 kw</a></dd>
-                                    <dd><a href="#">137 kw</a></dd>
-                                    <dd><a href="#">144 kw</a></dd>
-                                    <dd><a href="#">150 KW</a></dd>
-                                    <dd><a href="#">155 KW</a></dd>
-                                    <dd><a href="#">162 kw</a></dd>
-                                    <dd><a href="#">165 kw</a></dd>
-                                    <dd><a href="#">184 KW</a></dd>
-                                    <dd><a href="#">220 kw</a></dd>
-                                    <dd><a href="#"></a></dd>
+                                    <dd v-for="power in powers"><a href="#">{{ power.num }}</a></dd>
                                 </dl>
                             </li>
                             <li class="select-list">
@@ -267,32 +305,116 @@
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
                                     <dd><a href="#">整车声学</a></dd>
                                     <dd>
-                                        <p href="#">辅助总成声学</p>
+                                        <a href="#">辅助总成声学</a>
                                     </dd>
                                     <dd>
-                                        <p href="#">进排气及法规声学</p>
+                                        <a href="#">进排气及法规声学</a>
                                     </dd>
                                     <dd>
-                                        <p href="#">动力总成声学</p>
+                                        <a href="#">动力总成声学</a>
                                     </dd>
                                     <dd>
-                                        <p href="#">车身及仿真声学</p>
+                                        <a href="#">车身及仿真声学</a>
                                     </dd>
                                     <dd>
-                                        <p href="#">声学包</p>
+                                        <a href="#">声学包</a>
                                     </dd>
                                     <dd>
-                                        <p href="#">底盘及动力总成支撑声学</p>
+                                        <a href="#">底盘及动力总成支撑声学</a>
                                     </dd>
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select5">
                                     <dt>测试项目：</dt>
-                                    <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <dd><a href="#">整车内部噪声</a></dd>
-                                    <dd><a href="#">整车滚动噪声</a></dd>
-                                    <dd><a href="#">整车怠速启停</a></dd>
+                                    <dd class="select-all selected sec5"><a href="#">不限</a></dd>
+                                    <div id="secSection">
+                                        <div id="sec1" class="sec" >
+                                            <dd><a href="#">整车内部噪声</a></dd>
+                                            <dd><a href="#">整车滚动噪声</a></dd>
+                                            <dd><a href="#">整车怠速启停</a></dd>
+                                        </div>
+                                        <div id="sec2" class="sec">
+                                            <dd><a href="#">风扇(整车)</a></dd>
+                                            <dd><a href="#">风扇(台架)</a></dd>
+                                            <dd><a href="#">空调中间耳旁(整车)</a></dd>
+                                            <dd><a href="#">空调左侧出风口(整车)</a></dd>
+                                            <dd><a href="#">空调中央左侧出风口(整车)</a></dd>
+                                            <dd><a href="#">空调中央右侧出风口(整车)</a></dd>
+                                            <dd><a href="#">空调右侧出风口(整车)</a></dd>
+                                            <dd><a href="#">空调除霜出风口(整车)</a></dd>
+                                            <dd><a href="#">空调(台架)</a></dd>
+                                            <dd><a href="#">发电机</a></dd>
+                                            <dd><a href="#">压缩机</a></dd>
+                                            <dd><a href="#">摇窗机</a></dd>
+                                            <dd><a href="#">电动后盖撑杆</a></dd>
+                                            <dd><a href="#">燃油泵</a></dd>
+                                            <dd><a href="#">天窗</a></dd>
+                                            <dd><a href="#">前/后雨刮</a></dd>
+                                            <dd><a href="#">导航风扇</a></dd>
+                                            <dd><a href="#">座椅通风</a></dd>
+                                            <dd><a href="#">外后视镜(台架)</a></dd>
+                                        </div>
+                                 
+                                         <div id="sec3" class="sec">
+                                            <dd><a href="#">排气系统</a></dd>
+                                            <dd><a href="#">排气结构声</a></dd>
+                                            <dd><a href="#">排气次级声</a></dd>
+                                            <dd><a href="#">排气管口噪声</a></dd>
+                                            <dd><a href="#">进气管</a></dd>
+                                            <dd><a href="#">导流板</a></dd>
+                                            <dd><a href="#">空滤</a></dd>
+                                            <dd><a href="#">1/4波长管</a></dd>
+                                            <dd><a href="#">谐振腔</a></dd>
+                                            <dd><a href="#">波纹管</a></dd>
+                                        </div>
+                                        <!-- <div id="sec4" class="sec">
+                                            <dd><a href="#">排气系统</a></dd>
+                                            <dd><a href="#">排气结构声</a></dd>
+                                            <dd><a href="#">排气次级声</a></dd>
+                                            <dd><a href="#">排气管口噪声</a></dd>
+                                            <dd><a href="#">进气管</a></dd>
+                                            <dd><a href="#">导流板</a></dd>
+                                            <dd><a href="#">空滤</a></dd>
+                                            <dd><a href="#">1/4波长管</a></dd>
+                                            <dd><a href="#">谐振腔</a></dd>
+                                            <dd><a href="#">波纹管</a></dd>
+                                        </div> -->
+                                        <div id="sec5" class="sec">
+                                            <dd><a href="#">涡轮增压器</a></dd>
+                                            <dd><a href="#">发动机整车</a></dd>
+                                            <dd><a href="#">高压油泵</a></dd>
+                                            <dd><a href="#">发动机声功率</a></dd>
+                                            <dd><a href="#">进气增压管</a></dd>
+                                            <dd><a href="#">发动机(台架)</a></dd>
+                                            <dd><a href="#">插电混合动力电驱动总成(整车)</a></dd>
+                                            <dd><a href="#">纯电驱动总成(整车)</a></dd>
+                                        </div>
+                                        <div id="sec6" class="sec">
+                                            <dd><a href="#">整车内部噪声</a></dd>
+                                            <dd><a href="#">整车滚动噪声</a></dd>
+                                            <dd><a href="#">座椅</a></dd>
+                                        </div>
+                                        <div id="sec7" class="sec">
+                                            <dd><a href="#">内部噪声</a></dd>
+                                            <dd><a href="#">滚动噪声</a></dd>
+                                        </div>
+                                        <div id="sec8" class="sec">
+                                            <dd><a href="#">轮胎(室内转鼓)</a></dd>
+                                            <dd><a href="#">稳速轮胎噪声(室外)</a></dd>
+                                            <dd><a href="#">滚动噪声</a></dd>
+                                            <dd><a href="#">轮胎唱歌声</a></dd>
+                                            <dd><a href="#">支撑内部噪声</a></dd>
+                                            <dd><a href="#">支撑怠速舒适性</a></dd>
+                                            <dd><a href="#">支撑启停</a></dd>
+                                            <dd><a href="#">支撑Stuckern</a></dd>
+                                            <dd><a href="#">支撑隔振率</a></dd>
+                                            <dd><a href="#">全局运行模态</a></dd>
+                                            <dd><a href="#">底盘舒适性</a></dd>
+                                            <dd><a href="#">方向盘Tilger(整车)</a></dd>
+                                            <dd><a href="#">传动轴(整车)</a></dd>
+                                        </div>
+                                    </div>  
                                 </dl>
                             </li>
                             <li class="select-result">
@@ -309,15 +431,14 @@
                                 <span id="Anchor_top" class="f20" style="font-size: 18px;color: red">{{ res.count }}</span> 条
                             </p>
                         </div> -->
-
+                   
                         <!-- 后台返回的数据在这里展示 -->
                         <div class="layui-tab-item layui-show" style="margin-top: 15px">
                             <div class="layui-main">
                                 <div id="LAY_preview">
                                     <div class="demoTable">
                                         <div class="layui-inline">
-                                            <input class="layui-input" name="id" id="demoReload" autocomplete="off"
-                                                placeholder="这里是工况...">
+                                            <input class="layui-input" name="id" id="demoReload" autocomplete="off" placeholder="这里是工况...">
                                         </div>
                                         <button class="layui-btn" id="search-work" data-type="reload">工况搜索</button>
                                         <table id="info" lay-filter="test"></table>
@@ -328,7 +449,7 @@
                         </div>
                     </div>
                 </div>
-
+             
                 <!-- 辅助元素，一般用于移动设备下遮罩 -->
                 <div class="layadmin-body-shade" layadmin-event="shade"></div>
             </div>
@@ -337,11 +458,49 @@
             <div class="layadmin-body-shade" layadmin-event="shade"></div>
         </div>
     </div>
-
+    <div class="dataContrastList">
+     
+    
+        <div class="list-title">已选数据:</div>
+     
+        <div class="data-list">
+            <div>Data 123123</div>
+            <div>Data 198123</div>
+            <div>Data 298823</div>
+            <div>Data 298823</div>
+            <div>Data 298823</div>
+        </div>
+        <div class="bulletbox-button">
+            <button class="data-submit">
+                确认计算
+            </button>
+            <button class="data-download">
+                下载
+            </button>
+        </div>
+        
+    </div>
     <script src="layui/layui.js"></script>
 
     <!-- 使用layui框架 -->
     <script>
+        var arr1 = [{file_name:'bob',age:18} , {file_name:'jake', age:22}];
+        var arr2 = [{name:'kom', age:19 , hobby:'bask'},{inst:15}];
+        var str1 =JSON.stringify(arr1.concat(arr2));
+
+        sessionStorage.setItem("lastname", str1);
+        var str2 =JSON.parse(str1);
+        for(var i =0 ; i<str2.length;i++){
+            console.log(str2[i].name)
+            $(".data-list").append(
+            `<div>
+                ${str2[i].name}
+            </div>`
+
+            );
+        }
+
+
         layui.config({
             base: './home/' //静态资源所在路径
         }).use('index', function () {
@@ -361,6 +520,7 @@
             <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
             <a class="layui-btn layui-btn-sm layui-btn-normal" id="download-btn" onclick="file_download();">下载</a>
             <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="catContrast">查看</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
             <!-- <p>在添加数据对比的地方添加一个iframe</p> -->
         </div>
     </script>
@@ -412,9 +572,9 @@
             tableIns = table.render({
                 elem: '#info', // 找到制定的容器
                 url: "/car/", // 表格请求的URL
-                page: true, // 是否分页
-                limit: 20, // 一页显示多少条数据
-                height: 'full-130', // 表格的高度
+                // page: true, // 是否分页
+                // limit: 20, // 一页显示多少条数据
+                // height: 'full-130', // 表格的高度
                 defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏
                 toolbar: '#toolbarDemo',
                 cols: [
@@ -579,6 +739,26 @@
                             }
                         });
                         break;
+                    case 'getCheckData':
+                    var dataA = checkStatus.data;
+                    alert(dataA.length);
+                    for(var i =0 ; i<dataA.length;i++){
+                        $(".data-list").append(
+                        `<div>
+                            ${dataA[i].file_name}
+                        </div>`
+
+                        );
+                    };
+
+
+                    sessionStorage.getItem("lastname", str1);
+                    var str2 =JSON.parse(str1);
+                    var str3 =JSON.stringify(str2.concat(dataA));
+                    sessionStorage.setItem("lastname", str3);
+
+                    layer.alert(JSON.stringify(dataA));
+                    break;
                     case 'rebootContrast': // 重置cookie
                         $.removeCookie('contrast', {
                             path: '/'
@@ -642,7 +822,29 @@
         });
     </script>
 
-    <!-- 上方表单(车型，动力总成，功率)的数据 -->
+    <!-- 平台 -->
+    <script>
+        var vm = new Vue({
+            el: "#platforms",
+            data: {
+                platforms: [],
+            },
+            mounted: function () {
+                axios.get('/car_model/', {
+                    responseType: 'json'
+                })
+                    .then(response => {
+                        this.platforms = response.data;
+                        alert("平台的链接需要JS设置")
+                    })
+                    .catch(error => {
+                        alert("这里是发送车型的请求")
+                    })
+            },
+        })
+    </script>
+
+    <!-- 车型 -->
     <script>
         var vm = new Vue({
             el: "#select1",
@@ -664,6 +866,7 @@
         })
     </script>
 
+    <!-- 动力总成 -->
     <script>
         var vm = new Vue({
             el: "#select2",
@@ -685,6 +888,7 @@
         })
     </script>
 
+    <!-- 功率 -->
     <script>
         var vm = new Vue({
             el: "#select3",
@@ -705,6 +909,29 @@
         })
     </script>
 
+    <!-- 专业方向 -->
+    <script>
+        var vm = new Vue({
+            el: "#select4",
+            data: {
+                directions: []
+            },
+            mounted: function () {
+                axios.get('/direction_num/', {
+                        responseType: 'json'
+                    })
+                    .then(response => {
+                        this.directions = response.data;
+                    })
+                    .catch(error => {
+                        alert("WEB返回-404")
+                    })
+            }
+        })
+    </script>
+
+
+    <!-- 测试项目发送请求的时候，只携带当前点击的ID -->
     <div class="layui-layer-move"></div>
 </body>
 

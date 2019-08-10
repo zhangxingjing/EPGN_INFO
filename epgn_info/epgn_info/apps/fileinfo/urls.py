@@ -17,6 +17,7 @@ urlpatterns = [
 
     # 获取所有车型
     url(r'^car_model/(?P<pk>\d+)$', views.PlatformCarModelView.as_view({'get': 'car_model'})),
+    # url(r'^car_model/(?P<pk>\d+)$', views.parse_model_html),
 
     # 获取动力总成
     url(r'^propulsionpower_num/$', views.PropulsionPowerView.as_view({'get': 'propulsion'})),
@@ -40,6 +41,9 @@ urlpatterns = [
 
     # 用户查看使用文档
     url(r'^word/$', views.word),
+
+    # 访问模板渲染页面
+    url(r'^base/$', views.parse_base)
 
 ]
 

@@ -190,12 +190,14 @@ def figure_inner(raw_time, raw_data, raw_rpm, rpm_step, order):
     plt.grid(b=bool, which='both')
     plt.tight_layout()
     plt.legend(('level(A)', '2nd order'))
-    figurepath = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(np.random.randint(1000, 9999))
+    # 在这里返回指定的文件名和指定的图片存储路径
+    figurepath = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(np.random.randint(1000, 9999)) + ".png"
     path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
-    plt.savefig(path + figurepath)
+    image_path = path + figurepath
+    plt.savefig(image_path)
     plt.show()
     plt.close()
-    return figurepath
+    return image_path
 
 
 # 内部噪声
@@ -206,11 +208,11 @@ def inner(filepath):
         raw_time = datam[10000:-10000, 0]
         raw_data = datam[10000:-10000, 1]
         raw_rpm = datam[10000:-10000, 6]
-        fp = figure_inner(raw_time, raw_data, raw_rpm, 25, 2)
+        image_path = figure_inner(raw_time, raw_data, raw_rpm, 25, 2)
     except Exception as error:
         raw_time = datam[:, 0]
         raw_data = datam[:, 1]
         raw_rpm = datam[:, 6]
-        fp = figure_inner(raw_time, raw_data, raw_rpm, 25, 2)
+        image_path = figure_inner(raw_time, raw_data, raw_rpm, 25, 2)
     # 这里返回静态文件绝对路径
-    return fp
+    return image_path

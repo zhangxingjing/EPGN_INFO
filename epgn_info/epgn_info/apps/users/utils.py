@@ -13,7 +13,7 @@ def get_user_by_account(account):
     try:
         if re.match(r'(\d+|\w+\d+)', account):
             # 帐号为手机号
-            user = User.objects.get(jobnumber=account)
+            user = User.objects.get(nickname=account)
         else:
             # 帐号为用户名
             user = User.objects.get(username=account)

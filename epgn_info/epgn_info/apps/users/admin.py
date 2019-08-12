@@ -7,10 +7,10 @@ from django.utils.html import format_html
 # 用户的站点管理
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'username', 'jobnumber', 'mobile', 'last_login', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
-    fields = ("username", "jobnumber", "mobile")  # 这是用户添加数据的时候可以看到的页面
+    list_display = ('id', 'username', 'nickname', 'last_login', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
+    fields = ("username", "nickname")  # 这是用户添加数据的时候可以看到的页面
     list_display_links = ['username', ]  # 用来配置哪些字段可以作为链接, 点击他们可以进入编辑页面
-    search_fields = ['username', 'jobnumber']
+    search_fields = ['username', 'nickname']
 
     # save_on_top = True  # 保存, 编辑, 编辑并新建的 按钮 是否在顶部展示
     # actions_on_top = True   # 动作相关配置, 是否展示在顶部

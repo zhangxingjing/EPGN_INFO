@@ -377,4 +377,4 @@ def parse_template(request, pk):
         # "status": status
 
     }
-    return render(request, 'base_2.html', data)
+    return render(request, 'base.html', data)

@@ -251,8 +251,9 @@ def file_down(request, pk):
 
 
 # 文档查看
+@login_required
 def word(request):
-    file = open('/home/small-spider/Documents/EPGN/epgn_front_end/word/前端使用说明.docx', 'rb')
+    file = open('/home/spider/Documents/Project/EPGN_INFO/epgn_front_end/word/使用说明文档.docx', 'rb')
     response = FileResponse(file)
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="EPGN_INFO.docx"'

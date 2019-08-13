@@ -3,112 +3,15 @@
 
 <head>
     <meta charset="utf-8">
-    <title>EPGN-index</title>
+    <title>{% block title %}{% endblock %}</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/css/header.css">
-    <script src="../../../epgn_front_end/js/jquery-3.4.1.js"></script>
     <script src="../../../epgn_front_end/js/vue_2.6.10.js"></script>
-    <script src="../../../epgn_front_end/js/header.js"></script>
+    <script src="../../../epgn_front_end/js/jquery-3.4.1.js"></script>
     <script src="../../../epgn_front_end/js/axios-0.18.0.min.js"></script>
-    <script src="../../../epgn_front_end/js/jquery.cookie.js"></script>
-    <style>
-        .sec {
-            display: none
-        }
-
-        .dataContrastList {
-            position: fixed;
-            float: right;
-            top: 30%;
-            right: 4%;
-            width: 230px;
-            height: 280px;
-            z-index: 1000;
-            background: #B0E0E6;
-            overflow: scroll;
-
-        }
-
-        .list-title {
-            font-size: 22px;
-            font-weight: bold;
-            text-align: left;
-            color: #1E9FFF;
-            margin-top: 15px;
-            padding-left: 10px
-        }
-
-        .data-download {
-            border-left: 1px solid black !important
-        }
-
-        .data-list {
-            font-size: 16px;
-            text-align: left;
-            margin-top: 8px;
-            color: #333;
-            padding-left: 10px;
-
-                {
-                #margin-bottom: 100px;
-                #
-            }
-        }
-
-        .bulletbox-button {
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-
-                {
-                #position: absolute;
-                #
-            }
-
-                {
-                #bottom: 0px;
-                #
-            }
-
-            height: 35 px;
-            line-height: 35 px;
-            font-size: 16 px;
-            color: white;
-            background: #1E9FFF;
-        }
-
-        .bulletbox-button button {
-            text-align: center;
-            width: 50%;
-            border: 0px;
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-            border-right: 1px solid black;
-            background: rgba(255, 255, 255, .6);
-            color: white;
-        }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            border-radius: 10px;
-            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        ::-webkit-scrollbar-track {
-            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
-            border-radius: 0;
-            background: rgba(0, 0, 0, 0.1);
-        }
-    </style>
+    {% block link %}{% endblock %}
+    {% block style %}{% endblock %}
 </head>
 
 <body class="layui-layout-body" layadmin-themealias="default">
@@ -157,6 +60,7 @@
                         <li class="layui-nav-item"><a href="../../../epgn_front_end/userinfo.html">郑兴涛</a></li>
                         <li class="layui-nav-item"><a href="http://127.0.0.1:8000/logout/">退出登录</a></li>
                     </ul>
+                </ul>
             </div>
 
             <!-- 侧边菜单 -->
@@ -189,9 +93,7 @@
                                 <cite>检索</cite>
                                 <span class="layui-nav-more"></span></a>
                             <dl class="layui-nav-child" id="platforms">
-                                {% for platform in platforms %}
-                                <dd data-name="console"><a href="/base/{{ platform.id }}">{{ platform.name }}</a></dd>
-                                {% endfor %}
+                                <dd data-name="console" v-for="platform in platforms"><a :href="'/base/'+ platform.id">[[ platform.name ]]</a></dd>
                             </dl>
                         </li>
                         <li data-name="get" class="layui-nav-item">
@@ -213,156 +115,7 @@
 
             <!-- 主体内容 -->
             <div class="layui-body" id="LAY_app_body" style="top:5%">
-                <div class="layui-fluid">
-                    <div class="layui-row">
-                        <!-- Ajax请求的条件查询 -->
-                        <ul class="select" style="width: 100%">
-                            <li class="select-list">
-                                <dl id="select1">
-                                    <dt>车型：</dt>
-                                    <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    {% for car in cars %}
-                                    {% for car_model in car.subs %}
-                                    <dd><a href="#">{{ car_model.name }}</a></dd>
-                                    {% endfor %}
-                                    {% endfor %}
-                                </dl>
-                            </li>
-                            <li class="select-list">
-                                <dl id="select2">
-                                    <dt>动力总成：</dt>
-                                    <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    {% for propulsion in propulsions %}
-                                    <dd><a href="#">{{ propulsion.num }}</a></dd>
-                                    {% endfor %}
-                                </dl>
-                            </li>
-                            <li class="select-list">
-                                <dl id="select3">
-                                    <dt>功率：</dt>
-                                    <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    {% for power in powers %}
-                                    <dd><a href="#">{{ power.num }}</a></dd>
-                                    {% endfor %}
-                                </dl>
-                            </li>
-                            <li class="select-list">
-                                <dl id="select4">
-                                    <dt>专业方向：</dt>
-                                    <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    {% for part in parts %}
-                                    <dd><a href="#">{{ part.name }}</a></dd>
-                                    {% endfor %}
-                                </dl>
-                            </li>
-                            <li class="select-list">
-                                <dl id="select5">
-                                    <dt>测试项目：</dt>
-                                    <dd class="select-all selected sec5"><a href="#">不限</a></dd>
-                                    <div id="secSection">
-                                        <div id="sec1" class="sec">
-                                            <dd><a href="#">整车内部噪声</a></dd>
-                                            <dd><a href="#">整车滚动噪声</a></dd>
-                                            <dd><a href="#">整车怠速启停</a></dd>
-                                        </div>
-                                        <div id="sec2" class="sec">
-                                            <dd><a href="#">风扇(整车)</a></dd>
-                                            <dd><a href="#">风扇(台架)</a></dd>
-                                            <dd><a href="#">空调中间耳旁(整车)</a></dd>
-                                            <dd><a href="#">空调左侧出风口(整车)</a></dd>
-                                            <dd><a href="#">空调中央左侧出风口(整车)</a></dd>
-                                            <dd><a href="#">空调中央右侧出风口(整车)</a></dd>
-                                            <dd><a href="#">空调右侧出风口(整车)</a></dd>
-                                            <dd><a href="#">空调除霜出风口(整车)</a></dd>
-                                            <dd><a href="#">空调(台架)</a></dd>
-                                            <dd><a href="#">发电机</a></dd>
-                                            <dd><a href="#">压缩机</a></dd>
-                                            <dd><a href="#">摇窗机</a></dd>
-                                            <dd><a href="#">电动后盖撑杆</a></dd>
-                                            <dd><a href="#">燃油泵</a></dd>
-                                            <dd><a href="#">天窗</a></dd>
-                                            <dd><a href="#">前/后雨刮</a></dd>
-                                            <dd><a href="#">导航风扇</a></dd>
-                                            <dd><a href="#">座椅通风</a></dd>
-                                            <dd><a href="#">外后视镜(台架)</a></dd>
-                                        </div>
-
-                                        <div id="sec3" class="sec">
-                                            <dd><a href="#">排气系统</a></dd>
-                                            <dd><a href="#">排气结构声</a></dd>
-                                            <dd><a href="#">排气次级声</a></dd>
-                                            <dd><a href="#">排气管口噪声</a></dd>
-                                            <dd><a href="#">进气管</a></dd>
-                                            <dd><a href="#">导流板</a></dd>
-                                            <dd><a href="#">空滤</a></dd>
-                                            <dd><a href="#">1/4波长管</a></dd>
-                                            <dd><a href="#">谐振腔</a></dd>
-                                            <dd><a href="#">波纹管</a></dd>
-                                        </div>
-                                        <div id="sec5" class="sec">
-                                            <dd><a href="#">涡轮增压器</a></dd>
-                                            <dd><a href="#">发动机整车</a></dd>
-                                            <dd><a href="#">高压油泵</a></dd>
-                                            <dd><a href="#">发动机声功率</a></dd>
-                                            <dd><a href="#">进气增压管</a></dd>
-                                            <dd><a href="#">发动机(台架)</a></dd>
-                                            <dd><a href="#">插电混合动力电驱动总成(整车)</a></dd>
-                                            <dd><a href="#">纯电驱动总成(整车)</a></dd>
-                                        </div>
-                                        <div id="sec6" class="sec">
-                                            <dd><a href="#">整车内部噪声</a></dd>
-                                            <dd><a href="#">整车滚动噪声</a></dd>
-                                            <dd><a href="#">座椅</a></dd>
-                                        </div>
-                                        <div id="sec7" class="sec">
-                                            <dd><a href="#">内部噪声</a></dd>
-                                            <dd><a href="#">滚动噪声</a></dd>
-                                        </div>
-                                        <div id="sec8" class="sec">
-                                            <dd><a href="#">轮胎(室内转鼓)</a></dd>
-                                            <dd><a href="#">稳速轮胎噪声(室外)</a></dd>
-                                            <dd><a href="#">滚动噪声</a></dd>
-                                            <dd><a href="#">轮胎唱歌声</a></dd>
-                                            <dd><a href="#">支撑内部噪声</a></dd>
-                                            <dd><a href="#">支撑怠速舒适性</a></dd>
-                                            <dd><a href="#">支撑启停</a></dd>
-                                            <dd><a href="#">支撑Stuckern</a></dd>
-                                            <dd><a href="#">支撑隔振率</a></dd>
-                                            <dd><a href="#">全局运行模态</a></dd>
-                                            <dd><a href="#">底盘舒适性</a></dd>
-                                            <dd><a href="#">方向盘Tilger(整车)</a></dd>
-                                            <dd><a href="#">传动轴(整车)</a></dd>
-                                        </div>
-                                    </div>
-                                </dl>
-                            </li>
-                            <li class="select-result">
-                                <dl>
-                                    <dt class="layui-btn" data-type="reload" style="color: aliceblue;">点击查询</dt>
-                                    <dd class="select-no">&nbsp;</dd>
-                                </dl>
-                            </li>
-                        </ul>
-
-                        <!-- 后台返回的数据在这里展示 -->
-                        <div class="layui-tab-item layui-show" style="margin-top: 15px">
-                            <div class="layui-main">
-                                <div id="LAY_preview">
-                                    <div class="demoTable">
-                                        <div class="layui-inline">
-                                            <input class="layui-input" name="id" id="demoReload" autocomplete="off"
-                                                placeholder="这里是工况...">
-                                        </div>
-                                        <button class="layui-btn" id="search-work" data-type="reload">工况搜索</button>
-                                        <table id="info" lay-filter="test"></table>
-                                    </div>
-                                </div>
-                                <div class="site-mobile-shade"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                {% block content %}{% endblock %}
                 <!-- 辅助元素，一般用于移动设备下遮罩 -->
                 <div class="layadmin-body-shade" layadmin-event="shade"></div>
             </div>
@@ -371,297 +124,32 @@
             <div class="layadmin-body-shade" layadmin-event="shade"></div>
         </div>
     </div>
-    <div class="dataContrastList">
-
-
-        <div class="list-title">已选数据:</div>
-
-        <div class="data-list">
-            <div>Data 298823</div>
-        </div>
-        <div class="bulletbox-button">
-            <button class="data-submit">
-                确认计算
-            </button>
-            <button class="data-download">
-                下载
-            </button>
-        </div>
-
-    </div>
+    {% block right_data %}{% endblock %}
     <script src="../../../epgn_front_end/layui/layui.js"></script>
-
-    <!-- 使用layui框架 -->
+        <!-- 平台 -->
     <script>
-        var arr1 = [{ file_name: 'bob', age: 18 }, { file_name: 'jake', age: 22 }];
-        var arr2 = [{ name: 'kom', age: 19, hobby: 'bask' }, { inst: 15 }];
-        var str1 = JSON.stringify(arr1.concat(arr2));
-
-        sessionStorage.setItem("lastname", str1);
-        var str2 = JSON.parse(str1);
-        for (var i = 0; i < str2.length; i++) {
-            console.log(str2[i].name)
-            $(".data-list").append(
-                `<div>
-                ${str2[i].name}
-            </div>`
-            );
-        }
-
-
-        layui.config({
-            base: '../../../epgn_front_end/home/' //静态资源所在路径
-        }).use('index', function () {
-            var $ = layui.jquery,
-                layer = layui.layer,
-                admin = layui.admin,
-                element = layui.element,
-                table = layui.table,
-                form = layui.form;
-        });
+        var vm = new Vue({
+            el: "#platforms",
+            delimiters: ['[[', ']]'],
+            data: {
+                platforms: [],
+            },
+            mounted: function () {
+                axios.get('/car_platform/', {
+                        responseType: 'json'
+                    })
+                    .then(response => {
+                        this.platforms = response.data;
+                        // console.log("下面是后台返回的数据");
+                        // console.log(this.platforms);
+                    })
+                    .catch(error => {
+                        console.log("获取车型请求失败")
+                    })
+                },
+            })
     </script>
-
-    <!-- 使用script的方式把这段代码添加到html中 -->
-    <script type="text/html" id="toolbarDemo">
-    <div class="demoTable">
-        <!-- <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button> -->
-        <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
-        <a class="layui-btn layui-btn-sm layui-btn-normal" id="download-btn" onclick="file_download();">下载</a>
-        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="catContrast">查看</button>
-        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
-        <!-- <p>在添加数据对比的地方添加一个iframe</p> -->
-    </div>
-</script>
-
-    <!-- 文件批量下载 -->
-    <script>
-        function download(name, href) {
-            var a = document.createElement("a"), //创建a标签
-                e = document.createEvent("MouseEvents"); //创建鼠标事件对象
-            e.initEvent("click", false, false); //初始化事件对象
-            a.href = href; //设置下载地址
-            a.download = name; //设置下载文件名
-            a.dispatchEvent(e); //给指定的元素，执行事件click事件
-        }
-
-        //给多文件下载按钮添加点击事件
-        function file_download(params) {
-            allcookies = document.cookie;
-            btn = document.getElementById('download-btn');
-            mp3arr = [];
-            if (!$.cookie('contrast')) {
-                cookieChoiceIdArray = []; //转化数组
-            } else {
-                cookieChoiceIdArray = $.cookie('contrast').split(','); //转化数组
-            }
-            cookie_list = cookieChoiceIdArray.splice(-1, 1)
-            for (var i in cookieChoiceIdArray) {
-                mp3arr.splice(-1, 0, "/download/" + parseInt(cookieChoiceIdArray[i]))
-            }
-            for (let index = 0; index < mp3arr.length; index++) {
-                download('第' + index + '个文件', mp3arr[index]);
-            }
-        }
-    </script>
-
-    <!-- 表格 -->
-    <script>
-        layui.use('table', function () {
-            var $ = layui.$,
-                table = layui.table;
-
-            //方法级渲染
-            tableIns = table.render({
-                elem: '#info', // 找到制定的容器
-                url: "/car/", // 表格请求的URL
-                defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏
-                toolbar: '#toolbarDemo',
-                cols: [
-                    [{
-                        type: 'checkbox',
-                        LAY_CHECKED: false,
-                    }, {
-                        field: 'pk',
-                        title: 'ID',
-                        width: '3%'
-                    }, {
-                        field: 'produce',
-                        title: '车辆阶段',
-                        width: '6%',
-                        sort: true,
-                    }, {
-                        field: 'author',
-                        title: '实验员',
-                        width: '7%'
-                    }, {
-                        field: 'status',
-                        title: '工况',
-                        width: '13%',
-                        sort: true,
-                    }, {
-                        field: 'file_name',
-                        title: '文件',
-                        width: '53%'
-                    }, {
-                        field: 'other_need',
-                        title: '其他',
-                        width: '15%'
-                    }]
-                ],
-            });
-
-            // 表格重载动作
-            active_table = {
-                reload: function () {
-                    //执行重载
-                    table.reload('info', {
-                        page: {
-                            curr: 1 //重新从第 1 页开始
-                        },
-                        where: {
-                            "carmodel": $('#carmodel').children('a').html(),
-                            "propulsion": $('#propulsion').children('a').html(),
-                            "power": $('#power').children('a').html(),
-                            "discipline": $("#discipline").children('a').html(),
-                            "parts": $('#parts').children('a').html(),
-                            "time": (new Date()).valueOf(),
-                        },
-                        done: function (res, curr, count) {
-                            this.where = {};
-                        }
-                    });
-                }
-            };
-
-            active_btu = {
-                reload: function () {
-                    //执行重载
-                    table.reload('info', {
-                        page: {
-                            curr: 1 //重新从第 1 页开始
-                        },
-                        where: {
-                            "carmodel": $('#carmodel').children('a').html(),
-                            "propulsion": $('#propulsion').children('a').html(),
-                            "power": $('#power').children('a').html(),
-                            "discipline": $("#discipline").children('a').html(),
-                            "parts": $('#parts').children('a').html(),
-                            "key_word": $("#demoReload").val(),
-                            "time": (new Date()).valueOf(),
-                        },
-                        done: function (res, curr, count) {
-                            this.where = {};
-                        }
-                    });
-                }
-            };
-
-            // 在这里监听点击事件 ==> 两个地方分别进行判断 ==> 后台把所有的数据都接受，只返回对于这个标签有用的值
-            $('.select-result .layui-btn').on('click', function () {
-                var type = $(this).data('type');
-                active_table[type] ? active_table[type].call(this) : '';
-            });
-
-            $('.demoTable .layui-btn').on('click', function () {
-                var type = $(this).data('type');
-                active_btu[type] ? active_btu[type].call(this) : '';
-            });
-
-            // 监听表头事件 ==> 下载
-            table.on('toolbar(test)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
-                switch (obj.event) {
-                    case 'catContrast': // 查看
-                        $.ajax({
-                            url: "/contrast/",
-                            dataType: "html",
-                            type: "get",
-                            success: function (result) {
-                                layer.msg("OK")
-                            }
-                        });
-                        break;
-                    case 'getCheckData':
-                        var dataA = checkStatus.data;
-                        alert(dataA.length);
-                        for (var i = 0; i < dataA.length; i++) {
-                            $(".data-list").append(
-                                `<div>
-                            ${dataA[i].file_name}
-                        </div>`
-                            );
-                        }
-                        ;
-
-
-                        sessionStorage.getItem("lastname", str1);
-                        var str2 = JSON.parse(str1);
-                        var str3 = JSON.stringify(str2.concat(dataA));
-                        sessionStorage.setItem("lastname", str3);
-
-                        layer.alert(JSON.stringify(dataA));
-                        break;
-                    case 'rebootContrast': // 重置cookie
-                        $.removeCookie('contrast', {
-                            path: '/'
-                        }); // 删除指定路径下的cookie
-                        layer.msg("缓存已清空")
-                }
-                ;
-            });
-
-            //监听复选框点击
-            table.on('checkbox(test)', function (obj) {
-                if ($.cookie('contrast')) {
-                    var contrast_list = $.cookie('contrast').split(',')
-                } else {
-                    var contrast_list = []
-                }
-
-                if (obj.type == "all") {
-                    // var checkStatus = table.checkStatus('useruv');
-                    console.log(obj.data)
-                    var id_str = [];
-
-                    var data = obj.data;
-                    if (data.length > 0) {
-                        for (var i = 0; i < data.length; i++) {
-                            id_str += data[i].id + ',';
-                        }
-                    }
-                } else if (obj.type == "one") {
-                    layer.msg("当前选择的是单选")
-                    if (obj.checked) { // 当前文件为选中状态
-                        if (!$.cookie('contrast')) {
-                            // cookie为空
-                            $.cookie('contrast', obj.data["pk"] + ',', {
-                                path: "/"
-                            })
-                        } else {
-                            contrast = $.cookie('contrast') + obj.data["pk"] + ','
-                            $.cookie('contrast', contrast, {
-                                path: "/"
-                            })
-                        }
-                    } else { // 当前为取消动作
-                        alert(contrast_list)
-                        contrast_list_2 = contrast_list.splice($.inArray(obj.data["pk"],
-                            contrast_list), 1);
-                        alert(contrast_list_2)
-                        for (var i in contrast_list_2) {
-                            layer.msg(contrast_list[i])
-                            contrast_2 = contrast_2 + contrast_list[i] + ','
-                        }
-                        $.cookie('contrast', contrast_2, {
-                            path: "/"
-                        })
-                    }
-                    ;
-                }
-
-            });
-        });
-    </script>
+    {% block javascript %}{% endblock %}
 
 
     <!-- 测试项目发送请求的时候，只携带当前点击的ID -->

@@ -322,3 +322,46 @@
 </body>
 
 </html>
+
+<!-- 专业方向 -->
+<label class="layui-form-label">专业方向</label>
+<div class="layui-input-inline">
+    <select class="layui-input-inline" v-model="form_data.direction_id"
+        id="direction" lay-verify="required"
+        style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
+        <option value="">请选择</option>
+        <option v-for="direction in directions" v-bind:value="direction.id">
+            {{ direction.name }}</option>
+    </select>
+</div>
+
+<!-- 零部件 -->
+<label class="layui-form-label">测试项目</label>
+<div class="layui-input-inline">
+    <select class="layui-input-inline" lay-verify="required"
+        v-model="form_data.parts_id" id="part"
+        style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
+        <option value="">请选择</option>
+        <option v-for="part in parts" v-bind:value="part.id">{{ part.name }}
+        </option>
+    </select>
+</div>
+
+<!-- 工况 -->
+<label class="layui-form-label">工况</label>
+<div class="layui-input-inline">
+    <select class="layui-input-inline" lay-verify="required"
+        v-model="form_data.working_id" id="status"
+        style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
+        <option value="">请选择</option>
+        <option v-for="working in workings" v-bind:value="working.id">
+            {{ working.name }}</option>
+    </select>
+</div>
+<div class="layui-inline" style="margin-right:0px">
+    <label class="layui-form-label">其他</label>
+    <div class="layui-input-inline">
+        <input type="text" name="other_need" id="other_need" placeholder="特殊需求"
+            autocomplete="off" class="layui-input">
+    </div>
+</div>

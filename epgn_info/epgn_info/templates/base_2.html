@@ -6,18 +6,15 @@
     <title>EPGN-index</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <link rel="stylesheet" href="layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="layui/css/admin.css" media="all">
-    <link rel="stylesheet" href="css/header.css">
-
-    <!-- <script src="js/jquery-1.7.2.min.js"></script> -->
-    <script src="js/jquery-3.4.1.js"></script>
-    <script src="js/vue_2.6.10.js"></script>
-    <script src="js/header.js"></script>
-    <script src="js/axios-0.18.0.min.js"></script>
-    <script src="js/jquery.cookie.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
+    <link rel="stylesheet" href="../../../epgn_front_end/css/header.css">
+    <script src="../../../epgn_front_end/js/jquery-3.4.1.js"></script>
+    <script src="../../../epgn_front_end/js/vue_2.6.10.js"></script>
+    <script src="../../../epgn_front_end/js/header.js"></script>
+    <script src="../../../epgn_front_end/js/axios-0.18.0.min.js"></script>
+    <script src="../../../epgn_front_end/js/jquery.cookie.js"></script>
     <style>
         .sec {
             display: none
@@ -77,9 +74,9 @@
                 #
             }
 
-            height: 35px;
-            line-height: 35px;
-            font-size: 16px;
+            height: 35 px;
+            line-height: 35 px;
+            font-size: 16 px;
             color: white;
             background: #1E9FFF;
         }
@@ -134,7 +131,7 @@
 
                     <!-- 超链接 -->
                     <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <a href="http://e/" target="_blank" title="超链接">
+                        <a href="http://e/" target="_blank" title="//e/">
                             <i class="layui-icon layui-icon-website"></i>
                         </a>
                     </li>
@@ -148,63 +145,18 @@
 
                     <!-- 搜索框 -->
                     <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search"
-                            layadmin-event="serach" lay-action="template/search.html?keywords=">
+                        <input type="text" placeholder="全局搜索..." autocomplete="off"
+                            class="layui-input layui-input-search" layadmin-event="serach"
+                            lay-action="template/search.html?keywords=">
                     </li>
-
-                    <!-- 随着鼠标动的那条线 -->
-                    <span class="layui-nav-bar" style="left: 38px; top: 48px; width: 0px; opacity: 0;"></span>
-
                 </ul>
 
                 <!-- 右侧 -->
                 <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
-
-                    <!-- 笔记 -->
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <a href="javascript:;" layadmin-event="note">
-                            <i class="layui-icon layui-icon-note"></i>
-                        </a>
-                    </li>
-
-                    <!-- 全屏 -->
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <a href="javascript:;" layadmin-event="fullscreen">
-                            <i class="layui-icon layui-icon-screen-full"></i>
-                        </a>
-                    </li>
-
-                    <!-- 用户信息 -->
-                    <li class="layui-nav-item" lay-unselect="">
-                        <a href="javascript:;">
-                            <cite>贤心</cite>
-                            <span class="layui-nav-more"></span></a>
-                        <dl class="layui-nav-child layui-anim layui-anim-upbit">
-                            <dd><a lay-href="set/user/info.html">基本资料</a></dd>
-                            <dd><a lay-href="set/user/password.html">修改密码</a></dd>
-                            <hr>
-                            <dd layadmin-event="logout" style="text-align: center;"><a>退出</a></dd>
-                        </dl>
-                    </li>
-
-                    <!-- 右侧弹出 -->
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <a href="javascript:;" layadmin-event="about">
-                            <i class="layui-icon layui-icon-more-vertical"></i>
-                        </a>
-                    </li>
-
-                    <!-- 这是什么 -->
-                    <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect="">
-                        <a href="javascript:;" layadmin-event="more">
-                            <i class="layui-icon layui-icon-more-vertical"></i>
-                        </a>
-                    </li>
-                    <span class="layui-nav-bar" style="left: 28px; top: 48px; width: 0px; opacity: 0;"></span>
-                </ul>
-
-                <hr class="layui-bg-g" style="margin-top: 2.6%">
-
+                    <ul class="layui-nav-item">
+                        <li class="layui-nav-item"><a href="../../../epgn_front_end/userinfo.html">郑兴涛</a></li>
+                        <li class="layui-nav-item"><a href="http://127.0.0.1:8000/logout/">退出登录</a></li>
+                    </ul>
             </div>
 
             <!-- 侧边菜单 -->
@@ -237,7 +189,9 @@
                                 <cite>检索</cite>
                                 <span class="layui-nav-more"></span></a>
                             <dl class="layui-nav-child" id="platforms">
-                                <dd data-name="console" v-for="platform in platforms"><a href="base.html">{{ platform.name }}</a></dd>
+                                {% for platform in platforms %}
+                                <dd data-name="console"><a href="/base/{{ platform.id }}">{{ platform.name }}</a></dd>
+                                {% endfor %}
                             </dl>
                         </li>
                         <li data-name="get" class="layui-nav-item">
@@ -267,28 +221,38 @@
                                 <dl id="select1">
                                     <dt>车型：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <dd v-for="car_model in car_models"><a href="#">{{ car_model.name }}</a></dd>
+                                    {% for car in cars %}
+                                    {% for car_model in car.subs %}
+                                    <dd><a href="#">{{ car_model.name }}</a></dd>
+                                    {% endfor %}
+                                    {% endfor %}
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select2">
                                     <dt>动力总成：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <dd v-for="propulsion in propulsions"><a href="#">{{ propulsion.num }}</a></dd>
+                                    {% for propulsion in propulsions %}
+                                    <dd><a href="#">{{ propulsion.num }}</a></dd>
+                                    {% endfor %}
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select3">
                                     <dt>功率：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <dd v-for="power in powers"><a href="#">{{ power.num }}</a></dd>
+                                    {% for power in powers %}
+                                    <dd><a href="#">{{ power.num }}</a></dd>
+                                    {% endfor %}
                                 </dl>
                             </li>
                             <li class="select-list">
                                 <dl id="select4">
                                     <dt>专业方向：</dt>
                                     <dd class="select-all selected"><a href="#">不限</a></dd>
-                                    <dd v-for="direction in directions"><a href="#">{{ direction.name }}</a></dd>
+                                    {% for part in parts %}
+                                    <dd><a href="#">{{ part.name }}</a></dd>
+                                    {% endfor %}
                                 </dl>
                             </li>
                             <li class="select-list">
@@ -335,18 +299,6 @@
                                             <dd><a href="#">谐振腔</a></dd>
                                             <dd><a href="#">波纹管</a></dd>
                                         </div>
-                                        <!-- <div id="sec4" class="sec">
-                                            <dd><a href="#">排气系统</a></dd>
-                                            <dd><a href="#">排气结构声</a></dd>
-                                            <dd><a href="#">排气次级声</a></dd>
-                                            <dd><a href="#">排气管口噪声</a></dd>
-                                            <dd><a href="#">进气管</a></dd>
-                                            <dd><a href="#">导流板</a></dd>
-                                            <dd><a href="#">空滤</a></dd>
-                                            <dd><a href="#">1/4波长管</a></dd>
-                                            <dd><a href="#">谐振腔</a></dd>
-                                            <dd><a href="#">波纹管</a></dd>
-                                        </div> -->
                                         <div id="sec5" class="sec">
                                             <dd><a href="#">涡轮增压器</a></dd>
                                             <dd><a href="#">发动机整车</a></dd>
@@ -392,13 +344,6 @@
                             </li>
                         </ul>
 
-                        <!-- <div class="wrapper clearfix" style="margin: 10px 15px;font-size: 14px">
-                            <p class="result_num">
-                                <strong id="tips_top">符合您选择条件的数据有：</strong>
-                                <span id="Anchor_top" class="f20" style="font-size: 18px;color: red">{{ res.count }}</span> 条
-                            </p>
-                        </div> -->
-
                         <!-- 后台返回的数据在这里展示 -->
                         <div class="layui-tab-item layui-show" style="margin-top: 15px">
                             <div class="layui-main">
@@ -427,15 +372,8 @@
         </div>
     </div>
     <div class="dataContrastList">
-
-
         <div class="list-title">已选数据:</div>
-
         <div class="data-list">
-            <div>Data 123123</div>
-            <div>Data 198123</div>
-            <div>Data 298823</div>
-            <div>Data 298823</div>
             <div>Data 298823</div>
         </div>
         <div class="bulletbox-button">
@@ -446,26 +384,13 @@
                 下载
             </button>
         </div>
-
     </div>
-    <script src="layui/layui.js"></script>
+    <script src="../../../epgn_front_end/layui/layui.js"></script>
 
     <!-- 使用layui框架 -->
     <script>
-        var arr1 = [{
-            file_name: 'bob',
-            age: 18
-        }, {
-            file_name: 'jake',
-            age: 22
-        }];
-        var arr2 = [{
-            name: 'kom',
-            age: 19,
-            hobby: 'bask'
-        }, {
-            inst: 15
-        }];
+        var arr1 = [{ file_name: 'bob', age: 18 }, { file_name: 'jake', age: 22 }];
+        var arr2 = [{ name: 'kom', age: 19, hobby: 'bask' }, { inst: 15 }];
         var str1 = JSON.stringify(arr1.concat(arr2));
 
         sessionStorage.setItem("lastname", str1);
@@ -476,13 +401,12 @@
                 `<div>
                 ${str2[i].name}
             </div>`
-
             );
         }
 
 
         layui.config({
-            base: './home/' //静态资源所在路径
+            base: '../../../epgn_front_end/home/' //静态资源所在路径
         }).use('index', function () {
             var $ = layui.jquery,
                 layer = layui.layer,
@@ -495,14 +419,14 @@
 
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
-        <div class="demoTable">
-            <!-- <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button> -->
-            <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
-            <a class="layui-btn layui-btn-sm layui-btn-normal" id="download-btn" onclick="file_download();">下载</a>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="catContrast">查看</button>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
-            <!-- <p>在添加数据对比的地方添加一个iframe</p> -->
-        </div>
+    <div class="demoTable">
+        <!-- <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button> -->
+        <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
+        <a class="layui-btn layui-btn-sm layui-btn-normal" id="download-btn" onclick="file_download();">下载</a>
+        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="catContrast">查看</button>
+        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
+        <!-- <p>在添加数据对比的地方添加一个iframe</p> -->
+    </div>
     </script>
 
     <!-- 文件批量下载 -->
@@ -516,12 +440,10 @@
             a.dispatchEvent(e); //给指定的元素，执行事件click事件
         }
 
-        //给多文件下载按钮添加点击事件 
+        //给多文件下载按钮添加点击事件
         function file_download(params) {
             allcookies = document.cookie;
             btn = document.getElementById('download-btn');
-            // var contrast = $.cookie('contrast'); //获取cookie值
-            // 从前端接收一个列表 ==> 这里应该从前端的Cookie里面获取一个数据
             mp3arr = [];
             if (!$.cookie('contrast')) {
                 cookieChoiceIdArray = []; //转化数组
@@ -529,12 +451,8 @@
                 cookieChoiceIdArray = $.cookie('contrast').split(','); //转化数组
             }
             cookie_list = cookieChoiceIdArray.splice(-1, 1)
-            // for (var i = 1; i <= cookieChoiceIdArray.length; i++) { // 这里不管怎么改，都会多一个出来，就直接修改length-1
             for (var i in cookieChoiceIdArray) {
-                // alert(cookieChoiceIdArray[i])
-                // // if (i != 0) {
                 mp3arr.splice(-1, 0, "/download/" + parseInt(cookieChoiceIdArray[i]))
-                // }/
             }
             for (let index = 0; index < mp3arr.length; index++) {
                 download('第' + index + '个文件', mp3arr[index]);
@@ -552,9 +470,6 @@
             tableIns = table.render({
                 elem: '#info', // 找到制定的容器
                 url: "/car/", // 表格请求的URL
-                // page: true, // 是否分页
-                // limit: 20, // 一页显示多少条数据
-                // height: 'full-130', // 表格的高度
                 defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏
                 toolbar: '#toolbarDemo',
                 cols: [
@@ -652,63 +567,6 @@
             table.on('toolbar(test)', function (obj) {
                 var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
                 switch (obj.event) {
-                    // case 'getCheckData':    // 下载
-                    //     var data = checkStatus.data; //获取选中行数据
-                    //     // 在这里下载选中的数据 ==> 把data里面的数据发送给前端
-                    //     layer.open({
-                    //         type: 0, // 弹出层类型
-                    //         title: "下载", // 标题
-                    //         // content: '<div style="padding: 20px 20px;text-align: center;">' + JSON.stringify(data[0]["file_name"]) + '</div>', // 弹出层
-                    //         content: "确认下载所选文件吗？",
-                    //         // area: ['800px', '200px'], // 设置宽高
-                    //         // offset: "auto", // 坐标, 默认垂直水平居中
-                    //         id: 'LAY_demo', //防止重复弹出
-                    //         btn: ['确认', '取消'],
-                    //         btnAlign: 'c', //按钮居中
-                    //         anim: 0, // 弹出动画
-                    //         shade: 0.3, //不显示遮罩
-                    //         yes: function () {
-                    //             // alert(JSON.stringify(data[0]["file_name"]));
-                    //             for (var item in data) {
-                    //                 alert(JSON.stringify(item)),
-                    //                     $.ajax({
-                    //                         url: "/download/" + JSON.stringify(item["id"]),
-                    //                         type: 'GET',
-                    //                         async: true, //异步请求
-                    //                         success: function (json) {
-                    //                             layui.msg("文件下载完成，在“下载”中查看");
-                    //                         }
-                    //                     });
-                    //             };
-                    //             layer.closeAll();
-                    //         },
-                    //         function (index, layer) {
-                    //             layer.closeAll();
-                    //         }
-                    //     });
-                    //     break;
-                    // case 'addContrast': // 添加cookie
-                    //     var id_list = {};
-                    //     var data_list = checkStatus.data; // 获取选中行数据
-                    //     for (let index = 0; index < data_list.length; index++) { // 获取选中行的id
-                    //         // id_list.push(JSON.stringify(data_list[index]["pk"])) 向列表里面追加字段
-                    //         id_list[index]=data_list[index]["pk"]
-                    //     };
-                    //     if (data_list.length > 0) {
-                    //         $.ajax({
-                    //             url: "/contrast/",
-                    //             data: {id_list},
-                    //             dataType: "json",
-                    //             type: "POST",
-                    //             success: function (result) {
-                    //                 // continue
-                    //                 layer.msg("OK")
-                    //             }
-                    //         });
-                    //     } else {
-                    //         layer.msg("请勾选文件")
-                    //     }
-                    //     break;
                     case 'catContrast': // 查看
                         $.ajax({
                             url: "/contrast/",
@@ -727,9 +585,9 @@
                                 `<div>
                             ${dataA[i].file_name}
                         </div>`
-
                             );
-                        };
+                        }
+                        ;
 
 
                         sessionStorage.getItem("lastname", str1);
@@ -744,14 +602,12 @@
                             path: '/'
                         }); // 删除指定路径下的cookie
                         layer.msg("缓存已清空")
-                };
+                }
+                ;
             });
 
             //监听复选框点击
             table.on('checkbox(test)', function (obj) {
-                // layer.msg(obj.checked)  // 是否选中状态
-                // layer.msg(obj.data["pk"]) // 当前行数据
-                // layer.msg(obj.type);    //如果触发的是全选，则为：all，如果触发的是单选，则为：one
                 if ($.cookie('contrast')) {
                     var contrast_list = $.cookie('contrast').split(',')
                 } else {
@@ -795,120 +651,12 @@
                         $.cookie('contrast', contrast_2, {
                             path: "/"
                         })
-                    };
+                    }
+                    ;
                 }
 
             });
         });
-    </script>
-
-    <!-- 平台 -->
-    <script>
-        var vm = new Vue({
-            el: "#platforms",
-            data: {
-                platforms: [],
-            },
-            mounted: function () {
-                axios.get('/car_model/', {
-                        responseType: 'json'
-                    })
-                    .then(response => {
-                        this.platforms = response.data;
-                        console.log(this.platforms);
-                        alert("平台的链接需要JS设置")
-                    })
-                    .catch(error => {
-                        alert("这里是发送车型的请求")
-                    })
-            },
-        })
-    </script>
-
-    <!-- 车型 -->
-    <script>
-        var vm = new Vue({
-            el: "#select1",
-            data: {
-                car_models: [],
-            },
-            mounted: function () {
-                axios.get('/car_model/100', {
-                        responseType: 'json'
-                    })
-                    .then(response => {
-                        this.car_models = response.data[0]["subs"];
-                    })
-                    .catch(error => {
-                        // alert(error.response.data);
-                        alert("这里是发送车型的请求")
-                    })
-            },
-        })
-    </script>
-
-    <!-- 动力总成 -->
-    <script>
-        var vm = new Vue({
-            el: "#select2",
-            data: {
-                propulsions: []
-            },
-            mounted: function () {
-                axios.get('/propulsionpower_num/', {
-                        responseType: 'json'
-                    })
-                    .then(response => {
-                        this.propulsions = response.data;
-                    })
-                    .catch(error => {
-                        // alert(error.response.data);
-                        alert("这里是发送车型的请求")
-                    })
-            }
-        })
-    </script>
-
-    <!-- 功率 -->
-    <script>
-        var vm = new Vue({
-            el: "#select3",
-            data: {
-                powers: []
-            },
-            mounted: function () {
-                axios.get('/power/', {
-                        responseType: 'json'
-                    })
-                    .then(response => {
-                        this.powers = response.data;
-                    })
-                    .catch(error => {
-                        alert("WEB返回-404")
-                    })
-            }
-        })
-    </script>
-
-    <!-- 专业方向 -->
-    <script>
-        var vm = new Vue({
-            el: "#select4",
-            data: {
-                directions: []
-            },
-            mounted: function () {
-                axios.get('/direction_num/', {
-                        responseType: 'json'
-                    })
-                    .then(response => {
-                        this.directions = response.data;
-                    })
-                    .catch(error => {
-                        alert("WEB返回-404")
-                    })
-            }
-        })
     </script>
 
 

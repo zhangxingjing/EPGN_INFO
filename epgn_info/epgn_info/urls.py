@@ -17,8 +17,8 @@ urlpatterns = [
     url(r'', include('users.urls')),
 
     # 这是直接访问IP时, 浏览器展示的页面 ==> templates文件夹中的文件
-    url(r'^$', TemplateView.as_view(template_name='login_2.html'), name='login'),
-    # url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    # url(r'^$', TemplateView.as_view(template_name='login_2.html'), name='login'),
+    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
 
     # 车型的视图函数
     url(r'', include('fileinfo.urls')),

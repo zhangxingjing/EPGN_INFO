@@ -12,6 +12,27 @@ urlpatterns = [
     # 文件下载
     url(r'^download/(?P<pk>\d+)$', views.file_down),
 
+    # 获取所有平台
+    url(r'^car_model/$', views.PlatformCarModelView.as_view({'get': 'every_platform'})),
+
+    # 获取所有车型
+    url(r'^car_model/(?P<pk>\d+)$', views.PlatformCarModelView.as_view({'get': 'car_model'})),
+
+    # 获取动力总成
+    url(r'^propulsionpower_num/$', views.PropulsionPowerView.as_view({'get': 'propulsion'})),
+
+    # 获取功率
+    url(r'^propulsionpower_num/(?P<pk>\d+)/$', views.PropulsionPowerView.as_view({'get': 'power'})),
+
+    # 获取所有功率
+    url(r'^power/$', views.PropulsionPowerView.as_view({'get': 'every_power'})),
+
+    # 获取专业方向
+    url(r'^direction_num/$', views.DirectionView.as_view({'get': 'parts'})),
+
+    # 获取零部件和工况
+    url(r'^direction_num/(?P<pk>\d+)/$', views.DirectionView.as_view({'get': 'power'})),
+
     # 用户添加对比列表
     url(r'^contrast/$', views.SaveContrastView.as_view()),
 

@@ -52,11 +52,11 @@ ROOT_URLCONF = 'epgn_info.urls'
 # 模板文件
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',   # Django自带的模板渲染引擎
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # Django自带的模板渲染引擎
         'DIRS': [os.path.join(BASE_DIR, 'templates')],  # 配置HTML文件存放目录
-        'APP_DIRS': True,   # app内部的Templates是否启用
+        'APP_DIRS': True,  # app内部的Templates是否启用
         'OPTIONS': {
-            'context_processors': [ # 模板中间件
+            'context_processors': [  # 模板中间件
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -218,13 +218,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
 }
 
-# 用户认证
-JWT_AUTH = {
-    # token过期时间
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
-}
-
 # CORS
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8000',
@@ -248,6 +241,16 @@ STATIC_URL = '/epgn_front_end/'
 # GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end')
 STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'epgn_front_end'), ]
 
+# 用户认证 ==> JWT
+JWT_AUTH = {
+    # token过期时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+}
+
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
-AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', ]
+AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.contrib.auth.backends.ModelBackend']
+
+# 配置用户登录链接
+LOGIN_URL = '/login/'  #这个路径需要根据你网站的实际登陆地址来设置

@@ -1,9 +1,12 @@
 import json
+
+from django.contrib.auth.decorators import login_required
+
 from .algorithm.inner import inner
 from django.http import JsonResponse
 from .algorithm.fft import return_data
 
-
+@login_required
 def run_fft(request):
     """
     傅里叶变换算法
@@ -17,7 +20,7 @@ def run_fft(request):
         print(file_path, channel_dict, img_path)
     return JsonResponse({"ad":"ADC"})
 
-
+@login_required
 def run_inner(request):
     """
     内部噪声算法

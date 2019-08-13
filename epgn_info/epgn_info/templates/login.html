@@ -36,16 +36,14 @@
                         <div class="layui-form-item" style="margin-bottom: 20px;">
                             <input type="checkbox" name="remember" lay-skin="primary" title="记住密码">
                             <div class="layui-unselect layui-form-checkbox" lay-skin="primary">
-                                <span>记住密码</span>
+                                <span>记住密码好不</span>
                                 <i class="layui-icon layui-icon-ok"></i>
                             </div>
                             <a lay-href="/user/forget" class="layadmin-user-jump-change layadmin-link"
                                 style="margin-top: 7px;">忘记密码？</a>
                         </div>
                         <div class="layui-form-item">
-                            <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="LAY-user-login-submit">登
-                                入
-                            </button>
+                            <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="LAY-user-login-submit">登 入</button>
                         </div>
                     </form>
                 </div>
@@ -53,15 +51,6 @@
 
         </div>
         <script src="../../../epgn_front_end/layui/layui.js"></script>
-        <script>
-            layui.config({
-                base: '../../../epgn_front_end/home/' //静态资源所在路径
-            }).use('index', function () {
-                var layer = layui.layer,
-                    admin = layui.admin,
-                    element = layui.element;
-            });
-        </script>
         <script>
             layui.use(['admin', 'form', 'user'], function () {
                 var $ = layui.$,
@@ -78,9 +67,8 @@
 
                     //请求登入接口
                     admin.req({
-                        url: '/login/', //实际使用请改成服务端真实接口
+                        url: 'login/', //实际使用请改成服务端真实接口
                         data: obj.field,
-                        type: 'post',
                         done: function (res) {
                             //请求成功后，写入 access_token
                             layui.data(setter.tableName, {
@@ -95,7 +83,7 @@
                                 time: 1000
                             }, function () {
                                 location.hash = search.redirect ?
-                                    decodeURIComponent(search.redirect) : '/';
+                                    decodeURIComponent(search.redirect) : '/base/100/';
                             });
                         }
                     });

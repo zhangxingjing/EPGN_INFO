@@ -1,22 +1,19 @@
 import os
 import json
 import time
-from collections import OrderedDict
 from urllib import parse
-
-import collections
-from django.db.models import Q
-from django.shortcuts import render
-from drf_haystack.viewsets import HaystackViewSet
-
 from .serializers import *
+from django.db.models import Q
+from django.shortcuts import render, redirect
 from django.core import serializers
 from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from django.http import StreamingHttpResponse
+from drf_haystack.viewsets import HaystackViewSet
 from django.http import HttpResponse, JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
@@ -97,6 +94,7 @@ def file(request):
 
 
 # 上传文件
+@login_required()
 def upload(request):
     a = time.time()
     # 从前端获取的数据
@@ -117,10 +115,10 @@ def upload(request):
     EPG = request.POST.get('EPG')
     other = request.POST.get('other')
 
-    save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
+    # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
     # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
     # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-    # save_path = "/home/pysuper/Music/"  # work
+    save_path = "/home/spider/Music/"  # work
 
     # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
     car_model = Platform.objects.get(id=car_model_id).name
@@ -213,6 +211,7 @@ def upload(request):
 
 
 # 文件下载
+@login_required
 def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
@@ -258,6 +257,79 @@ def word(request):
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="EPGN_INFO.docx"'
     return response
+
+
+# 前端访问到页面的时候就发送查询`动力总成`的请求, 选择动力总成之后在发送k;`功率`的请求
+class PropulsionPowerView(ViewSet):
+    def propulsion(self, request):
+        # 获取所有动力总成
+        # 使用序列化器序列化输出
+        propulsion = PropulsionPower.objects.filter(parent=None)
+        propulsion_num = PropulsionSerializer(propulsion, many=True)
+        return Response(propulsion_num.data)
+
+    def power(self, request, pk):
+        # 获取当前动力总成对象
+        # 使用序列化器输出
+        propulsion_obj = PropulsionPower.objects.get(pk=pk)
+        serializer = PowerSerializer(propulsion_obj)
+        return Response(serializer.data)
+
+    def every_power(self, request):
+        items = PropulsionPower.objects.all()
+        data = []
+        for i in items:
+            if i.parent_id:
+                item = {}
+                item["id"] = i.id
+                item["num"] = i.num
+                data.append(item)
+        return Response(data)
+
+
+# 前端访问到页面的时候就发送查询`平台`的请求, 选择平台之后在发送`车型`的请求
+class PlatformCarModelView(ViewSet):
+    def every_platform(self, request):
+        platform = Platform.objects.all()
+        data = []
+        for i in platform:
+            if i.parent_id:
+                item = {}
+                item["id"] = i.id
+                item["name"] = i.name
+                data.append(item)
+        return Response(data)
+
+    def platform(self, request):
+        # 获取所有平台
+        # 使用序列化器序列化输出
+        platform = Platform.objects.filter(parent=None)
+        platform_num = PlatformSerializer(platform, many=True)
+        return Response(platform_num.data)
+
+    def car_model(self, request, pk):
+        # 获取所有动力总成
+        # 使用序列化器序列化输出
+        car = Platform.objects.filter(pk=pk)
+        car_name = CarModelSerializer(car, many=True)
+        return Response(car_name.data)
+
+
+# 前端访问到页面的时候就发送查询`专业方向`的请求, 选择专业方向之后在发送`零部件`的请求, 选择零部件之后再选择`工况`
+class DirectionView(ViewSet):
+    def parts(self, request):
+        # 获取所有动力总成
+        # 使用序列化器序列化输出
+        parts = Direction.objects.filter(parent=None)
+        parts_num = DirectionSerializer(parts, many=True)
+        return Response(parts_num.data)
+
+    def power(self, request, pk):
+        # 获取当前动力总成对象
+        # 使用序列化器输出
+        parts_obj = Direction.objects.get(pk=pk)
+        serializer = PartsWorkSerializer(parts_obj)
+        return Response(serializer.data)
 
 
 # 把用户选择的数据存到本地cookie中

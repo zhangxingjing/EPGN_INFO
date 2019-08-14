@@ -18,7 +18,7 @@
 
         <!-- 已选数据的筛选在这里使用layui中的表格实现 ==> 显示一个文件名，同时添加右上方的功能区 -->
         <div class="layui-btn-group demoTable" style="margin-right: 10px">
-            <button class="layui-btn layui-btn-sm"" data-type=" getCheckData"
+            <button class="layui-btn layui-btn-sm" data-type=" getCheckData"
                 style="margin-top: 10px;height: 37.89px">获取</button>
         </div>
         <div class="layui-form" style="float: left;width: 155px;margin-top: 10px;">
@@ -32,7 +32,6 @@
 
     <!-- 右侧关于算法部分==>Tab样式 -->
     <div class="layui-form layui-tab layui-tab-card" style="width:83%;float: left;">
-        <!-- <form class="layui-form" action="" lay-filter="example" style="margin-top: 10px"> -->
         <div class="layui-inline">
             <label class="layui-form-label">算法选择:</label>
             <div class="layui-input-inline">
@@ -44,7 +43,7 @@
             </div>
         </div>
         <div class="layui-form-item" style="margin-top: 10px">
-            <label class="layui-form-label">复选框</label>
+            <label class="layui-form-label">{{ string }}</label>
             <div class="layui-input-block">
                 <input type="checkbox" name="pipeline" title="VL" value="VL">
                 <input type="checkbox" name="pipeline" title="VR" value="VR" checked="">
@@ -56,12 +55,6 @@
                 <button type="reset" class="layui-btn layui-btn-normal">Reset</button>
             </div>
         </div>
-        <!-- </form> -->
-
-        <!-- <ul class="layui-tab-title">
-                            <li class="layui-this">FFT</li>
-                            <li>1/3倍频程</li>
-                        </ul> -->
         <!-- 这里对应上面li标签里面的内容 -->
         <div class="layui-tab-content" style="height: auto;">
             <div class="layui-tab-item layui-show">
@@ -72,9 +65,9 @@
             </div>
         </div>
 
-        <button class="layui-btn" lay-submit="" lay-filter="demo1" style="margin: 0px 10px 10px 0px; float: right"">立即导出</button>
-                    </div>
-                </div>
+        <button class="layui-btn" lay-submit="" lay-filter="demo1" style="margin: 0px 10px 10px 0px; float: right">立即导出</button>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
@@ -91,8 +84,8 @@
 
 <script>
     $(" #run").click(function () {
-        obj = document.getElementsByName("pipeline")
-        check_pipeline = {}
+        obj = document.getElementsByName("pipeline");
+        check_pipeline = {};
         for (i in obj) {
             if (obj[i].checked) {
                 check_pipeline[i] = obj[i].value;
@@ -101,14 +94,14 @@
         layer.msg('发送请求, 返回当前提交数据返回的算法处理结果');
         $.ajax({
             url: /calculate/,
+            type: "post",
+            dataType: "json",
             data: {
                 "data": {
                     "calculate": $("#calculate").val(),
                     "pipeline": check_pipeline,
                 }
             },
-            dataType: "json",
-            type: "post",
             success: function (result) {
                 $('#jumpbox').html(result);
                 $('#jumpbox').modal('show');

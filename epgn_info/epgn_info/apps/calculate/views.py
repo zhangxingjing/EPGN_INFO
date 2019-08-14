@@ -1,7 +1,9 @@
 import json
 from django.shortcuts import render
+from django.template import loader
+
 from .algorithm.inner import inner
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .algorithm.fft import return_data
 from django.contrib.auth.decorators import login_required
 
@@ -11,8 +13,11 @@ def calculate(request):
     if request.method == "GET":
         return render(request, 'calculate.html')
     # 如果不是GET请求，这里接受前端传递的参数，判断选择指定的算法，返回一样的结果
-    data = {"ad": "ADC"}
-    return render(request, 'calculate.hmtl', data)
+
+    string = u"我在学习Django，用它来建网站"
+    template = loader.get_template('calculate.html')
+    return HttpResponse(template.render({"string":string}, request))
+    # return render(request, 'calculate.html', {'string': string})
 
 
 # 处理FFT

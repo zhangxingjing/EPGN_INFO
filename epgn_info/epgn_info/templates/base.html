@@ -48,9 +48,8 @@
 
                     <!-- 搜索框 -->
                     <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <input type="text" placeholder="全局搜索..." autocomplete="off"
-                            class="layui-input layui-input-search" layadmin-event="serach"
-                            lay-action="template/search.html?keywords=">
+                        <input type="text" placeholder="全局搜索..." autocomplete="off" id="global_search" class="layui-input layui-input-search"
+                               layadmin-event="serach" lay-action="template/search.html?keywords=">
                     </li>
                 </ul>
 
@@ -127,7 +126,8 @@
     </div>
     {% block right_data %}{% endblock %}
     <script src="../../../epgn_front_end/layui/layui.js"></script>
-        <!-- 平台 -->
+
+    <!-- 平台 -->
     <script>
         var vm = new Vue({
             el: "#platforms",
@@ -149,6 +149,30 @@
                     })
                 },
             })
+    </script>
+
+    <!-- 全局搜索 -->
+    <script>
+        $("#global_search").click(function () {
+            alert("这里配置文件全局搜索")
+            // 这里应该是全局搜索的
+            // $.ajax({
+            //     url: "/fileinfo/search/",
+            //     datatype: "json",
+            //     type: "GET",
+            //     // async: true, //异步请求
+            //     data: {
+            //         "text": $("#global_search").val()
+            //     },
+            //     success: function (e) {
+            //         // 这里的e就是后台返回的值
+            //         console.log(e);
+            //     },
+            //     error: function (e) {
+            //         console.log("Error");
+            //     }
+            // });
+        })
     </script>
     {% block javascript %}{% endblock %}
 

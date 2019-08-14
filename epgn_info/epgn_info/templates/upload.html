@@ -34,8 +34,7 @@
                             <div class="layui-input-inline">
                                 <select name="car_model" lay-verify="required" id="car_model" 　lay-search="">
                                     <option value="">直接选择或搜索选择</option>
-                                    <option v-for="car_model in car_models" 　v-bind:value="car_model.id">
-                                        {{ car_model.name }}</option>
+                                    <option v-for="car_model in car_models" 　v-bind:value=car_model.id>[[ car_model.name ]]</option>
                                 </select>
                             </div>
                         </div>
@@ -73,8 +72,7 @@
                                     lay-verify="required"
                                     style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                     <option disabled value="">请选择</option>
-                                    <option v-for="propulsion in propulsions" v-bind:value="propulsion.id">
-                                        {{ propulsion.num }}</option>
+                                    <option v-for="propulsion in propulsions" v-bind:value=propulsion.id>[[ propulsion.num ]]</option>
                                 </select>
                             </div>
                             <label class="layui-form-label">功率</label>
@@ -83,8 +81,7 @@
                                     lay-verify="required"
                                     style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                     <option disabled value="">请选择</option>
-                                    <option v-for="power in powers" v-bind:value="power.id">
-                                        {{ power.num }}</option>
+                                    <option v-for="power in powers" v-bind:value=power.id>[[ power.num ]]</option>
                                 </select>
                             </div>
 
@@ -101,8 +98,7 @@
                                 lay-verify="required"
                                 style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                 <option value="">请选择</option>
-                                <option v-for="direction in directions" v-bind:value="direction.id">
-                                    {{ direction.name }}</option>
+                                <option v-for="direction in directions" v-bind:value=direction.id>[[ direction.name ]]</option>
                             </select>
                         </div>
 
@@ -113,8 +109,7 @@
                                 id="part"
                                 style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                 <option value="">请选择</option>
-                                <option v-for="part in parts" v-bind:value="part.id">{{ part.name }}
-                                </option>
+                                <option v-for="part in parts" v-bind:value=part.id>[[ part.name ]]</option>
                             </select>
                         </div>
 
@@ -125,8 +120,7 @@
                                 id="status"
                                 style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                 <option value="">请选择</option>
-                                <option v-for="working in workings" v-bind:value="working.id">
-                                    {{ working.name }}</option>
+                                <option v-for="working in workings" v-bind:value=working.id>[[ working.name ]]</option>
                             </select>
                         </div>
                         <div class="layui-inline" style="margin-right:0px">
@@ -420,6 +414,7 @@
 <script>
     var vm = new Vue({
         el: "#car_model",
+        delimiters: ['[[', ']]'],
         data: {
             car_models: [],
         },
@@ -442,6 +437,7 @@
 <script>
     var vm = new Vue({
         el: '#propulsion_power',
+        delimiters: ['[[', ']]'],
         data: {
             propulsions: [],
             powers: [],
@@ -510,6 +506,7 @@
 <script>
     var vm = new Vue({
         el: '#direction_parts',
+        delimiters: ['[[', ']]'],
         data: {
             directions: [],
             parts: [],
@@ -580,9 +577,25 @@
 
 <!-- 撤销的点击事件 -->
 <script>
-    // document.getElementById("#cancel").addEventListener('click', function(){
-    //     alert("接下来是点击事件")
-    // })
+    $("#cancel").click(function () {
+         $.ajax({
+             url: '/cancel/',
+             type:'post',
+             dataType:'json',
+             contentType:"application/json",
+             async:true,//异步请求
+             cache:false,
+             data: $('#file_name').val(),
+             //执行成功的回调函数
+             success:function(data) {
+                 alert(data.info)
+             },
+             //执行失败或错误的回调函数
+             error:function(data) {
+                 alert("认证失败");
+             }
+         });
+    })
 </script>
 
 {% endblock %}

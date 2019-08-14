@@ -1,13 +1,12 @@
 import json
-
 from django.shortcuts import render
-
 from .algorithm.inner import inner
 from django.http import JsonResponse
 from .algorithm.fft import return_data
 from django.contrib.auth.decorators import login_required
 
 
+# 算法页面的首页
 def calculate(request):
     if request.method == "GET":
         return render(request, 'calculate.html')
@@ -16,6 +15,7 @@ def calculate(request):
     return render(request, 'calculate.hmtl', data)
 
 
+# 处理FFT
 @login_required
 def run_fft(request):
     """
@@ -30,7 +30,7 @@ def run_fft(request):
         print(file_path, channel_dict, img_path)
     return JsonResponse({"ad": "ADC"})
 
-
+# 处理内部噪声
 @login_required
 def run_inner(request):
     """

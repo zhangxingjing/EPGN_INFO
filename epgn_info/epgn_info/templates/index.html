@@ -1,244 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="utf-8">
-    <title>EPGN-index</title>
-    <meta name="renderer" content="webkit">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+{% block title %}EPGN-index{% endblock %}
+
+{% block link %}
     <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
     <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
     <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
-</head>
+{% endblock %}
 
-<body class="layui-layout-body" layadmin-themealias="default">
-<div id="LAY_app" class="">
-    <div class="layui-layout layui-layout-admin">
-
-        <!-- 头部区域 -->
-        <div class="layui-header">
-
-            <!-- 左侧 -->
-            <ul class="layui-nav layui-layout-left">
-
-                <!-- 侧边栏 -->
-                <li class="layui-nav-item layadmin-flexible" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="flexible" title="侧边栏">
-                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
-                    </a>
-                </li>
-
-                <!-- 超链接 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <a href="http://www.baidu.com" target="_blank" title="超链接">
-                        <i class="layui-icon layui-icon-website"></i>
-                    </a>
-                </li>
-
-                <!-- 刷新 -->
-                <li class="layui-nav-item" lay-unselect="">
-                    <a href="" layadmin-event="refresh" title="刷新">
-                        <i class="layui-icon layui-icon-refresh-3"></i>
-                    </a>
-                </li>
-
-                <!-- 搜索框 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search"
-                           layadmin-event="serach" lay-action="template/search.html?keywords=">
-                </li>
-
-                <!-- 随着鼠标动的那条线 -->
-                <span class="layui-nav-bar" style="left: 38px; top: 48px; width: 0px; opacity: 0;"></span>
-
-            </ul>
-
-            <!-- 右侧 -->
-            <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
-
-                <!-- 可以做超链接获取iframe页面 -->
-                <li class="layui-nav-item" lay-unselect="">
-                    <a lay-href="app/message/index.html" layadmin-event="message" lay-text="消息中心">
-                        <i class="layui-icon layui-icon-notice"></i>
-                        <!-- 如果有新消息，则显示小圆点 -->
-                    </a>
-                </li>
-
-                <!-- 右侧弹出 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="theme">
-                        <i class="layui-icon layui-icon-theme"></i>
-                    </a>
-                </li>
-
-                <!-- 笔记本 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="note">
-                        <i class="layui-icon layui-icon-note"></i>
-                    </a>
-                </li>
-
-                <!-- 全屏 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="fullscreen">
-                        <i class="layui-icon layui-icon-screen-full"></i>
-                    </a>
-                </li>
-
-                <!-- 用户信息 -->
-                <li class="layui-nav-item" lay-unselect="">
-                    <a href="javascript:;">
-                        <cite>贤心</cite>
-                        <span class="layui-nav-more"></span></a>
-                    <dl class="layui-nav-child layui-anim layui-anim-upbit">
-                        <dd><a lay-href="set/user/info.html">基本资料</a></dd>
-                        <dd><a lay-href="set/user/password.html">修改密码</a></dd>
-                        <hr>
-                        <dd layadmin-event="logout" style="text-align: center;"><a>退出</a></dd>
-                    </dl>
-                </li>
-
-                <!-- 右侧弹出 -->
-                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="about">
-                        <i class="layui-icon layui-icon-more-vertical"></i>
-                    </a>
-                </li>
-
-                <!-- 这是什么 -->
-                <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-unselect="">
-                    <a href="javascript:;" layadmin-event="more">
-                        <i class="layui-icon layui-icon-more-vertical"></i>
-                    </a>
-                </li>
-                <span class="layui-nav-bar" style="left: 28px; top: 48px; width: 0px; opacity: 0;"></span>
-            </ul>
-
-            <hr class="layui-bg-g" style="margin-top: 2.6%">
-
-        </div>
-
-        <!-- 侧边菜单 -->
-        <div class="layui-side layui-side-menu">
-            <div class="layui-side-scroll">
-                <div class="layui-logo">
-                    <a href="../../../epgn_front_end/index.html">
-                        <span>EPGN INFO 2.0</span>
-                    </a>
-                </div>
-
-                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
-                    lay-filter="layadmin-system-side-menu">
-                    <li data-name="get" class="layui-nav-item layui-this">
-                        <a href="../../../epgn_front_end/index.html" lay-tips="主页" lay-direction="2">
-                            <i class="layui-icon layui-icon-home"></i>
-                            <cite>主页</cite>
-                        </a>
-                    </li>
-                    <li data-name="get" class="layui-nav-item">
-                        <a href="../../../epgn_front_end/upload.html" lay-tips="上传" lay-direction="2">
-                            <i class="layui-icon layui-icon-upload-circle"></i>
-                            <cite>上传</cite>
-                        </a>
-                    </li>
-                    <li data-name="home" class="layui-nav-item">
-                        <a href="javascript:;" lay-tips="检索" lay-direction="2">
-                            <i class="layui-icon layui-icon-search"></i>
-                            <cite>检索</cite>
-                            <span class="layui-nav-more"></span>
-                        </a>
-                        <dl class="layui-nav-child">
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb27.html">MQB 27</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb37.html">MQB 37</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb37a.html">MQB 37A</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb37w.html">MQB 37W</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb41b.html">MQB 41B</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mqb48.html">MQB 48</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/meb.html">MEB</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/mlb.html">MLB</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/pq25.html">PQ 25</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/pq34.html">PQ 34</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/pq34l.html">PQ 34L</a>
-                            </dd>
-                            <dd data-name="console">
-                                <a href="../../../epgn_front_end/pq35.html">PQ 35</a>
-                            </dd>
-                            </dd>
-
-                        </dl>
-                    </li>
-                    <li data-name="get" class="layui-nav-item">
-                        <a href="../../../epgn_front_end/calculate.html" lay-tips="算法" lay-direction="2">
-                            <i class="layui-icon layui-icon-chart"></i>
-                            <cite>算法</cite>
-                        </a>
-                    </li>
-                    <li data-name="get" class="layui-nav-item">
-                        <a href="../../../epgn_front_end/search.html" lay-tips="高级搜索" lay-direction="2">
-                            <i class="layui-icon layui-icon-auz"></i>
-                            <cite>高级搜索</cite>
-                        </a>
-                    </li>
-                    <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
-                </ul>
-            </div>
-        </div>
-
-        <!-- 主体内容 -->
-
-        <div class="layui-body" id="LAY_app_body" style="top:5%">
-            <div class="layui-fluid" style="padding:15px">
-                <h3>username</h3>
-                <h3>123123123</h3>
-
-            </div>
-        </div>
-
-        <!-- 辅助元素，一般用于移动设备下遮罩 -->
-        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+{% block content %}
+    <div class="layui-fluid" style="padding:15px">
+        <h3>username</h3>
+        <h3>123123123</h3>
     </div>
-</div>
+{% endblock %}
 
-<script src="../../../epgn_front_end/layui/layui.js"></script>
-<script>
-    layui.config({
-        base: '../../../epgn_front_end/home/' //静态资源所在路径
-    }).use('index', function () {
-        var layer = layui.layer,
-            admin = layui.admin,
-            element = layui.element;
-    });
-</script>
-<script>
-    $('dl.layui-nav-child>dd').click(function () {
-        alert("当前的点击事件")
-    });
-</script>
-
-<div class="layui-layer-move"></div>
-</body>
-
-</html>
+{% block javascript %}
+    <script>
+        layui.config({
+            base: '../../../epgn_front_end/home/' //静态资源所在路径
+        }).use('index', function () {
+            var layer = layui.layer,
+                admin = layui.admin,
+                element = layui.element;
+        });
+    </script>
+    <script>
+        $('dl.layui-nav-child>dd').click(function () {
+            alert("当前的点击事件")
+        });
+    </script>
+{% endblock %}

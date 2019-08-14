@@ -26,6 +26,9 @@ INSTALLED_APPS = [
     # 注册CORS
     # 'corsheaders',
 
+    # 注册全文检索
+    'haystack',
+
     # 注册试图函数的子应用
     'users.apps.UsersConfig',
     'fileinfo.apps.FileInfoConfig',
@@ -49,11 +52,11 @@ ROOT_URLCONF = 'epgn_info.urls'
 # 模板文件
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
-        'APP_DIRS': True,
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',  # Django自带的模板渲染引擎
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # 配置HTML文件存放目录
+        'APP_DIRS': True,  # app内部的Templates是否启用
         'OPTIONS': {
-            'context_processors': [
+            'context_processors': [  # 模板中间件
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -65,7 +68,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'epgn_info.wsgi.application'
 
-# 数据库
+# 配置数据库
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -73,7 +76,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'epgn'  # 新建数据库
+        'NAME': 'epgn_info'  # 新建数据库
     }
 }
 
@@ -102,7 +105,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-# 配置缓存
+# 配置缓存 ==> 要使用redis的话，要修改配置文件中的访问地址，再重启服务器
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -140,6 +143,7 @@ CACHES = {
         }
     },
 }
+
 # session保存到缓存当中
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 # 指明session保存的session这个redis库中
@@ -187,6 +191,18 @@ LOGGING = {
     }
 }
 
+# Haystack 对接elasticsearch搜索引擎
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'epgn_info',  # 指定elasticsearch建立的索引库的名称
+    },
+}
+
+# 当添加、修改、删除数据时，自动生成索引
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
@@ -200,13 +216,6 @@ REST_FRAMEWORK = {
     ),
     # 分页
     'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
-}
-
-#
-JWT_AUTH = {
-    # token过期时间
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
 # CORS
@@ -229,9 +238,18 @@ DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # 静态文件目录
 STATIC_URL = '/epgn_front_end/'
-# GENERATED_STATIC_HTML_FILES_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'front_end')
 STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'epgn_front_end'), ]
+
+# 用户认证 ==> JWT
+JWT_AUTH = {
+    # token过期时间
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+}
 
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
-AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', ]
+AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.contrib.auth.backends.ModelBackend']
+
+# 配置用户登录链接
+LOGIN_URL = '/login/'  #这个路径需要根据你网站的实际登陆地址来设置

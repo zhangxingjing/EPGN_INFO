@@ -1,19 +1,22 @@
 import os
 import json
 import time
+from collections import OrderedDict
 from urllib import parse
-from .serializers import *
+
+import collections
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render
+from drf_haystack.viewsets import HaystackViewSet
+
+from .serializers import *
 from django.core import serializers
 from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from django.http import StreamingHttpResponse
-from drf_haystack.viewsets import HaystackViewSet
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
@@ -94,11 +97,7 @@ def file(request):
 
 
 # 上传文件
-# @login_required
 def upload(request):
-    if request.method == "GET":
-        return render(request, 'upload.html')
-
     a = time.time()
     # 从前端获取的数据
     car_model_id = request.POST.get("car_model")  # 车型
@@ -118,10 +117,10 @@ def upload(request):
     EPG = request.POST.get('EPG')
     other = request.POST.get('other')
 
-    # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
+    save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
     # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
     # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-    save_path = "/home/spider/Music/"  # work
+    # save_path = "/home/pysuper/Music/"  # work
 
     # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
     car_model = Platform.objects.get(id=car_model_id).name
@@ -210,14 +209,16 @@ def upload(request):
         }
     }
     res = json.dumps(res_dict)
-    # return HttpResponse(res)
-    return render(request, 'upload.html', res)
+    return HttpResponse(res)
 
 
 # 文件下载
-@login_required
 def file_down(request, pk):
-    """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
+    """
+    前段在发送请求的时候应该是从cookie里面拿到的id
+    后端查询数据库，拿到文件名，拼接绝对路径
+    """
+    print(pk)
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
     file_path = "/home/pysuper/Music/hdf/" + file_name
@@ -255,9 +256,10 @@ def file_down(request, pk):
 
 
 # 文档查看
-@login_required
 def word(request):
-    file = open('/home/spider/Documents/Project/EPGN_INFO/epgn_front_end/word/使用说明文档.docx', 'rb')
+    file = open('/home/small-spider/Documents/EPGN/epgn_front_end/word/前端使用说明.docx', 'rb')
+    # file = open('/home/pysuper/Documents/EPGN/epgn_front_end/word/前端使用说明.docx', 'rb')
+    # file = open('/home/pysuper/Pictures/壁纸/xiaoyujiang-001.jpg', 'rb')
     response = FileResponse(file)
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="EPGN_INFO.docx"'
@@ -273,10 +275,10 @@ class PropulsionPowerView(ViewSet):
         propulsion_num = PropulsionSerializer(propulsion, many=True)
         return Response(propulsion_num.data)
 
-    def power(self, request, pk):
+    def power(self, request):
         # 获取当前动力总成对象
         # 使用序列化器输出
-        propulsion_obj = PropulsionPower.objects.get(pk=pk)
+        propulsion_obj = PropulsionPower.objects.get()
         serializer = PowerSerializer(propulsion_obj)
         return Response(serializer.data)
 
@@ -294,20 +296,17 @@ class PropulsionPowerView(ViewSet):
 
 # 前端访问到页面的时候就发送查询`平台`的请求, 选择平台之后在发送`车型`的请求
 class PlatformCarModelView(ViewSet):
-    def every_platform(self, request):
-        platform = Platform.objects.all()
-        data = []
-        for i in platform:
-            if i.parent_id:
-                item = {}
-                item["id"] = i.id
-                item["name"] = i.name
-                data.append(item)
-        return Response(data)
-
     def platform(self, request):
         # 获取所有平台
         # 使用序列化器序列化输出
+        # platform = Platform.objects.all()
+        # data = []
+        # for i in platform:
+        #     if i.parent_id:
+        #         item = {}
+        #         item["id"] = i.id
+        #         item["name"] = i.name
+        #         data.append(item)
         platform = Platform.objects.filter(parent=None)
         platform_num = PlatformSerializer(platform, many=True)
         return Response(platform_num.data)
@@ -408,8 +407,7 @@ class FileSearchViewSet(HaystackViewSet):
 
 
 # 把数据渲染到base.html
-# @login_required
-def parse_template(request, pk):
+def parse_base(request, pk):
     # 平台
     platform = Platform.objects.filter(parent=None)
     platform_num = PlatformSerializer(platform, many=True)
@@ -455,4 +453,4 @@ def parse_template(request, pk):
         # "status": status
 
     }
-    return render(request, 'info.html', data)
+    return render(request, 'base_2.html', data)

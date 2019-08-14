@@ -1,0 +1,13 @@
+{{ object.id }}
+{{ object.carmodel }}
+{{ object.author }}
+{{ object.file_name }}
+{{ object.platform }}
+{{ object.produce }}
+{{ object.parts }}
+{{ object.status }}
+{{ object.car_num }}
+{{ object.propulsion }}
+{{ object.power }}
+{{ object.file_type }}
+{{ object.other_need }}

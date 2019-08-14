@@ -4,25 +4,23 @@ from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 
 
-# 创建用户
+# 创建用户 ==> 不让用户自己创建
 class CreateUserSerializer(serializers.ModelSerializer):
     # ModelSerializer ==> 模型类序列化器(校验用户提交的数据)
     # 用户注册
     """
     提交字段
     1. username
+    5. nickname
     2. password
     3. password2
-    4. mobile
-    5. sms_code
-    6. allow
+    5. allow
     返回字段
     1. id
     2. username
-    3. mobile
-    4. jwt token
+    3. jwt token
     """
-    jobnumber = serializers.CharField(label="工号", write_only=True)
+    nickname = serializers.CharField(label="昵称", write_only=True)
     password2 = serializers.CharField(label='确认密码', write_only=True)
     allow = serializers.CharField(label='是否同意协议', write_only=True)
     token = serializers.CharField(label='token', read_only=True)
@@ -31,7 +29,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         # 指明参照哪个模型类
         model = User
         # 指明为模型类的哪些字段生成
-        fields = ['id', 'jobnumber', 'username', 'mobile', 'password', 'password2', 'allow', 'token']
+        fields = ['id', 'username', 'nickname', 'password', 'password2', 'allow', 'token']
 
         # 在Meta中, 重新定义, 改动字段属性
         extra_kwargs = {
@@ -40,32 +38,26 @@ class CreateUserSerializer(serializers.ModelSerializer):
                 'min_length': 8,
                 'max_length': 32,
             },
-            'jobnumber': {
+            'nickname': {
                 'min_length': 5,
                 'max_length': 20,
             }
         }
 
-    def validate_mobile(self, value):
-        if not re.match(r'^1[3-9]\d{9}$', value):
-            raise serializers.ValidationError('请输入正确的手机号码')
+    def validate_username(self, value):
+        if User.objects.filter(username=value):
+            raise serializers.ValidationError('当前用户名已存在')
         return value
 
-    def validate_jobnumber(self, value):
+    def validate_nickname(self, value):
         # 直接使用'calidate_参数名' 完成对当前这个参数的校验 ==> 这里是自己定义编写的函数校验参数
-        if not re.match(r'(\d+|\w+\d+)', value):
-            raise serializers.ValidationError('请输入正确的工号')
+        if not re.match(r'(\d+|\w+)', value):
+            raise serializers.ValidationError('请输入正确的昵称')
         return value
 
     def validate_allow(self, value):
         if value != 'true':
             raise serializers.ValidationError('请点击同意协议')
-        return value
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value):
-            raise serializers.ValidationError('当前用户名已存在')
-
         return value
 
     def validate(self, attrs):
@@ -76,7 +68,6 @@ class CreateUserSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-
         # 删除用户提交的多余数据创建用户
         del validated_data['password2']
         del validated_data['allow']
@@ -93,3 +84,10 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
         user.token = token
         return user
+
+
+# 用户登录的序列化器
+class AuthUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"

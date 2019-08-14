@@ -1,4 +1,6 @@
+from .search_indexes import FileIndex
 from rest_framework import serializers
+from drf_haystack.serializers import HaystackSerializer
 from .models import PropulsionPower, Platform, Direction, Fileinfo
 
 
@@ -57,3 +59,26 @@ class ContrasCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fileinfo
         fields = ['id', 'file_name']
+
+
+# 返回的文件信息序列化器
+class FileSerializer(serializers.ModelSerializer):
+    """指定返回的数据中有哪些字段"""
+
+    class Meta:
+        model = Fileinfo  # 绑定对应的模型类
+        fields = ["id", "carmodel", "author", "file_name", "platform", "produce", "parts", "status", "car_num",
+                  "propulsion", "power", "other_need"]
+
+
+# 处理搜索引擎返回数据的序列化器
+class FileIndexSerializer(HaystackSerializer):
+    """
+    索引结果数据序列化器:检查前端传入的参数text，并且检索出数据后再使用这个序列化器返回给前端
+    object字段是用来向前端返回数据时序列化的字段
+    """
+    object = FileSerializer(read_only=True)
+
+    class Meta:
+        index_classes = [FileIndex]  # 绑定的搜索索引
+        fields = ('text', 'object')

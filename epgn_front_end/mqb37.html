@@ -18,6 +18,69 @@
     <script src="js/header.js"></script>
     <script src="js/axios-0.18.0.min.js"></script>
     <script src="js/jquery.cookie.js"></script>
+    <style>
+        .dataContrastList {
+            position: fixed;
+            float: right;
+            top: 30%;
+            right: 4%;
+            width: 230px;
+            height: 280px;
+            z-index: 1000;
+            background: #B0E0E6;
+            overflow: scroll;
+
+        }
+
+        .list-title {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: left;
+            color: #1E9FFF;
+            margin-top: 15px;
+            padding-left: 10px
+        }
+
+        .data-list {
+            font-size: 16px;
+            text-align: left;
+            margin-top: 8px;
+            color: #333;
+            padding-left: 10px
+        }
+
+        .data-submit {
+            width: 100px;
+            margin-left: 65px;
+            height: 35px;
+            line-height: 35px;
+            text-align: center;
+            font-size: 16px;
+            color: white;
+            background: #1E9FFF;
+            border-radius: 2px;
+            border: 0px;
+            margin-top: 10px
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+            border-radius: 0;
+            background: rgba(0, 0, 0, 0.1);
+
+        }
+    </style>
 </head>
 
 <body class="layui-layout-body" layadmin-themealias="default">
@@ -338,7 +401,22 @@
             </div>
         </div>
     </div>
-    
+    <div class="dataContrastList">
+
+
+        <div class="list-title">已选数据:</div>
+
+        <div class="data-list">
+            <div>Data 123123</div>
+            <div>Data 198123</div>
+            <div>Data 298823</div>
+
+        </div>
+        <button class="data-submit">
+            确认计算
+        </button>
+    </div>
+
     <script src="layui/layui.js"></script>
 
     <!-- 使用layui框架 -->
@@ -353,6 +431,24 @@
                 table = layui.table,
                 form = layui.form;
         });
+        var sessionStr = (sessionStorage.getItem("lastname"));
+       alert(sessionStr)
+        if (sessionStr == null) {
+            alert("没有session")
+
+        }
+        else {
+            alert("有session");
+            var str2 = JSON.parse(sessionStr);
+            for (var i = 0; i < str2.length; i++) {
+                console.log(str2[i].file_name)
+                $(".data-list").append(
+                    `<div>
+                ${str2[i].file_name}
+              </div>`
+                );
+            }
+        }
     </script>
 
     <!-- 使用script的方式把这段代码添加到html中 -->
@@ -391,7 +487,7 @@
             }
             cookie_list = cookieChoiceIdArray.splice(-1, 1)
             // for (var i = 1; i <= cookieChoiceIdArray.length; i++) { // 这里不管怎么改，都会多一个出来，就直接修改length-1
-            for (var i in cookieChoiceIdArray){
+            for (var i in cookieChoiceIdArray) {
                 // alert(cookieChoiceIdArray[i])
                 // // if (i != 0) {
                 mp3arr.splice(-1, 0, "/download/" + parseInt(cookieChoiceIdArray[i]))
@@ -636,8 +732,8 @@
             },
             mounted: function () {
                 axios.get('/car_model/100', {
-                        responseType: 'json'
-                    })
+                    responseType: 'json'
+                })
                     .then(response => {
                         this.car_models = response.data[0]["subs"];
                     })
@@ -657,8 +753,8 @@
             },
             mounted: function () {
                 axios.get('/propulsionpower_num/', {
-                        responseType: 'json'
-                    })
+                    responseType: 'json'
+                })
                     .then(response => {
                         this.propulsions = response.data;
                     })
@@ -678,8 +774,8 @@
             },
             mounted: function () {
                 axios.get('/power/', {
-                        responseType: 'json'
-                    })
+                    responseType: 'json'
+                })
                     .then(response => {
                         this.powers = response.data;
                     })

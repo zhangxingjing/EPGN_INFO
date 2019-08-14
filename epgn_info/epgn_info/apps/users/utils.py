@@ -14,11 +14,9 @@ def get_user_by_account(account):
     """
     try:
         if re.match(r'(\d+|\w+\d+)', account):
-            # 帐号为手机号
-            user = User.objects.get(username=account)
+            user = User.objects.get(username=account)  # 帐号为手机号
         else:
-            # 帐号为用户名
-            user = User.objects.get(nickname=account)
+            user = User.objects.get(nickname=account)  # 帐号为用户名
     except User.DoesNotExist:
         return None
     else:
@@ -27,11 +25,12 @@ def get_user_by_account(account):
 
 # 自定义用户名工号认证
 class UsernameMobileAuthBackend(ModelBackend):
-
     def authenticate(self, request, username=None, password=None, **kwargs):
         # 在这里使用上面自定义的获取用户信息方法, 拿到用户后校验jwt
         user = get_user_by_account(username)
+        print("用户在这里开始校验", user, user.nickname)
         if user is not None and user.check_password(password):
+            print("用户校验成功")
             return user
 
 
@@ -40,7 +39,8 @@ def jwt_response_payload_handler(token, user=None, request=None):
     return {
         'token': token,
         'user_id': user.id,
-        'username': user.username
+        'username': user.username,
+        "nickname": user.nickname,
     }
 
 

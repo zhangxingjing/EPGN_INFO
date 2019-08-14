@@ -94,8 +94,11 @@ def file(request):
 
 
 # 上传文件
-@login_required()
+# @login_required
 def upload(request):
+    if request.method == "GET":
+        return render(request, 'upload.html')
+
     a = time.time()
     # 从前端获取的数据
     car_model_id = request.POST.get("car_model")  # 车型
@@ -207,7 +210,8 @@ def upload(request):
         }
     }
     res = json.dumps(res_dict)
-    return HttpResponse(res)
+    # return HttpResponse(res)
+    return render(request, 'upload.html', res)
 
 
 # 文件下载
@@ -404,6 +408,7 @@ class FileSearchViewSet(HaystackViewSet):
 
 
 # 把数据渲染到base.html
+# @login_required
 def parse_template(request, pk):
     # 平台
     platform = Platform.objects.filter(parent=None)

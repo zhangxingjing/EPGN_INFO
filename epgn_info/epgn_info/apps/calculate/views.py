@@ -1,10 +1,20 @@
 import json
 
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
 from .algorithm.inner import inner
 from django.http import JsonResponse
 from .algorithm.fft import return_data
+from django.contrib.auth.decorators import login_required
+
+
+def calculate(request):
+    if request.method == "GET":
+        return render(request, 'calculate.html')
+    # 如果不是GET请求，这里接受前端传递的参数，判断选择指定的算法，返回一样的结果
+    data = {"ad": "ADC"}
+    return render(request, 'calculate.hmtl', data)
+
 
 @login_required
 def run_fft(request):
@@ -18,7 +28,8 @@ def run_fft(request):
     for file_name in file_name_list:
         file_path, channel_dict, img_path = return_data(file_name)
         print(file_path, channel_dict, img_path)
-    return JsonResponse({"ad":"ADC"})
+    return JsonResponse({"ad": "ADC"})
+
 
 @login_required
 def run_inner(request):
@@ -33,9 +44,9 @@ def run_inner(request):
     for file_name in file_name_list:
         filepath = "/home/spider/Music/" + file_name
         image_path = inner(filepath)
-        print({file_name:image_path})
-        item.append({file_name:image_path})
-    return JsonResponse({"items":item})
+        print({file_name: image_path})
+        item.append({file_name: image_path})
+    return JsonResponse({"items": item})
 
 
 """

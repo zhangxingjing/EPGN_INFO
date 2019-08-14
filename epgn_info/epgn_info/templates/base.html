@@ -26,11 +26,11 @@
                 <ul class="layui-nav layui-layout-left">
 
                     <!-- 侧边栏 -->
-                    <li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <!--<li class="layui-nav-item layadmin-flexible" lay-unselect="">
                         <a href="javascript:;" layadmin-event="flexible" title="侧边栏">
                             <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
                         </a>
-                    </li>
+                    </li>-->
 
                     <!-- 超链接 -->
                     <li class="layui-nav-item layui-hide-xs" lay-unselect="">
@@ -57,8 +57,8 @@
                 <!-- 右侧 -->
                 <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
                     <ul class="layui-nav-item">
-                        <li class="layui-nav-item"><a href="../../../epgn_front_end/userinfo.html">郑兴涛</a></li>
-                        <li class="layui-nav-item"><a href="http://127.0.0.1:8000/logout/">退出登录</a></li>
+                        <li class="layui-nav-item"><a href="/userinfo/">郑兴涛</a></li>
+                        <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>
                     </ul>
                 </ul>
             </div>
@@ -68,7 +68,7 @@
                 <div class="layui-side-scroll">
                     <!-- logo -->
                     <div class="layui-logo">
-                        <a href="index.html">
+                        <a href="/">
                             <span>EPGN INFO 2.0</span>
                         </a>
                     </div>
@@ -76,17 +76,18 @@
                     <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
                         lay-filter="layadmin-system-side-menu">
                         <li data-name="get" class="layui-nav-item">
-                            <a href="index.html" lay-tips="主页" lay-direction="2">
+                            <a href="/" lay-tips="主页" lay-direction="2">
                                 <i class="layui-icon layui-icon-home"></i>
                                 <cite>主页</cite>
                             </a>
                         </li>
                         <li data-name="get" class="layui-nav-item">
-                            <a href="upload.html" lay-tips="上传" lay-direction="2">
+                            <a href="/upload/" lay-tips="上传" lay-direction="2">
                                 <i class="layui-icon layui-icon-upload-circle"></i>
                                 <cite>上传</cite>
                             </a>
                         </li>
+                        <!--<li data-name="home" class="layui-nav-item layui-nav-itemed">-->
                         <li data-name="home" class="layui-nav-item layui-nav-itemed">
                             <a href="javascript:;" lay-tips="检索" lay-direction="2">
                                 <i class="layui-icon layui-icon-search"></i>
@@ -97,17 +98,17 @@
                             </dl>
                         </li>
                         <li data-name="get" class="layui-nav-item">
-                            <a href="calculate.html" lay-tips="算法" lay-direction="2">
+                            <a href="/calculate/" lay-tips="算法" lay-direction="2">
                                 <i class="layui-icon layui-icon-upload-circle"></i>
                                 <cite>算法</cite>
                             </a>
                         </li>
-                        <li data-name="get" class="layui-nav-item">
+                        <!--<li data-name="get" class="layui-nav-item">
                             <a href="search.html" lay-tips="高级搜索" lay-direction="2">
                                 <i class="layui-icon layui-icon-auz"></i>
                                 <cite>高级搜索</cite>
                             </a>
-                        </li>
+                        </li>-->
                         <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
                     </ul>
                 </div>

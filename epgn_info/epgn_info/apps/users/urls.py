@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^authorizations/$', obtain_jwt_token),  # 登录
     url(r'^login/$', views.user_login),  # 登录
     url(r'^logout/$', views.logout),  # 退出
-    # url('^index$', views.)
+    url('^userinfo/$', views.user_info)  # 用户个人中心
 ]

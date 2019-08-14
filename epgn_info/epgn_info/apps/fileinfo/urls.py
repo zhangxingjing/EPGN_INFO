@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^download/(?P<pk>\d+)$', views.file_down),
 
     # 获取平台
-    url(r'^car_platform/$', views.PlatformCarModelView.as_view({'get':'platform'})),
+    url(r'^car_platform/$', views.PlatformCarModelView.as_view({'get': 'platform'})),
 
     # 获取所有车型
     url(r'^car_model/$', views.PlatformCarModelView.as_view({'get': 'every_platform'})),

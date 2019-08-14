@@ -52,12 +52,14 @@
 				dataType: 'json',
 				async: true, //异步请求
 				data: {
-					username: "zheng",// $('.username').values()
-					password: "zheng123123"// $('.password').values()
+					username: $('.username').val(),
+					password: $('.password').val(),
 				},
 				//执行成功的回调函数
 				success: function (data) {
 					// 还要处理tokwen
+                    alert(data.username);
+                    alert(data.token);
 					window.location.href = "/";
 				},
 				//执行失败或错误的回调函数

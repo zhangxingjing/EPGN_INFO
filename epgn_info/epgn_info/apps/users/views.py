@@ -52,3 +52,10 @@ def user_login(request):
 def logout(request):
     auth.logout(request)
     return render(request, 'login_2.html')
+
+
+# 用户
+def user_info(request):
+    if request.method == "GET":
+        return render(request, 'userinfo.html')
+    # 如果是POST请求，接收前端传递的参数，修改用户信息

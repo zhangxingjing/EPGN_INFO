@@ -10,8 +10,8 @@ from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect
+from django.http import StreamingHttpResponse
 from drf_haystack.viewsets import HaystackViewSet
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -247,7 +247,7 @@ def word(request):
 
 
 # 上传文件
-# @login_required # 用户认证
+@login_required
 def upload(request):
     if request.method == "GET":
         return render(request, 'upload.html')
@@ -383,6 +383,7 @@ def file_down(request, pk):
 
 
 # 文件上传时候的撤销
+@login_required
 def cancel(request):
     save_path = "/home/spider/Music/"
     # 接收前端传递的参数
@@ -415,7 +416,6 @@ def cancel(request):
 
 
 # 把数据渲染到base.html
-# @login_required
 def parse_template(request, pk):
     # 平台
     platform = Platform.objects.filter(parent=None)

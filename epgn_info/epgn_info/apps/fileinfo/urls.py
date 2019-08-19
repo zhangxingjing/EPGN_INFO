@@ -2,6 +2,8 @@ from . import views
 from django.conf.urls import url
 from rest_framework.routers import SimpleRouter, DefaultRouter
 
+router = SimpleRouter()
+
 urlpatterns = [
     # 检索 ==> 表格重载
     url(r'^car/$', views.file),
@@ -47,16 +49,9 @@ urlpatterns = [
 
     # 用户撤销文件上传
     url(r'^cancel/$', views.cancel),
-
-    # ele
 ]
 
-# 使用rest_framework中的SimpleRouter方法,优化功率查询时候的url
-# router = SimpleRouter()
-# router.register('propulsionpower_num', views.PropulsionPowerView, base_name='propulsionpower_num')
-
-# urlpatterns += router.urls
-router = SimpleRouter()
 # 搜索引擎的URL
 router.register('fileinfo/search', views.FileSearchViewSet, base_name='fileinfo_search')
+
 urlpatterns += router.urls

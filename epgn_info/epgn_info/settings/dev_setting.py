@@ -1,6 +1,6 @@
-import datetime
 import os
 import sys
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -29,7 +29,7 @@ INSTALLED_APPS = [
     # 注册全文检索
     'haystack',
 
-    # 注册试图函数的子应用
+    # 注册子应用
     'users.apps.UsersConfig',
     'fileinfo.apps.FileInfoConfig',
     'calculate.apps.CalculateConfig',
@@ -252,4 +252,4 @@ AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
 AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.contrib.auth.backends.ModelBackend']
 
 # 配置用户登录链接
-LOGIN_URL = '/login/'  #这个路径需要根据你网站的实际登陆地址来设置
+LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址来设置

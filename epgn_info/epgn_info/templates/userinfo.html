@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}EPGN USERINFO{% endblock %}
+{% block title %}USER{% endblock %}
 
 {% block link %}
     <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
@@ -27,20 +27,21 @@
                                         <div class="layui-form" lay-filter="">
                                             <!-- 用户名 -->
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label">用户啊名</label>
+                                                <label class="layui-form-label">工号</label>
                                                 <div class="layui-input-inline">
-                                                    <input type="text" name="username" value="xianxin" readonly=""
+                                                    <input type="text" name="username" value="YRKJ1553" readonly=""
                                                         class="layui-input">
                                                 </div>
-                                                <div class="layui-form-mid layui-word-aux">不可修改。一般用于后台登入名</div>
+                                                <div class="layui-form-mid layui-word-aux">不可修改</div>
                                             </div>
-                                            <!-- 昵称 -->
+                                            <!-- 用户名 -->
                                             <div class="layui-form-item">
-                                                <label class="layui-form-label">昵称</label>
+                                                <label class="layui-form-label">用户名</label>
                                                 <div class="layui-input-inline">
-                                                    <input type="text" name="nickname" value="贤心" lay-verify="nickname"
-                                                        autocomplete="off" placeholder="请输入昵称" class="layui-input">
+                                                    <input type="text" name="nickname" value="郑兴涛" readonly=""
+                                                        class="layui-input">
                                                 </div>
+                                                <div class="layui-form-mid layui-word-aux">不可修改</div>
                                             </div>
 
 

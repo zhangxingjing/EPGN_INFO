@@ -1,11 +1,9 @@
 import os
 import re
 import numpy as np
-from numpy.dual import fft
 from scipy.fftpack.basic import fft
 from matplotlib import pyplot as plt
 from scipy.signal.windows import hann
-
 from epgn_info.settings.dev_setting import BASE_DIR
 
 

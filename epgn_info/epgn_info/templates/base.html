@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}{% endblock %}</title>
+    <title>EPGN {% block title %}{% endblock %}</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
@@ -93,12 +93,14 @@
                                 <cite>检索</cite>
                                 <span class="layui-nav-more"></span></a>
                             <dl class="layui-nav-child" id="platforms">
-                                <dd data-name="console" v-for="platform in platforms"><a :href="'/base/'+ platform.id">[[ platform.name ]]</a></dd>
+                                <dd data-name="console" v-for="platform in platforms">
+                                    <a :href="'/base/'+ platform.id">[[ platform.name ]]</a>
+                                </dd>
                             </dl>
                         </li>
                         <li data-name="get" class="layui-nav-item">
                             <a href="/calculate/" lay-tips="算法" lay-direction="2">
-                                <i class="layui-icon layui-icon-upload-circle"></i>
+                                <i class="layui-icon layui-icon-template-1"></i>
                                 <cite>算法</cite>
                             </a>
                         </li>
@@ -175,7 +177,6 @@
         })
     </script>
     {% block javascript %}{% endblock %}
-
 
     <!-- 测试项目发送请求的时候，只携带当前点击的ID -->
     <div class="layui-layer-move"></div>

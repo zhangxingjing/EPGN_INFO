@@ -1,12 +1,11 @@
 import os
-
-import numpy as np
-import librosa
 import time
+import librosa
+import numpy as np
 import statsmodels.api as sm
+from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
-from scipy.fftpack import fft
 from epgn_info.settings.dev_setting import BASE_DIR
 
 

@@ -43,8 +43,12 @@ urlpatterns = [
     url(r'^word/$', views.word),
 
     # 访问模板渲染页面
-    url(r'^base/(?P<pk>\d+)/$', views.parse_template)
+    url(r'^base/(?P<pk>\d+)/$', views.parse_template),
 
+    # 用户撤销文件上传
+    url(r'^cancel/$', views.cancel),
+
+    # ele
 ]
 
 # 使用rest_framework中的SimpleRouter方法,优化功率查询时候的url

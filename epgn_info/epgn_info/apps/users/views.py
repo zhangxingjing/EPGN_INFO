@@ -1,15 +1,14 @@
-from django.contrib.auth.hashers import make_password
-from rest_framework.response import Response
-
 from .models import User
-from .serializers import AuthUserSerializer
 from . import serializers
 from django.contrib import auth
 from django.http import HttpResponse
+from .serializers import AuthUserSerializer
+from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import authenticate, login
 from rest_framework import viewsets, mixins, status
+from django.contrib.auth.hashers import make_password
 
 
 # 重写 ==> admin创建的用户密码加密登录校验

@@ -1,10 +1,11 @@
 from .models import User
 from . import serializers
 from django.contrib import auth
+from django.db import transaction
 from django.http import HttpResponse
 from .serializers import AuthUserSerializer
 from rest_framework.response import Response
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework.generics import CreateAPIView
 from django.contrib.auth import authenticate, login
 from rest_framework import viewsets, mixins, status
@@ -57,4 +58,15 @@ def logout(request):
 def user_info(request):
     if request.method == "GET":
         return render(request, 'userinfo.html')
-    # 如果是POST请求，接收前端传递的参数，修改用户信息
+    username = request.POST.get("username")
+    new_password = request.POST.get("new_password")
+    user = User.objects.get(username=username)
+    with transaction.atomic():  # 数据库回滚
+        try:
+            user.set_password(new_password)
+            user.save()
+        except Exception as error:
+            user = user
+    return None
+
+

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}EPGN CALCULATE{% endblock %}
+{% block title %}CALCULATE{% endblock %}
 
 {% block link %}
 <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="layui-form-item" style="margin-top: 10px">
-            <label class="layui-form-label">{{ string }}</label>
+            <label class="layui-form-label">通道选择:</label>
             <div class="layui-input-block">
                 <input type="checkbox" name="pipeline" title="VL" value="VL">
                 <input type="checkbox" name="pipeline" title="VR" value="VR" checked="">
@@ -60,7 +60,8 @@
             <div class="layui-tab-item layui-show">
                 <div style="text-align: center">
                     <img src="../../../epgn_front_end/image/back.jpg" alt="算法处理的结果" style="width: 1000px; ">
-                    <h2>这里发送算法的处理结果</h2>
+                    <h2>这里发送算法的处理结果{{ string }}</h2>
+                    <h2>{{ string }}</h2>
                 </div>
             </div>
         </div>
@@ -83,7 +84,7 @@
     </script>
 
 <script>
-    $(" #run").click(function () {
+    $("#run").click(function () {
         obj = document.getElementsByName("pipeline");
         check_pipeline = {};
         for (i in obj) {

@@ -2,10 +2,14 @@ import re
 
 
 # 读取指定文件中的通道信息
+import time
+
+
 def read_file_header(file_name):
+    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     head_content = ""
-    file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
-    file = open(file_path, "r", encoding="gbk", errors="ignore")
+    # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
+    file = open(file_name, "r", encoding="gbk", errors="ignore")
     while True:
         file_content = file.readline()
         if not file_content:
@@ -16,7 +20,10 @@ def read_file_header(file_name):
             break
 
     # 处理头文件中的channel字典
-    header_info = re.match(r"(.*?)\[CodedChannel0](.*?)\[Channel\d](.*)", head_content, re.S).group(1)
+    try:
+        header_info = re.match(r"(.*?)\[CodedChannel0](.*?)\[Channel\d](.*)", head_content, re.S).group(1)
+    except AttributeError as error:
+        header_info = re.match(r"(.*?)(Channel 1.*?)Comment", head_content, re.S).group(2)
     detail_key_list = []
     detail_value_list = []
     channel_dict = {}
@@ -36,8 +43,8 @@ def read_file_num(file_name):
     items = []
     data_content = ""
     split_tag = ' '  # # 编码不同的时候，使用不同的读取方式
-    file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
-    file = open(file_path, "r", encoding="gbk", errors="ignore")
+    # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
+    file = open(file_name, "r", encoding="gbk", errors="ignore")
 
     while True:
         file_content = file.readline()
@@ -66,8 +73,9 @@ def read_file_num(file_name):
     return items[:-1]
 
 
-channel_dict = read_file_header('100009 ( 0.00-11.33 s)')
-print(channel_dict)
+# channel_dict = read_file_header('/home/spider/Music/asc/guan2019-08-14_100001 ( 0.00-12.63 s).asc')
+# print(channel_dict)
+# print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
-items = read_file_num('100009 ( 0.00-11.33 s)')
-print(items)
+# items = read_file_num('100009 ( 0.00-11.33 s)')
+# print(items)

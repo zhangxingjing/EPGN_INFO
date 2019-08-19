@@ -29,6 +29,10 @@ INSTALLED_APPS = [
     # 注册全文检索
     'haystack',
 
+    # 使用xadmin
+    'xadmin',
+    'crispy_forms',
+
     # 注册子应用
     'users.apps.UsersConfig',
     'fileinfo.apps.FileInfoConfig',
@@ -76,7 +80,8 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'epgn_info'  # 新建数据库
+        # 'NAME': 'epgn_info'  # 新建数据库
+        'NAME': 'epgninfo'  # 新建数据库==> 使用xadmin
     }
 }
 
@@ -253,3 +258,6 @@ AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.cont
 
 # 配置用户登录链接
 LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址来设置
+
+XADMIN_TITLE = "EPGN_INFO 后台管理" # 左上方的文字
+XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com" # 最下面的文字

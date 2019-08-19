@@ -1,3 +1,4 @@
+import xadmin
 from django.contrib import admin
 from django.conf.urls import url, include
 from django.views.generic.base import TemplateView, RedirectView
@@ -5,7 +6,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     # 站点管理
-    url(r'^admin/', admin.site.urls),
+    url(r'^admin/', xadmin.site.urls, name="xadmin"),
 
     # 显示图片的请求 ==> /favicon.ico
     url(r'^favicon\.ico$', RedirectView.as_view(url=r'epgn_front_end/image/favicon.ico')),

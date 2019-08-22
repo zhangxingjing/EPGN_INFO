@@ -21,6 +21,7 @@ class Fileinfo(models.Model):
     # 可以添加什么属性来确定当前文件是实验数据还是报告数据
 
     class Meta:
+        ordering = ['-id']
         db_table = 'tb_car'  # 对应的数据表名字
         verbose_name_plural = verbose_name = '汽车数据信息'
 

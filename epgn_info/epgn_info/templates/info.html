@@ -381,6 +381,12 @@
             tableIns = table.render({
                 elem: '#info', // 找到制定的容器
                 url: "/car/", // 表格请求的URL
+                page: true, // 是否分页
+                limit: 20, // 一页显示多少条数据
+                height: 'full-130', // 表格的高度
+                // even: true, // 隔行背景
+                // skin: 'line', // 行边框风格
+                // loading: true, // 开启进度条
                 defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏
                 toolbar: '#toolbarDemo',
                 cols: [
@@ -390,7 +396,9 @@
                     }, {
                         field: 'pk',
                         title: 'ID',
-                        width: '3%'
+                        width: '5%',
+                        sort: true,     // 开启排序
+                        // fixed: 'left'   // 固定在左侧
                     }, {
                         field: 'produce',
                         title: '车辆阶段',
@@ -415,7 +423,12 @@
                         width: '15%'
                     }]
                 ],
+                // initSort:{
+                //     field: 'pk',    // 自定义排序字段
+                //     type: 'desc'    // 设置排序类型
+                // }
             });
+
 
             // 表格重载动作
             active_table = {

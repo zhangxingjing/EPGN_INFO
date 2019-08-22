@@ -197,7 +197,7 @@ def file(request):
             search_dict["parts"] = parts
 
         # 如果没有key_word， items就是这个值
-        items = Fileinfo.objects.filter(**search_dict)
+        items = Fileinfo.objects.filter(**search_dict).order_by('-id')
 
         # 如果key_word存在，再从上面搜索的QuerySet中搜索
         if key_word:
@@ -207,7 +207,7 @@ def file(request):
                                                                   Q(author__icontains=key_word) |
                                                                   Q(status__icontains=key_word) |
                                                                   Q(file_name__icontains=key_word) |
-                                                                  Q(other_need__icontains=key_word))
+                                                                  Q(other_need__icontains=key_word)).order_by('-id')
 
     # 这里是使用什么方法分页查询数据的
     paginator = Paginator(items, limit)

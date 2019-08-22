@@ -27,7 +27,7 @@
             width: 230px;
             height: 280px;
             z-index: 1000;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0, 0, 0, 0.6);
             display: none;
         {#overflow: scroll;#}
 
@@ -65,7 +65,7 @@
             line-height: 35px;
             font-size: 16px;
             color: white;
-            background: rgba(42,149,241,1) !important;
+            background: rgba(42, 149, 241, 1) !important;
         }
 
         .bulletbox-button button {
@@ -265,7 +265,7 @@
 {% endblock content %}
 
 {% block right_data %}
-    <div class="dataContrastList" id="data2019">
+    <div class="dataContrastList" id="dataContrastList">
         <div class="list-title">已选数据:</div>
         <div class="data-list">
 
@@ -285,36 +285,42 @@
     <!-- 使用layui框架 -->
     <script>
         var listArray = null;
-        var sessionArray2 =[];
-        var listDisplay = sessionStorage.getItem("sessionString");
-        console.log(listDisplay);
-        if (listDisplay == null || listDisplay == 1) {
-            var dd = document.getElementById('data2019');
-            dd.style.display = "none";
-        } else {
-            var dd = document.getElementById('data2019');
-            dd.style.display = "block";
-            listArray = 1;
-            sessionArray2 = JSON.parse(listDisplay);
-            console.log(sessionArray2);
-            for (var i = 0; i < sessionArray2.length; i++) {
+        var sessionArray = [];
+        var judge_sessionValue = sessionStorage.getItem("sessionString");
+        // judge_sessionValue里面有值
+        if (judge_sessionValue != null) {
+
+
+            //取session转数组
+            sessionArray = JSON.parse(judge_sessionValue);
+            for (var i = 0; i < sessionArray.length; i++) {
                 $(".data-list").append(
-                    `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${sessionArray2[i].file_name}</div>`
+                    `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${sessionArray[i].file_name}</div>`
                 );
             }
-            $(".list-data").click(function () {
-                var index = $(".data-list div").index(this);
-                // alert(index);
+            ;
+
+            // 显示数组
+            var compare_dataBlock = document.getElementById('dataContrastList');
+            compare_dataBlock.style.display = "block";
+
+
+            $(".data-list").off('click');
+            $(".data-list").on('click', '.list-data', function () {
+                var compare_dataIndex = $(".list-data").index(this);
+                console.log(compare_dataIndex);
                 $(this).remove();
-                sessionArray2.splice(index, 1);
-                sessionString = JSON.stringify(sessionArray2);
+                sessionArray.splice(compare_dataIndex, 1);
+                sessionString = JSON.stringify(sessionArray);
                 sessionStorage.setItem("sessionString", sessionString);
-                if (sessionArray2.length == 0) {
-                    var dd = document.getElementById('data2019');
-                    dd.style.display = "none";
-                    sessionStorage.sessionString = 1;
+                if (sessionArray.length == 0) {
+                    var compare_dataBlock = document.getElementById('dataContrastList');
+                    compare_dataBlock.style.display = "none";
+                    sessionStorage.removeItem("sessionString");
+
                 }
-            })
+
+            });
         }
 
 
@@ -351,6 +357,22 @@
             a.href = href; //设置下载地址
             a.download = name; //设置下载文件名
             a.dispatchEvent(e); //给指定的元素，执行事件click事件
+        }
+
+        function remove_compareData() {
+            console.log(this);
+            var compare_dataIndex = $(".data-list div").index(this);
+            console.log(compare_dataIndex);
+            $(this).remove();
+            sessionArray.splice(compare_dataIndex, 1);
+            console.log(sessionArray);
+            sessionString = JSON.stringify(sessionArray);
+            sessionStorage.setItem("sessionString", sessionString);
+            if (sessionArray.length == 0) {
+                var compare_dataBlock = document.getElementById('dataContrastList');
+                compare_dataBlock.style.display = "none";
+                sessionStorage.removeItem("sessionString");
+            }
         }
 
         //给多文件下载按钮添加点击事件
@@ -490,94 +512,91 @@
 
             // 监听表头事件 ==> 下载
             table.on('toolbar(test)', function (obj) {
-                var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
-                switch (obj.event) {
-                    case 'catContrast': // 查看
-                        $.ajax({
-                            url: "/contrast/",
-                            dataType: "html",
-                            type: "get",
-                            success: function (result) {
-                                layer.msg("OK")
-                            }
-                        });
-                        break;
-                    case 'getCheckData':
-                        var addArrayList = checkStatus.data;
-                        if (listArray == null) {
-                            sessionArray = addArrayList;
-                            sessionString = JSON.stringify(sessionArray);
-                             listArray =1;
+                    var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+                    switch (obj.event) {
+                        case 'catContrast': // 查看
+                            $.ajax({
+                                url: "/contrast/",
+                                dataType: "html",
+                                type: "get",
+                                success: function (result) {
+                                    layer.msg("OK")
+                                }
+                            });
+                            break;
+                        case 'getCheckData':
+                            var add_arrayData = checkStatus.data;
+                            judge_sessionValue = sessionStorage.getItem("sessionString");
+                            if (judge_sessionValue == null) {
+                                sessionArray = add_arrayData;
+                                sessionString = JSON.stringify(sessionArray);
+                                document.getElementById('dataContrastList').style.display = "block";
 
-                        } else {
+                            } else {
+                                var result = [];
 
-                         var result = [];
-                         function com1(){
-                            for (let i = 0; i < addArrayList.length; i++) {
-                            num = addArrayList[i].file_name;
-                            sessionArray2 = JSON.parse(sessionStorage.sessionString);
-                            for (let j = 0; j < sessionArray2.length; j++) {
-                                n = sessionArray2[j].file_name;
-                                console.log(n)
-                                if (n === num) {
-                                    result.push(addArrayList[i]);
-                                    break;
-                                    // console.log(arr1[i])
+                                function get_sameArray() {
+                                    for (let i = 0; i < add_arrayData.length; i++) {
+                                        new_itemName = add_arrayData[i].file_name;
+                                        for (let j = 0; j < sessionArray.length; j++) {
+                                            old_itemName = sessionArray[j].file_name;
+                                            if (new_itemName === old_itemName) {
+                                                result.push(add_arrayData[i]);
+                                                break;
+                                                // console.log(arr1[i])
+                                            }
                                         }
                                     }
                                 }
+
+                                get_sameArray();
+                                console.log(result);
+                                add_arrayData = add_arrayData.filter(item => {
+                                    let idList = result.map(v => v.file_name)
+                                    return !idList.includes(item.file_name)
+                                })
+                                console.log(add_arrayData);
+                                sessionArray = sessionArray.concat(add_arrayData);
+                                sessionString = JSON.stringify(sessionArray);
                             }
-                        com1();
-                        console.log(result);
-                        addArrayList= addArrayList.filter(item => {
-                                let idList= result.map(v => v.file_name)
-                                return !idList.includes(item.file_name)
-                            })
-                        console.log(addArrayList);
-                        sessionArray = sessionArray2.concat(addArrayList);
-                        sessionString = JSON.stringify(sessionArray);
-                        }
-                        sessionStorage.setItem("sessionString", sessionString);
-
-
-
-                        console.log(addArrayList);
-
-
-
-                        for (var i = 0; i < addArrayList.length; i++) {
-                            $(".data-list").append(
-                                `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${addArrayList[i].file_name}</div>`
-                            );
-                        };
-                        document.getElementById('data2019').style.display = "block";
-                        $(".list-data").click(function () {
-                            var index = $(".data-list div").index(this);
-                            console.log(index);
-                            $(this).remove();
-                            sessionArray.splice(index, 1);
-                            console.log(sessionArray.length);
-                            sessionString = JSON.stringify(sessionArray);
                             sessionStorage.setItem("sessionString", sessionString);
-                            if (sessionArray.length == 0) {
-                                var dd = document.getElementById('data2019');
-                                dd.style.display = "none";
-                                sessionStorage.sessionString = "[]";
-                                sessionArray2=[];
+
+                            for (var i = 0; i < add_arrayData.length; i++) {
+                                $(".data-list").append(
+                                    `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${add_arrayData[i].file_name}</div>`
+                                );
                             }
-                        })
+                            ;
+                            $(".data-list").off('click');
+                            $(".data-list").on('click', '.list-data', function () {
+                                var compare_dataIndex = $(".list-data").index(this);
+                                console.log(compare_dataIndex);
+                                $(this).remove();
+                                sessionArray.splice(compare_dataIndex, 1);
+                                sessionString = JSON.stringify(sessionArray);
+                                sessionStorage.setItem("sessionString", sessionString);
+                                if (sessionArray.length == 0) {
+                                    var compare_dataBlock = document.getElementById('dataContrastList');
+                                    compare_dataBlock.style.display = "none";
+                                    sessionStorage.removeItem("sessionString");
+
+                                }
+
+                            });
 
 
-                        break;
-                    case 'rebootContrast': // 重置cookie
-                        $.removeCookie('contrast', {
-                            path: '/'
-                        }); // 删除指定路径下的cookie
-                        layer.msg("缓存已清空")
+                            break;
+                        case
+                        'rebootContrast'
+                        : // 重置cookie
+                            $.removeCookie('contrast', {
+                                path: '/'
+                            }); // 删除指定路径下的cookie
+                            layer.msg("缓存已清空")
+                    }
+                    ;
                 }
-                ;
-            });
-
+            );
 
 
             //监听复选框点击

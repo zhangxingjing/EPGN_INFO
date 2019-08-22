@@ -462,4 +462,4 @@ def parse_template(request, pk):
         # "status": status
 
     }
-    return render(request, 'info.html', data)
+    return render(request, 'info——demo.html', data)

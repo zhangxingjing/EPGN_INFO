@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^direction_num/(?P<pk>\d+)/$', views.DirectionView.as_view({'get': 'power'})),
 
     # 用户添加对比列表
-    url(r'^contrast/$', views.SaveContrastView.as_view()),
+    # url(r'^contrast/$', views.SaveContrastView.as_view()),
 
     # 用户查看使用文档
     url(r'^word/$', views.word),

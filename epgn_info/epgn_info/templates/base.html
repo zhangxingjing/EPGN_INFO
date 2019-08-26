@@ -56,8 +56,10 @@
                 <!-- 右侧 -->
                 <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
                     <ul class="layui-nav-item">
-                        <li class="layui-nav-item"><a href="/userinfo/">郑兴涛</a></li>
-                        <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>
+                        <!--<li class="layui-nav-item"><a href="/userinfo/">请登录</a></li>
+                        <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>-->
+                        <li class="layui-nav-item"><a href="">请登录</a></li>
+                        <li class="layui-nav-item"><a href="">退出登录</a></li>
                     </ul>
                 </ul>
             </div>
@@ -99,7 +101,8 @@
                             </dl>
                         </li>
                         <li data-name="get" class="layui-nav-item">
-                            <a href="/calculate/" lay-tips="算法" lay-direction="2">
+{#                            <a href="/calculate/" lay-tips="算法" lay-direction="2">#}
+                            <a href="" lay-tips="算法" lay-direction="2">
                                 <i class="layui-icon layui-icon-template-1"></i>
                                 <cite>算法</cite>
                             </a>
@@ -156,7 +159,7 @@
     <!-- 全局搜索 -->
     <script>
         $("#global_search").click(function () {
-            alert("这里配置文件全局搜索")
+            layer.msg("配置文件全局搜索")
             // 这里应该是全局搜索的
             // $.ajax({
             //     url: "/fileinfo/search/",

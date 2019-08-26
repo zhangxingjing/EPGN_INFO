@@ -8,7 +8,7 @@ from .algorithm.read_file import read_file_header, read_file_num
 
 
 # 算法页面的首页
-@login_required
+# @login_required
 def calculate(request):
     if request.method == "GET":
         return render(request, 'calculate.html')
@@ -20,7 +20,7 @@ def calculate(request):
 
 
 # 获取文件名，返回通道信息
-@login_required
+# @login_required
 def get_file_header(request):
     filename = request.POST.get("filename")
     save_path = "/home/spider/Music/asc/"  # work
@@ -31,7 +31,7 @@ def get_file_header(request):
 
 
 # 处理FFT
-@login_required
+# @login_required
 def run_fft(request):
     """
     傅里叶变换算法
@@ -47,7 +47,7 @@ def run_fft(request):
 
 
 # 处理内部噪声
-@login_required
+# @login_required
 def run_inner(request):
     """
     内部噪声算法

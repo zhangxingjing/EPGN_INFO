@@ -92,66 +92,66 @@ class DirectionView(ViewSet):
 
 
 # 把用户选择的数据存到本地cookie中
-class SaveContrastView(APIView):
-    def perform_authentication(self, request):
-        pass
-
-    def post(self, request):
-        # 添加到cookie中存储
-        # print(info.getlist(["data"], default=None))   # 获取QueryDict中的值（getlist中必须是个可哈希的
-
-        info = request.data.dict()  # 拿到前端请求, 使用QueryDict中的dict()放法转换成字典类型
-        cookie_info = []
-        for num in info.values():
-            cookie_info.append(int(num))
-        contrast_cookie = request.COOKIES.get('contrast', None)
-
-        # 校验当前浏览器是否有保存cookie
-        if contrast_cookie:
-            # old_cookie_contrast = json.loads(contrast_cookie)  # 获取之前cookie里面的值 ==> list
-            old_cookie_contrast = parse.unquote(contrast_cookie).split(',')
-
-            # 拿到前端已有的cookie之后,要判断一下现在的值在不在cookie中
-            list_1 = []
-            for i in cookie_info:
-                if str(i) not in old_cookie_contrast:
-                    list_1.append(int(i))
-            cookie_contrast = old_cookie_contrast + list_1
-
-            # 再遍历一次是为了去除 ''
-            contrast = []
-            for son in cookie_contrast:
-                if son:
-                    contrast.append(son)
-        else:
-            contrast = cookie_info
-
-        a_n = ''
-        for n in contrast:
-            a_n += str(n) + ','
-        response = Response(info, status=201)
-        # response.delete_cookie('contrast')
-        # response.set_cookie('contrast', json.dumps(contrast), max_age=60 * 60 * 24 * 365)
-        response.set_cookie('contrast', parse.quote(a_n), max_age=60 * 60 * 24 * 365)
-        return response
-
-    def get(self, request):
-        # 点击查看的时候在这里返回cookie里面保存的数据
-        contrast_cookie = request.COOKIES.get('contrast', None)
-        # 获取cookie, 如果cookie 存在, 就拿到转码后的contrast_cookie
-        if contrast_cookie:
-            contrast = json.loads(contrast_cookie)
-        else:
-            contrast = {}
-
-        print(contrast)
-        cars = []
-        for cars_info in contrast:
-            # 拿到每个商品sku, 设置其个别属性
-            cars = Fileinfo.objects.get(id=1)
-
-        serializer = ContrasCartSerializer(cars, many=True)
-        return Response(serializer)
+# class SaveContrastView(APIView):
+#     def perform_authentication(self, request):
+#         pass
+#
+#     def post(self, request):
+#         # 添加到cookie中存储
+#         # print(info.getlist(["data"], default=None))   # 获取QueryDict中的值（getlist中必须是个可哈希的
+#
+#         info = request.data.dict()  # 拿到前端请求, 使用QueryDict中的dict()放法转换成字典类型
+#         cookie_info = []
+#         for num in info.values():
+#             cookie_info.append(int(num))
+#         contrast_cookie = request.COOKIES.get('contrast', None)
+#
+#         # 校验当前浏览器是否有保存cookie
+#         if contrast_cookie:
+#             # old_cookie_contrast = json.loads(contrast_cookie)  # 获取之前cookie里面的值 ==> list
+#             old_cookie_contrast = parse.unquote(contrast_cookie).split(',')
+#
+#             # 拿到前端已有的cookie之后,要判断一下现在的值在不在cookie中
+#             list_1 = []
+#             for i in cookie_info:
+#                 if str(i) not in old_cookie_contrast:
+#                     list_1.append(int(i))
+#             cookie_contrast = old_cookie_contrast + list_1
+#
+#             # 再遍历一次是为了去除 ''
+#             contrast = []
+#             for son in cookie_contrast:
+#                 if son:
+#                     contrast.append(son)
+#         else:
+#             contrast = cookie_info
+#
+#         a_n = ''
+#         for n in contrast:
+#             a_n += str(n) + ','
+#         response = Response(info, status=201)
+#         # response.delete_cookie('contrast')
+#         # response.set_cookie('contrast', json.dumps(contrast), max_age=60 * 60 * 24 * 365)
+#         response.set_cookie('contrast', parse.quote(a_n), max_age=60 * 60 * 24 * 365)
+#         return response
+#
+#     def get(self, request):
+#         # 点击查看的时候在这里返回cookie里面保存的数据
+#         contrast_cookie = request.COOKIES.get('contrast', None)
+#         # 获取cookie, 如果cookie 存在, 就拿到转码后的contrast_cookie
+#         if contrast_cookie:
+#             contrast = json.loads(contrast_cookie)
+#         else:
+#             contrast = {}
+#
+#         print(contrast)
+#         cars = []
+#         for cars_info in contrast:
+#             # 拿到每个商品sku, 设置其个别属性
+#             cars = Fileinfo.objects.get(id=1)
+#
+#         serializer = ContrasCartSerializer(cars, many=True)
+#         return Response(serializer)
 
 
 # 使用elasticsearch搜索引擎
@@ -247,7 +247,7 @@ def word(request):
 
 
 # 上传文件
-@login_required
+# @login_required
 def upload(request):
     if request.method == "GET":
         return render(request, 'upload.html')
@@ -339,16 +339,16 @@ def upload(request):
             "info": "Please check the form information..."
         }
     }
-    return render(request, 'upload.html', json.dumps(res_dict))
-
+    # return render(request, 'upload.html', json.dumps(res_dict))
+    return HttpResponse(res_dict)
 
 # 文件下载
-@login_required
+# @login_required
 def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
-    file_path = "/home/pysuper/Music/hdf/" + file_name
+    file_path = "/home/spider/Music/hdf/" + file_name
     if not os.path.isfile(file_path):
         # 判断下载文件是否存在
         return HttpResponse("Sorry but Not Found the File")
@@ -375,15 +375,16 @@ def file_down(request, pk):
         # 以流的形式下载文件,这样可以实现任意格式的文件下载
         response['Content-Type'] = 'application/octet-stream'
         # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
-        response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
+        # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
+        from django.utils.http import urlquote
+        response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
     except:
         return HttpResponse("Sorry but Not Found the File")
-
     return response
 
 
 # 文件上传时候的撤销
-@login_required
+# @login_required
 def cancel(request):
     save_path = "/home/spider/Music/"
     # 接收前端传递的参数
@@ -462,4 +463,4 @@ def parse_template(request, pk):
         # "status": status
 
     }
-    return render(request, 'info——demo.html', data)
+    return render(request, 'info.html', data)

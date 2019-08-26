@@ -100,6 +100,7 @@ $(document).ready(function () {
 
 	$("#select4 dd").click(function () {
 		$(this).addClass("selected").siblings().removeClass("selected");
+		$('#secSection div').children('dd').removeClass("selected");
 		$("#parts").remove();
 		$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");
 		if ($(this).hasClass("select-all")) {
@@ -136,12 +137,14 @@ $(document).ready(function () {
 				$("#parts a").html($(this).text());
 				$("#parts").on("click",function () {
 					$(this).remove();
+					$('#secSection div').children('dd').removeClass("selected");
 					$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");	
 				})
 			} else {
 				$(".select-result dl").append(copyThisC.attr("id", "parts"));
 				$("#parts").on("click",function () {
 					$(this).remove();
+					$('#secSection div').children('dd').removeClass("selected");
 					$('#select5 dd.select-all').addClass("selected").siblings().removeClass("selected");	
 				})
 			}

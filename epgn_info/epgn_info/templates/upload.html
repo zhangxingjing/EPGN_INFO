@@ -385,7 +385,7 @@
                             tds = tr.children();
                         tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
                         tds.eq(3).html(
-                            '<button id="cancel" class="layui-btn layui-btn-mini layui-btn-normal demo-reload" onclik="cancel()">撤销</button>'
+                            '<button id="cancel" class="layui-btn layui-btn-mini layui-btn-normal demo-reload" onclick="cancel()">撤销</button>'
                         );
                         return delete this.files[index]; //删除文件队列已经上传成功的文件
                         //     $("#cancel").click(function(){
@@ -578,6 +578,30 @@
 
 <!-- 撤销的点击事件 -->
 <script>
+    function cancel(){
+        var fileName = $('#file_name').text();
+        console.log(fileName);
+        var formData = new FormData();
+        formData.append("filename",fileName);
+        console.log(formData.get(filename));//追加非form表单的内容
+         $.ajax({
+             url: '/cancel/',
+             type:'post',
+             dataType:'json',
+             contentType:"application/json",
+             async:true,//异步请求
+             cache:false,
+             data: formData,
+             //执行成功的回调函数
+             success:function(data) {
+                 alert(data.info)
+             },
+             //执行失败或错误的回调函数
+             error:function(data) {
+                 alert("认证失败");
+             }
+         });
+    }
     $("#cancel").click(function () {
          $.ajax({
              url: '/cancel/',

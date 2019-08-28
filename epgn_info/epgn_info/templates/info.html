@@ -46,7 +46,7 @@
 
         .data-download {
             border-left: 1px solid white !important;
-            background: rgba(0,150,136,1);
+            background: rgba(0, 150, 136, 1);
         }
 
         .data-list {
@@ -112,8 +112,9 @@
             width: 13px;
             height: 13px;
         }
+
         .data-submit {
-            background: rgba(30,159,255,1);
+            background: rgba(30, 159, 255, 1);
         }
 
     </style>
@@ -258,9 +259,9 @@
                         <div class="demoTable">
                             <div class="layui-inline">
                                 <input class="layui-input" name="id" id="demoReload" autocomplete="off"
-                                       placeholder="这里是工况...">
+                                       placeholder="这里是模糊搜索字段...">
                             </div>
-                            <button class="layui-btn" id="search-work" data-type="reload">工况搜索</button>
+                            <button class="layui-btn" id="search-work" data-type="reload">模糊搜索</button>
                             <table id="info" lay-filter="test"></table>
                         </div>
                     </div>
@@ -278,9 +279,11 @@
 
         </div>
         <div class="bulletbox-button">
-            <button class="data-submit">
-                确认计算
-            </button>
+            <a href="/calculate/">
+                <button class="data-submit">
+                    确认计算
+                </button>
+            </a>
             <button class="data-download" onclick="data_download()">
                 下载
             </button>
@@ -360,10 +363,11 @@
     <script>
         function data_download() {
             console.log(sessionArray);
-            for (let i =0;i<sessionArray.length;i++){
-              download('第' + i + '个文件', "/download/" + sessionArray[i].pk);
+            for (let i = 0; i < sessionArray.length; i++) {
+                download('第' + i + '个文件', "/download/" + sessionArray[i].pk);
             }
         }
+
         function download(name, href) {
             var a = document.createElement("a"), //创建a标签
                 e = document.createEvent("MouseEvents"); //创建鼠标事件对象
@@ -432,33 +436,36 @@
                         type: 'checkbox',
                         LAY_CHECKED: false,
                     }, {
-                        field: 'pk',
-                        title: 'ID',
-                        width: '5%',
+                        field: 'car_num',
+                        title: '车辆编号',
+                        width: '10%',
                         sort: true,     // 开启排序
-                        // fixed: 'left'   // 固定在左侧
+                        align: 'center'   // 居中显示
                     }, {
                         field: 'produce',
-                        title: '车辆阶段',
-                        width: '6%',
+                        title: '生产阶段',
+                        width: '10%',
                         sort: true,
-                    }, {
-                        field: 'author',
-                        title: '实验员',
-                        width: '9%'
+                        align: 'center'
                     }, {
                         field: 'status',
-                        title: '工况',
+                        title: '试验工况',
+                        width: '20%'
+                    }, {
+                        field: 'author',
+                        title: '试验员',
                         width: '12%',
-                        sort: true,
+                        hide: true,
+                        align: 'center'
                     }, {
                         field: 'file_name',
-                        title: '文件',
-                        width: '50%'
+                        title: '文件名',
+                        width: '40%',
+                        sort: true,
                     }, {
                         field: 'other_need',
                         title: '其他',
-                        width: '15%'
+                        width: 280,
                     }]
                 ],
                 // initSort:{
@@ -481,10 +488,19 @@
                             "power": $('#power').children('a').html(),
                             "discipline": $("#discipline").children('a').html(),
                             "parts": $('#parts').children('a').html(),
+                            "key_word": $("#demoReload").val(),
                             "time": (new Date()).valueOf(),
                         },
                         done: function (res, curr, count) {
-                            this.where = {};
+                            this.where = {
+                                "carmodel": $('#carmodel').children('a').html(),
+                                "propulsion": $('#propulsion').children('a').html(),
+                                "power": $('#power').children('a').html(),
+                                "discipline": $("#discipline").children('a').html(),
+                                "parts": $('#parts').children('a').html(),
+                                "key_word": $("#demoReload").val(),
+                                "time": (new Date()).valueOf(),
+                            };
                         }
                     });
                 }
@@ -507,7 +523,15 @@
                             "time": (new Date()).valueOf(),
                         },
                         done: function (res, curr, count) {
-                            this.where = {};
+                            this.where = {
+                                "carmodel": $('#carmodel').children('a').html(),
+                                "propulsion": $('#propulsion').children('a').html(),
+                                "power": $('#power').children('a').html(),
+                                "discipline": $("#discipline").children('a').html(),
+                                "parts": $('#parts').children('a').html(),
+                                "key_word": $("#demoReload").val(),
+                                "time": (new Date()).valueOf(),
+                            };
                         }
                     });
                 }

@@ -10,12 +10,13 @@ from .algorithm.read_file import read_file_header, read_file_num
 # 算法页面的首页
 # @login_required
 def calculate(request):
+    print(request.method)
     if request.method == "GET":
-        return render(request, 'calculate.html')
+        # return render(request, 'login.html')
     # 如果不是GET请求，这里接受前端传递的参数，判断选择指定的算法，返回一样的结果
 
-    string = "我在学习Django，用它来建网站"
-    return HttpResponse({"string": string})
+        string = "我在学习Django，用它来建网站"
+        return HttpResponse({"string": string})
     # return render(request, 'calculate.html', {'string': string})
 
 

@@ -7,7 +7,7 @@ from django.contrib import admin
 # 用户的站点管理
 # @xadmin.site.register(User)
 class UserAdmin():
-    list_display = ('id', 'username', 'nickname', 'password', 'last_login', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
+    list_display = ('id', 'username', 'nickname', 'last_login', 'is_staff', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
     fields = ("username", "nickname", 'password', 'is_superuser')  # 这是用户添加数据的时候可以看到的页面
     list_display_links = ['username', ]  # 用来配置哪些字段可以作为链接, 点击他们可以进入编辑页面
     search_fields = ['username', 'nickname']

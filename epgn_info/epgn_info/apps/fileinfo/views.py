@@ -293,7 +293,7 @@ def upload(request):
 
     if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce:
         # 用户名 + 文件名
-        new_name = author + create_date + "_" + filename
+        new_name = create_date + "_" + filename
         # 在这里判断下文件格式 ==> 分开保存
         try:
             with transaction.atomic():  # 数据库回滚
@@ -316,7 +316,9 @@ def upload(request):
                     "code": 0,
                     "msg": "File upload completed...",
                     "data": {
-                        "info": save_path + new_name
+                        "file_save_path": save_path + new_name,
+                        "file_old_name": filename,
+                        "file_new_name": new_name,
                     }
                 }
                 print(new_name, "上传时间: ", time.time() - a)
@@ -336,7 +338,7 @@ def upload(request):
         "code": 1,
         "msg": "File upload failed...",
         "data": {
-            "info": "Please check the form information..."
+            "info": "Please check the form information...",
         }
     }
     # return render(request, 'upload.html', json.dumps(res_dict))
@@ -388,29 +390,33 @@ def file_down(request, pk):
 def cancel(request):
     save_path = "/home/spider/Music/"
     # 接收前端传递的参数
-    file_name = request.POST.get("filename")
+    body = request.body
+    body_str = body.decode()
+    body_json = json.loads(body_str)
+    file_name = body_json["filename"]
+
     file_id = Fileinfo.objects.get(file_name=file_name).id
 
     try:
-        # 通过参数，找到SQL中的数据，删除（回滚）
+        # TODO: 通过参数，找到SQL中的数据，删除（回滚）
         with transaction.atomic():
             Fileinfo.objects.filter(id=file_id).delete()
             # 通过参数，拼接出该文件的绝对路径，删除（try）
             os.remove(save_path + "hdf/" + file_name)
             result = {
                 "code": 0,
-                "msg": "文件撤销成功",
+                "msg": "File Revoked Successfully!",
                 "data": {
-                    "info": "Please re-select file upload..."
+                    "info": "Please Reselect File Upload!"
                 }
             }
         return HttpResponse(json.dumps(result))
     except FileNotFoundError as error:
         result = {
             "code": 1,
-            "msg": "文件撤销失败",
+            "msg": "File Revocation Failed!",
             "data": {
-                "info": "Please contact the super administrator!"
+                "info": "Please Contact The Super Administrator!"
             }
         }
         return HttpResponse(json.dumps(result))

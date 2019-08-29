@@ -14,9 +14,9 @@ def get_user_by_account(account):
     """
     try:
         if re.match(r'(\d+|\w+\d+)', account):
-            user = User.objects.get(username=account)  # 帐号为手机号
+            user = User.objects.get(job_number=account)  # 帐号为工号
         else:
-            user = User.objects.get(nickname=account)  # 帐号为用户名
+            user = User.objects.get(username=account)  # 帐号为用户名
     except User.DoesNotExist:
         return None
     else:
@@ -38,10 +38,10 @@ class UsernameMobileAuthBackend(ModelBackend):
 def jwt_response_payload_handler(token, user=None, request=None):
     # 用户登录成功, 后台向session中存储数据
     return {
-        'token': token,
         'user_id': user.id,
         'username': user.username,
-        "nickname": user.nickname,
+        "job_number": user.job_number,
+        'token': token,
     }
 
 

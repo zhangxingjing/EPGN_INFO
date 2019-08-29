@@ -7,10 +7,10 @@ from django.contrib import admin
 # 用户的站点管理
 # @xadmin.site.register(User)
 class UserAdmin():
-    list_display = ('id', 'username', 'nickname', 'last_login', 'is_staff', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
-    fields = ("username", "nickname", 'password', 'is_superuser')  # 这是用户添加数据的时候可以看到的页面
+    list_display = ('id', 'username', 'job_number', 'last_login', 'is_staff', 'is_superuser')  # 这里显示的是修改数据之后后台可以看到的页面中的数据
+    fields = ("username", "job_number", 'password', 'is_superuser')  # 这是用户添加数据的时候可以看到的页面
     list_display_links = ['username', ]  # 用来配置哪些字段可以作为链接, 点击他们可以进入编辑页面
-    search_fields = ['username', 'nickname']
+    search_fields = ['username', 'job_number']
 
     # save_on_top = True  # 保存, 编辑, 编辑并新建的 按钮 是否在顶部展示
     # actions_on_top = True   # 动作相关配置, 是否展示在顶部

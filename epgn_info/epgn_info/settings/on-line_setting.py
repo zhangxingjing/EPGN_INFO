@@ -9,7 +9,7 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# ALLOWED_HOSTS = ['api.epgn.site', '127.0.0.1', 'localhost', 'www.csvw.com']
 ALLOWED_HOSTS = ['*', ]
 
 # 子应用
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # 注册CORS
-    'corsheaders',
+    # 'corsheaders',
 
     # 注册全文检索
     'haystack',
@@ -227,6 +227,8 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8000',
     'localhost:8000',
+    'www.epgn.site:8000',
+    'api.epgn.site:8000'
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -245,19 +247,16 @@ STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'ep
 
 # 用户认证 ==> JWT
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',  # 指定使用的JWT返回的函数
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1), # 指明token的有效期
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
-AUTHENTICATION_BACKENDS = [
-    'users.utils.UsernameMobileAuthBackend',  # JWT用户认证登录
-    'django.contrib.auth.backends.ModelBackend'  # Admin用户登录
-]
+AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.contrib.auth.backends.ModelBackend']
 
 # 配置用户登录链接
 LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址来设置
 
-XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
-XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
+XADMIN_TITLE = "EPGN_INFO 后台管理" # 左上方的文字
+XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com" # 最下面的文字

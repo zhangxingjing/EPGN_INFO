@@ -308,6 +308,9 @@
                     url: '/upload/',
                     accept: 'file',
                     multiple: true,
+                    headers: {
+                        "Authorization": "JWT " + sessionStorage.token  // user_id = sessionStorage.user_id
+                    },
                     auto: false,
                     bindAction: '#testListAction',
                     exts: 'asc|hdf',
@@ -392,8 +395,6 @@
                         });
                     },
                     done: function (res, index, upload) {
-
-
                         if (res.code == 0) { //上传成功
                             filenameArray.push({'oldname': res.data.file_old_name, 'newname': res.data.file_new_name});
                             console.log(filenameArray);

@@ -252,6 +252,12 @@ def upload(request):
     if request.method == "GET":
         return render(request, 'upload.html')
 
+    # 获取session中的数据
+    user = request.user
+    # id = request.session.get("id")
+
+    print("user:", user.username)
+
     a = time.time()
     # 从前端获取的数据
     car_model_id = request.POST.get("car_model")  # 车型
@@ -343,6 +349,7 @@ def upload(request):
     }
     # return render(request, 'upload.html', json.dumps(res_dict))
     return HttpResponse(res_dict)
+
 
 # 文件下载
 # @login_required

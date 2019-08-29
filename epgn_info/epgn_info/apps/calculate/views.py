@@ -1,4 +1,6 @@
 import json
+from pprint import pprint
+
 from .algorithm.inner import inner
 from django.shortcuts import render
 from .algorithm.fft import return_data
@@ -7,17 +9,33 @@ from django.contrib.auth.decorators import login_required
 from .algorithm.read_file import read_file_header, read_file_num
 
 
+# 如果不是GET请求，这里接受前端传递的参数，判断选择指定的算法，返回一样的结果
+
 # 算法页面的首页
 # @login_required
 def calculate(request):
-    print(request.method)
-    if request.method == "GET":
-        # return render(request, 'login.html')
-    # 如果不是GET请求，这里接受前端传递的参数，判断选择指定的算法，返回一样的结果
+    if request.method == "POST":
+        # 接受前端传递的参数--文件名列表
+        # filename_list = request.POST.get("filename_list", [])
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
 
-        string = "我在学习Django，用它来建网站"
-        return HttpResponse({"string": string})
-    # return render(request, 'calculate.html', {'string': string})
+        data = []
+        for filename in body_json["filename_list"]:
+            # 拼接每个文件名, 拼接文件的绝对路径 ==> 算法返回当前文件的通道信息
+            file_path = "/home/spider/Music/大众/EPGN_INGO/" + filename
+            channel_dict = read_file_header(file_path)
+
+            data.append({
+                "filename": filename,
+                "children": json.dumps(channel_dict)
+            })
+        pprint(data)
+        return JsonResponse({"data": data})
+
+    string = "访问无效! 请联系超管"
+    return HttpResponse({"string": string})
 
 
 # 获取文件名，返回通道信息

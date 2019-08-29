@@ -36,6 +36,7 @@ class UsernameMobileAuthBackend(ModelBackend):
 
 # 自定义jwt认证成功返回的数据 ==> 用户登录成功返回的数据
 def jwt_response_payload_handler(token, user=None, request=None):
+    # 用户登录成功, 后台向session中存储数据
     return {
         'token': token,
         'user_id': user.id,

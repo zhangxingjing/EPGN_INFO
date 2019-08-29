@@ -57,10 +57,13 @@
 				},
 				//执行成功的回调函数
 				success: function (data) {
-					// 还要处理tokwen
-                    alert(data.username);
-                    // alert(data.token);
-					window.location.href = "/";
+					// 前端存储用户登录信息
+                    sessionStorage.token = data.token;
+                    sessionStorage.usename = data.username;
+                    sessionStorage.nickname = data.nickname;
+                    sessionStorage.user_id = data.user_id;
+
+					window.location.href = "/base/100";
 				},
 				//执行失败或错误的回调函数
 				error: function (data) {

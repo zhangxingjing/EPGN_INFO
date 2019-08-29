@@ -6,7 +6,7 @@ import time
 
 
 def read_file_header(file_name):
-    print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+    # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     head_content = ""
     # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
     file = open(file_name, "r", encoding="gbk", errors="ignore")

@@ -35,7 +35,16 @@ class UserView(CreateAPIView):
 def user_login(request):
     """用户使用工号，密码登录 ==> 用户登录之后页面跳转到首页 ==> 所有的API需要校验用户登录状态"""
     if request.method == 'GET':
-        return render(request, 'login_2.html')
+        # return render(request, 'login_2.html')
+        username = request.POST.get('username', None)
+        password = request.POST.get('password', None)
+        print(username, password)
+        user = authenticate(username=username, password=password)
+        if user:
+            login(request, user)  # 用户登录
+            return redirect('/base/100')  # 登录成功返回页面
+        else:
+            return HttpResponse("用户名或者密码错误")
     else:
         username = request.POST.get('username', None)
         password = request.POST.get('password', None)
@@ -50,7 +59,8 @@ def user_login(request):
 
 # 退出: url(r'^logout/$', views.logout)
 def logout(request):
-    auth.logout(request)
+    # auth.logout(request)
+    request.session.clear()
     return render(request, 'login_2.html')
 
 
@@ -68,5 +78,3 @@ def user_info(request):
         except Exception as error:
             user = user
     return None
-
-

@@ -252,17 +252,10 @@ def word(request):
 # 上传文件
 # @login_required
 def upload(request):
-    # permission_classes = (IsAuthenticated, )    # 限定必须是已经认证的用户
+    permission_classes = (IsAuthenticated, )    # 限定必须是已经认证的用户
     if request.method == "GET":
         # 获取session中的数据
-        user = request.user
-        # id = request.session.get("id")
-
-        print("user:", user.username)
-        print("user:", user.job_number)
         return render(request, 'upload.html')
-
-
 
     a = time.time()
     # 从前端获取的数据

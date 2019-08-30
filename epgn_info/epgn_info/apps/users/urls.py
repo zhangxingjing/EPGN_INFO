@@ -9,12 +9,15 @@ urlpatterns = [
     # jwt登录
     url(r'^authorizations/$', obtain_jwt_token),
 
-    # 自定义登录
-    url(r'^login/$', views.user_login),
+    # 获取用户认证信息
+    url('^user/$', views.UserDetailView.as_view()),
 
-    # 退出
-    url(r'^logout/$', views.logout),
-
-    # 用户个人中心
+    # 用户修改密码
     url('^userinfo/$', views.user_info),
+
+    # 自定义登录
+    # url(r'^login/$', views.user_login),
+
+    # 退出 ==> 前端js里处理（清空sessionStorage）
+    # url(r'^logout/$', views.logout),
 ]

@@ -6,183 +6,246 @@
     <title>EPGN {% block title %}{% endblock %}</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <script src="../../../epgn_front_end/js/vue_2.6.10.js"></script>
     <script src="../../../epgn_front_end/js/jquery-3.4.1.js"></script>
     <script src="../../../epgn_front_end/js/axios-0.18.0.min.js"></script>
+    <script>
+        var user_id = sessionStorage.user_id || localStorage.user_id;
+        var token = sessionStorage.token || localStorage.token;
+        if (!(user_id && token)) {
+            location.href = '../../../epgn_front_end/login_2.html';
+        }
+    </script>
     {% block link %}{% endblock %}
     {% block style %}{% endblock %}
 </head>
 
 <body class="layui-layout-body" layadmin-themealias="default">
 
-    <div id="LAY_app" class="">
-        <div class="layui-layout layui-layout-admin">
+<div id="LAY_app" class="" v-cloak>
+    <div class="layui-layout layui-layout-admin" id="content_text">
 
-            <!-- 头部区域 -->
-            <div class="layui-header">
+        <!-- 头部区域 -->
+        <div class="layui-header">
 
-                <!-- 左侧 -->
-                <ul class="layui-nav layui-layout-left">
+            <!-- 左侧 -->
+            <ul class="layui-nav layui-layout-left">
 
-                    <!-- 侧边栏 -->
-                    <!--<li class="layui-nav-item layadmin-flexible" lay-unselect="">
-                        <a href="javascript:;" layadmin-event="flexible" title="侧边栏">
-                            <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                <!-- 侧边栏 -->
+                <!--<li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <a href="javascript:;" layadmin-event="flexible" title="侧边栏">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+                    </a>
+                </li>-->
+
+                <!-- 超链接 -->
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <a href="http://e/" target="_blank" title="//e/">
+                        <i class="layui-icon layui-icon-website"></i>
+                    </a>
+                </li>
+
+                <!-- 刷新 -->
+                <li class="layui-nav-item" lay-unselect="">
+                    <a href="" layadmin-event="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+
+                <!-- 搜索框 -->
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <input type="text" placeholder="全局搜索..." autocomplete="off" id="global_search"
+                           class="layui-input layui-input-search"
+                           layadmin-event="serach" lay-action="template/search.html?keywords=">
+                </li>
+            </ul>
+
+            <!-- 右侧 -->
+            <ul class="layui-nav layui-layout-right" id="user_info" lay-filter="layadmin-layout-right">
+                <ul class="layui-nav-item">
+                    <li class="layui-nav-item"><a href="/userinfo/">[[ username ]]，你好！</a></li>
+                    {#                    <li class="layui-nav-item"><a href="/userinfo/">{{ username }}，你好！</a></li>#}
+                    <li class="layui-nav-item"><a @click="logout">退出登录</a></li>
+                    <!--<li class="layui-nav-item"><a href="">请登录</a></li>
+                        <li class="layui-nav-item"><a href="">退出登录</a></li>-->
+                </ul>
+            </ul>
+        </div>
+
+        <!-- 侧边菜单 -->
+        <div class="layui-side layui-side-menu">
+            <div class="layui-side-scroll">
+                <!-- logo -->
+                <div class="layui-logo">
+                    <a href="/">
+                        <span>EPGN INFO 2.0</span>
+                    </a>
+                </div>
+
+                <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
+                    lay-filter="layadmin-system-side-menu">
+                    <li data-name="get" class="layui-nav-item">
+                        <a href="/" lay-tips="主页" lay-direction="2">
+                            <i class="layui-icon layui-icon-home"></i>
+                            <cite>主页</cite>
+                        </a>
+                    </li>
+                    <li data-name="get" class="layui-nav-item">
+                        <a href="/upload/" lay-tips="上传" lay-direction="2">
+                            <i class="layui-icon layui-icon-upload-circle"></i>
+                            <cite>上传</cite>
+                        </a>
+                    </li>
+                    <!--<li data-name="home" class="layui-nav-item layui-nav-itemed">-->
+                    <li data-name="home" class="layui-nav-item layui-nav-itemed">
+                        <a href="javascript:;" lay-tips="检索" lay-direction="2">
+                            <i class="layui-icon layui-icon-search"></i>
+                            <cite>检索</cite>
+                            <span class="layui-nav-more"></span></a>
+                        <dl class="layui-nav-child" id="platforms">
+                            <dd data-name="console" v-for="platform in platforms">
+                                <a :href="'/base/'+ platform.id">[[ platform.name ]]</a>
+                            </dd>
+                        </dl>
+                    </li>
+                    <li data-name="get" class="layui-nav-item">
+                        {#                            <a href="/calculate/" lay-tips="算法" lay-direction="2">#}
+                        <a href="" lay-tips="算法" lay-direction="2">
+                            <i class="layui-icon layui-icon-template-1"></i>
+                            <cite>算法</cite>
+                        </a>
+                    </li>
+                    <!--<li data-name="get" class="layui-nav-item">
+                        <a href="search.html" lay-tips="高级搜索" lay-direction="2">
+                            <i class="layui-icon layui-icon-auz"></i>
+                            <cite>高级搜索</cite>
                         </a>
                     </li>-->
-
-                    <!-- 超链接 -->
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <a href="http://e/" target="_blank" title="//e/">
-                            <i class="layui-icon layui-icon-website"></i>
-                        </a>
-                    </li>
-
-                    <!-- 刷新 -->
-                    <li class="layui-nav-item" lay-unselect="">
-                        <a href="" layadmin-event="refresh" title="刷新">
-                            <i class="layui-icon layui-icon-refresh-3"></i>
-                        </a>
-                    </li>
-
-                    <!-- 搜索框 -->
-                    <li class="layui-nav-item layui-hide-xs" lay-unselect="">
-                        <input type="text" placeholder="全局搜索..." autocomplete="off" id="global_search" class="layui-input layui-input-search"
-                               layadmin-event="serach" lay-action="template/search.html?keywords=">
-                    </li>
-                </ul>
-
-                <!-- 右侧 -->
-                <ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right">
-                    <ul class="layui-nav-item">
-                        <!--<li class="layui-nav-item"><a href="/userinfo/">请登录</a></li>
-                        <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>-->
-                        <li class="layui-nav-item"><a href="">{{ sessionStorage.usename }}</a></li>
-                        <li class="layui-nav-item"><a href="">退出登录</a></li>
-                    </ul>
+                    <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
                 </ul>
             </div>
+        </div>
 
-            <!-- 侧边菜单 -->
-            <div class="layui-side layui-side-menu">
-                <div class="layui-side-scroll">
-                    <!-- logo -->
-                    <div class="layui-logo">
-                        <a href="/">
-                            <span>EPGN INFO 2.0</span>
-                        </a>
-                    </div>
-
-                    <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
-                        lay-filter="layadmin-system-side-menu">
-                        <li data-name="get" class="layui-nav-item">
-                            <a href="/" lay-tips="主页" lay-direction="2">
-                                <i class="layui-icon layui-icon-home"></i>
-                                <cite>主页</cite>
-                            </a>
-                        </li>
-                        <li data-name="get" class="layui-nav-item">
-                            <a href="/upload/" lay-tips="上传" lay-direction="2">
-                                <i class="layui-icon layui-icon-upload-circle"></i>
-                                <cite>上传</cite>
-                            </a>
-                        </li>
-                        <!--<li data-name="home" class="layui-nav-item layui-nav-itemed">-->
-                        <li data-name="home" class="layui-nav-item layui-nav-itemed">
-                            <a href="javascript:;" lay-tips="检索" lay-direction="2">
-                                <i class="layui-icon layui-icon-search"></i>
-                                <cite>检索</cite>
-                                <span class="layui-nav-more"></span></a>
-                            <dl class="layui-nav-child" id="platforms">
-                                <dd data-name="console" v-for="platform in platforms">
-                                    <a :href="'/base/'+ platform.id">[[ platform.name ]]</a>
-                                </dd>
-                            </dl>
-                        </li>
-                        <li data-name="get" class="layui-nav-item">
-{#                            <a href="/calculate/" lay-tips="算法" lay-direction="2">#}
-                            <a href="" lay-tips="算法" lay-direction="2">
-                                <i class="layui-icon layui-icon-template-1"></i>
-                                <cite>算法</cite>
-                            </a>
-                        </li>
-                        <!--<li data-name="get" class="layui-nav-item">
-                            <a href="search.html" lay-tips="高级搜索" lay-direction="2">
-                                <i class="layui-icon layui-icon-auz"></i>
-                                <cite>高级搜索</cite>
-                            </a>
-                        </li>-->
-                        <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- 主体内容 -->
-            <div class="layui-body" id="LAY_app_body" style="top:5%">
-                {% block content %}{% endblock %}
-                <!-- 辅助元素，一般用于移动设备下遮罩 -->
-                <div class="layadmin-body-shade" layadmin-event="shade"></div>
-            </div>
-
+        <!-- 主体内容 -->
+        <div class="layui-body" id="LAY_app_body" style="top:5%">
+            {% block content %}{% endblock %}
             <!-- 辅助元素，一般用于移动设备下遮罩 -->
             <div class="layadmin-body-shade" layadmin-event="shade"></div>
         </div>
-    </div>
-    {% block right_data %}{% endblock %}
-    <script src="../../../epgn_front_end/layui/layui.js"></script>
 
-    <!-- 平台 -->
-    <script>
-        var vm = new Vue({
-            el: "#platforms",
-            delimiters: ['[[', ']]'],
-            data: {
-                platforms: [],
-            },
-            mounted: function () {
-                axios.get('/car_platform/', {
-                        responseType: 'json'
-                    })
+        <!-- 辅助元素，一般用于移动设备下遮罩 -->
+        <div class="layadmin-body-shade" layadmin-event="shade"></div>
+    </div>
+</div>
+{% block right_data %}{% endblock %}
+<script src="../../../epgn_front_end/layui/layui.js"></script>
+
+<!-- 平台 -->
+<script>
+    var vm = new Vue({
+        el: "#platforms",
+        delimiters: ['[[', ']]'],
+        data: {
+            platforms: [],
+        },
+        mounted: function () {
+            axios.get('/car_platform/', {
+                responseType: 'json'
+            })
+                .then(response => {
+                    this.platforms = response.data;
+                })
+                .catch(error => {
+                    console.log("获取车型请求失败")
+                })
+        },
+    })
+</script>
+
+<!-- 全局搜索 -->
+<script>
+    $("#global_search").click(function () {
+        layer.msg("配置文件全局搜索")
+        // 这里应该是全局搜索的
+        // $.ajax({
+        //     url: "/fileinfo/search/",
+        //     datatype: "json",
+        //     type: "GET",
+        //     // async: true, //异步请求
+        //     data: {
+        //         "text": $("#global_search").val()
+        //     },
+        //     success: function (e) {
+        //         // 这里的e就是后台返回的值
+        //         console.log(e);
+        //     },
+        //     error: function (e) {
+        //         console.log("Error");
+        //     }
+        // });
+    })
+</script>
+
+<!-- 判断用户登录状态 -->
+<script>
+    var vm = new Vue({
+        el: "#user_info",
+        // el: "#LAY_app",
+        delimiters: ['[[', ']]'],
+        data: {
+            user_id: sessionStorage.user_id || localStorage.user_id,
+            token: sessionStorage.token || localStorage.token,
+            username: '',
+            job_number: '',
+        },
+        mounted: function () {
+            // 判断用户的登录状态
+            if (this.user_id && this.token) {
+                axios.get('/user/', {
+                    // 向后端传递JWT token的方法
+                    headers: {
+                        'Authorization': 'JWT ' + this.token
+                    },
+                    responseType: 'json',
+                    withCredentials: true
+                })
                     .then(response => {
-                        this.platforms = response.data;
-                        // console.log("下面是后台返回的数据");
-                        // console.log(this.platforms);
+                        // 加载用户数据
+                        this.user_id = response.data.id;
+                        this.job_number = response.data.job_number;
+                        this.username = response.data.username;
+                        console.log(this.user_id, this.job_number, this.username);  // 这里是有值的
                     })
                     .catch(error => {
-                        console.log("获取车型请求失败")
-                    })
-                },
-            })
-    </script>
+                        if (error.response.status == 401 || error.response.status == 403) {
+                            location.href = '../../../epgn_front_end/login.html';
+                        }
+                    });
+            } else {
+                location.href = '../../../epgn_front_end/login.html';
+            }
+        },
+        methods: {
+            // 登录
+            login: function () {
+                location.href = '../../../epgn_front_end/login_2.html';
+            },
+            // 退出
+            logout: function () {
+                sessionStorage.clear();
+                localStorage.clear();
+                location.href = '../../../epgn_front_end/login.html';
+            },
+        }
+    })
+</script>
 
-    <!-- 全局搜索 -->
-    <script>
-        $("#global_search").click(function () {
-            layer.msg("配置文件全局搜索")
-            // 这里应该是全局搜索的
-            // $.ajax({
-            //     url: "/fileinfo/search/",
-            //     datatype: "json",
-            //     type: "GET",
-            //     // async: true, //异步请求
-            //     data: {
-            //         "text": $("#global_search").val()
-            //     },
-            //     success: function (e) {
-            //         // 这里的e就是后台返回的值
-            //         console.log(e);
-            //     },
-            //     error: function (e) {
-            //         console.log("Error");
-            //     }
-            // });
-        })
-    </script>
-    {% block javascript %}{% endblock %}
+{% block javascript %}{% endblock %}
 
-    <!-- 测试项目发送请求的时候，只携带当前点击的ID -->
-    <div class="layui-layer-move"></div>
+<!-- 测试项目发送请求的时候，只携带当前点击的ID -->
+<div class="layui-layer-move"></div>
 </body>
 
 </html>

@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # 注册CORS
-    'corsheaders',
+    # 'corsheaders',
 
     # 注册全文检索
     'haystack',

@@ -91,3 +91,10 @@ class AuthUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
+# 用户详细信息序列化器
+class UserDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User  # 指明参照哪个模型类
+        fields = ('id', 'username', 'job_number')  # 指明为模型类的哪些字段生成

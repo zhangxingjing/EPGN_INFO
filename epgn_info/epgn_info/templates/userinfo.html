@@ -38,7 +38,7 @@
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">用户名</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="username" value="{{ username }}" readonly=""
+                                        <input type="text" name="username" id="username" value="{{ username }}" readonly=""
                                                class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
@@ -49,14 +49,14 @@
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">当前密码</label>
                                         <div class="layui-input-inline">
-                                            <input type="password" name="oldPassword" lay-verify="required"
+                                            <input type="password" name="oldPassword" id="oldPassword" lay-verify="required"
                                                    lay-vertype="tips" class="layui-input">
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">新密码</label>
                                         <div class="layui-input-inline">
-                                            <input type="password" name="password" lay-verify="pass"
+                                            <input type="password" name="password" id="password" lay-verify="pass"
                                                    lay-vertype="tips" autocomplete="off" id="LAY_password"
                                                    class="layui-input">
                                         </div>
@@ -65,22 +65,17 @@
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">确认新密码</label>
                                         <div class="layui-input-inline">
-                                            <input type="password" name="repassword" lay-verify="repass"
+                                            <input type="password" name="repassword" id="repassword" lay-verify="repass"
                                                    lay-vertype="tips" autocomplete="off" class="layui-input">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="layui-form-item layui-form-text">
-                                <label class="layui-form-label">备注</label>
-                                <div class="layui-input-block">
-                                    <textarea name="remarks" placeholder="请输入内容"
-                                        class="layui-textarea"></textarea>
-                                </div>
-                            </div> -->
                             <div class="layui-form-item">
                                 <div class="layui-input-block">
-                                    <button class="layui-btn" lay-submit="" lay-filter="setmyinfo">确认修改</button>
+                                    <button class="layui-btn" lay-submit="" lay-filter="setmyinfo"
+                                            onclick="submitinfo()">确认修改
+                                    </button>
                                     <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>
                                 </div>
                             </div>
@@ -105,8 +100,7 @@
                 admin = layui.admin,
                 element = layui.element;
         });
-    </script>
-    <script>
+
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -120,6 +114,31 @@
                 "job_number": sessionStorage.job_number,
                 "username": sessionStorage.username,
             });
-        })
+        });
+
+        function submitinfo() {
+            //定义变量sendData
+            $.ajax({
+                url: '/userinfo/',
+                type: 'post',
+                dataType: 'json',
+                async: true,//异步请求
+                data: {
+                    username: $("#username").val(),
+                    old_password: $("#oldPassword").val(),
+                    new_password: $("#password").val(),
+                    re_password: $("#repassword").val()
+                },//使用变量sendData
+                //执行成功的回调函数
+                success: function (data) {
+                    if data.msg ==1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
+                    location.href = '../../../epgn_front_end/login_2.html';
+                },
+                //执行失败或错误的回调函数
+                error: function (data) {
+                    alert(data.msg);
+                }
+            });
+        }
     </script>
 {% endblock %}

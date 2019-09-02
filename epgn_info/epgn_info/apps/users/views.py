@@ -1,3 +1,5 @@
+import json
+
 from .models import User
 from . import serializers
 from django.contrib import auth
@@ -27,54 +29,47 @@ class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.List
         return Response(serializers.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-# 创建： url(r'^users/$', views.UserView.as_view()),
+# 注册： url(r'^users/$', views.UserView.as_view()),
 class UserView(CreateAPIView):
     serializer_class = serializers.CreateUserSerializer
 
 
-# 登录: url(r'^login/$', views.user_login)
-def user_login(request):
-    """用户使用工号，密码登录 ==> 用户登录之后页面跳转到首页 ==> 所有的API需要校验用户登录状态"""
-    if request.method == 'GET':
-        return render(request, 'login_2.html')
-    else:
-        username = request.POST.get('username', None)
-        password = request.POST.get('password', None)
-        print(username, password)
-        user = authenticate(username=username, password=password)
-        if user:
-            login(request, user)  # 用户登录
-            return redirect('/base/100')  # 登录成功返回页面
-        else:
-            return HttpResponse("用户名或者密码错误")
-
-
-# 退出: url(r'^logout/$', views.logout)
-def logout(request):
-    request.session.clear()
-    return render(request, 'login_2.html')
-
-
-# 修改密码：url('^userinfo/$', views.user_info),
-def user_info(request):
-    if request.method == "GET":
-        return render(request, 'userinfo.html')
-    username = request.POST.get("username")
-    new_password = request.POST.get("new_password")
-    user = User.objects.get(username=username)
-    with transaction.atomic():  # 数据库回滚
-        try:
-            user.set_password(new_password)
-            user.save()
-        except Exception as error:
-            user = user
-    return None
-
-
-# 获取用户信息
+# 获取用户信息： url('^user/$', views.UserDetailView.as_view()),
 class UserDetailView(RetrieveAPIView):
     serializer_class = serializers.UserDetailSerializer
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
         return self.request.user
+
+
+# 修改密码：url('^userinfo/$', views.user_info),
+def user_info(request):
+    if request.method == "GET":
+        return render(request, 'userinfo.html')
+
+    # 获取数据
+    username = request.POST.get("username", None)
+    old_password = request.POST.get("old_password", None)
+    new_password = request.POST.get("new_password", None)
+    re_password = request.POST.get("re_password", None)
+    print(username, old_password, new_password, re_password)
+
+    user = authenticate(username=username, password=old_password)
+    if user is not None:    # 判断old_password
+        if new_password == re_password:    # 判断两次密码
+            if user.is_active:  # 判断用户权限
+                user = User.objects.get(username=username)
+                data = {}
+                with transaction.atomic():  # 数据库回滚
+                    try:
+                        user.set_password(new_password)
+                        user.save()
+                        data = {"msg":"密码修改成功，请重新登录！"}
+                    except Exception as error:
+                        user = user
+                        data = {"msg": "密码修改失败，请联系超管！"}
+                return HttpResponse(data)
+            return HttpResponse({"msg":"您没有权限修改当前用户信息！"})
+        return HttpResponse({"msg":"两次密码不一致，请重新填写！"})
+    return HttpResponse(json.dumps({"msg":"旧密码错误，请重新填写！"}))

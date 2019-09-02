@@ -24,7 +24,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # 注册CORS
-    # 'corsheaders',
+    'corsheaders',
 
     # 注册全文检索
     'haystack',
@@ -225,8 +225,8 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ORIGIN_WHITELIST = (
-    '127.0.0.1:8000',
-    'localhost:8000',
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 

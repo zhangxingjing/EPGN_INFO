@@ -43,7 +43,8 @@ class PropulsionPower(models.Model):
 # 平台-车型
 class Platform(models.Model):
     name = models.CharField(max_length=20, verbose_name='车型')
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='平台')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
+                               verbose_name='平台')
 
     class Meta:
         db_table = 'tb_platform'

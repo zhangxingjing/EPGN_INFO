@@ -48,11 +48,11 @@ def read_file_num(file_name):
 
     while True:
         file_content = file.readline()
-        if not file_content:
-            break
-        if not file_content[0].isdigit():
-            continue
-        elif file_content[0].isdigit():  # 如果当前行是数字开头，就用data保存
+        # if not file_content:
+        #     break
+        # if not file_content[0].isdigit():
+        #     continue
+        if file_content[0].isalpha() is False or file_content[0].isspace() is True:  # 如果当前行是数字开头，就用data保存
             data_content += file_content
 
     # 处理头文件中的采集数据
@@ -77,5 +77,5 @@ def read_file_num(file_name):
 # print(channel_dict)
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
-# items = read_file_num('100009 ( 0.00-11.33 s)')
-# print(items)
+items = read_file_num('/home/spider/Music/大众/EPGN_INGO/100001 ( 0.00-12.63 s).asc')
+print(items)

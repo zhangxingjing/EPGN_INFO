@@ -53,23 +53,23 @@ def user_info(request):
     old_password = request.POST.get("old_password", None)
     new_password = request.POST.get("new_password", None)
     re_password = request.POST.get("re_password", None)
-    print(username, old_password, new_password, re_password)
+    # print(username, old_password, new_password, re_password)
 
-    user = authenticate(username=username, password=old_password)
-    if user is not None:    # 判断old_password
-        if new_password == re_password:    # 判断两次密码
+    user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
+    if user is not None:  # 判断old_password
+        if new_password == re_password:  # 判断两次密码
             if user.is_active:  # 判断用户权限
                 user = User.objects.get(username=username)
-                data = {}
+                data = {"msg": "密码修改失败，请联系超管！"}
                 with transaction.atomic():  # 数据库回滚
                     try:
                         user.set_password(new_password)
                         user.save()
-                        data = {"msg":"密码修改成功，请重新登录！"}
+                        data = {"msg": "密码修改成功，请重新登录！"}
                     except Exception as error:
                         user = user
                         data = {"msg": "密码修改失败，请联系超管！"}
-                return HttpResponse(data)
-            return HttpResponse({"msg":"您没有权限修改当前用户信息！"})
-        return HttpResponse({"msg":"两次密码不一致，请重新填写！"})
-    return HttpResponse(json.dumps({"msg":"旧密码错误，请重新填写！"}))
+                return HttpResponse(json.dumps(data))
+            return HttpResponse(json.dumps({"msg": "您没有权限修改当前用户信息！"}))
+        return HttpResponse(json.dumps({"msg": "两次密码不一致，请重新填写！"}))
+    return HttpResponse(json.dumps({"msg": "旧密码错误，请重新填写！"}))

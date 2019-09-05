@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from matplotlib.ticker import MaxNLocator
 from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from epgn_info.epgn_info.settings.dev_setting import BASE_DIR
 
 
-class Calculate_Object():
+class Calculate_Object(object):
     def __init__(self, file_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
@@ -96,6 +97,15 @@ class Calculate_Object():
         elif windowType == 'hann':
             sum_db = 20 * np.log10(sum((data_recovery / 2 * 1.633) ** 2) ** 0.5 / 2e-5)
         return sum_db
+
+    def save_img(self):
+        figure_path = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
+        path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
+        image_path = path + figure_path
+        plt.savefig(image_path)
+        plt.show()
+        plt.close()
+        return image_path
 
 
 class LevelTime(Calculate_Object):
@@ -298,12 +308,8 @@ class FftInfo(LevelTime, OederVfft):
         plt.grid(b=bool, which='both')
         plt.tight_layout()
         plt.legend(('level(A)', '2nd order'))
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class FftCalculate(FftInfo):
@@ -318,12 +324,8 @@ class FftCalculate(FftInfo):
         plt.grid(b=bool, which='both')
         plt.title('fft average')
         plt.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class FftVsTime(FftInfo):
@@ -339,12 +341,8 @@ class FftVsTime(FftInfo):
         fig.colorbar(cf, ax=ax)
         ax.set_title('contourf for fft versus time')
         fig.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class FftVsRpm(FftInfo):
@@ -359,12 +357,8 @@ class FftVsRpm(FftInfo):
         fig.colorbar(cf, ax=ax)
         ax.set_title('contourf for fft versus rpm')
         fig.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class OctaveFft(FftInfo):
@@ -379,12 +373,8 @@ class OctaveFft(FftInfo):
         plt.ylabel('db(A)')
         plt.title('Octave fft 16384')
         plt.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class OrderVsVfft(OederVfft):
@@ -397,12 +387,8 @@ class OrderVsVfft(OederVfft):
         plt.title('2nd order')
         plt.grid(b=bool, which='both')
         plt.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class LevelVsTime(LevelTime):
@@ -415,12 +401,8 @@ class LevelVsTime(LevelTime):
         plt.ylabel('db')
         plt.title('level versus time')
         plt.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
 class LevelVsRpm(LevelTime):
@@ -434,12 +416,10 @@ class LevelVsRpm(LevelTime):
         plt.ylabel('db')
         plt.title('level versus rpm')
         plt.tight_layout()
-        plt.show()
-        figurepath = self.absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-# zz0 = OctaveFft("100032 ( 0.00-53.35 s)", 0, 1, 8)
-# zz0.figure_octave_fft()
+
+zz0 = LevelVsTime("100032 ( 0.00-53.35 s)", 0, 1, 8)
+image_path = zz0.figure_level_time()
+print(image_path)

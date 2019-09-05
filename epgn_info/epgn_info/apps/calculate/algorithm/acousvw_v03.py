@@ -489,15 +489,16 @@ def figure_level_rpm(raw_time, raw_data, raw_rpm, rpm_step, rpmtype, timeWeighti
 
 
 filepath = '/home/spider/Music/大众/EPGN_INGO/100032 ( 0.00-53.35 s).asc'
+# filepath = '/home/spider/Music/大众/EPGN_INGO/100001 ( 0.00-12.63 s).asc'
 data_item = readAscFile(filepath)
 raw_time = data_item[:, 0]
 raw_data = data_item[:, 1]
 raw_rpm = data_item[:, 8]
 
-zz0 = figure_fft_rpm(raw_time, raw_data, raw_rpm, 10, 'falling', 16384, 1)  # FFT对转速
+# zz0 = figure_fft_rpm(raw_time, raw_data, raw_rpm, 10, 'falling', 16384, 1)  # FFT对转速
 zz1 = figure_fft_time(raw_time, raw_data, 16384, 25, 1)  # FFT对时间
-zz2 = figure_fft_average(raw_time, raw_data, 16384, 75, 1)  # FFT
-zz3 = figure_level_rpm(raw_time, raw_data, raw_rpm, 10, 'falling', 1, 1)  # LEVEL对转速 A计权
-zz4 = figure_level_time(raw_time, raw_data, 0.125, 1)  # LEVEL对时间
-zz5 = figure_order_vfft(raw_time, raw_data, raw_rpm, 10, 'falling', 2, 0.5, 0.5, 0.1)  # 二阶对转速
-zz6 = figure_octave_fft(raw_time, raw_data, 16384, 75, 1)  # 倍频程
+# zz2 = figure_fft_average(raw_time, raw_data, 16384, 75, 1)  # FFT
+# zz3 = figure_level_rpm(raw_time, raw_data, raw_rpm, 10, 'falling', 1, 1)  # LEVEL对转速 A计权
+# zz4 = figure_level_time(raw_time, raw_data, 0.125, 1)  # LEVEL对时间
+# zz5 = figure_order_vfft(raw_time, raw_data, raw_rpm, 10, 'falling', 2, 0.5, 0.5, 0.1)  # 二阶对转速
+# zz6 = figure_octave_fft(raw_time, raw_data, 16384, 75, 1)  # 倍频程

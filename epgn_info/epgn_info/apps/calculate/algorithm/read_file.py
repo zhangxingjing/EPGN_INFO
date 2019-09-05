@@ -1,11 +1,12 @@
 import re
-
-
-# 读取指定文件中的通道信息
-import time
-
+import numpy as np
 
 def read_file_header(file_name):
+    """
+    # 读取指定文件中的通道信息
+    :param file_name:
+    :return:
+    """
     # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     head_content = ""
     # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
@@ -40,19 +41,24 @@ def read_file_header(file_name):
 
 
 def read_file_num(file_name):
+    """
+    读取文件数组数据
+    :param file_name:
+    :return:
+    """
     items = []
     data_content = ""
     split_tag = ' '  # # 编码不同的时候，使用不同的读取方式
-    # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
-    file = open(file_name, "r", encoding="gbk", errors="ignore")
+    file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
+    file = open(file_path, "r", encoding="gbk", errors="ignore")
 
     while True:
         file_content = file.readline()
-        # if not file_content:
-        #     break
-        # if not file_content[0].isdigit():
-        #     continue
-        if file_content[0].isalpha() is False or file_content[0].isspace() is True:  # 如果当前行是数字开头，就用data保存
+        if not file_content:
+            break
+        if not file_content[0].isdigit():
+            continue
+        if file_content[0].isdigit():  # 如果当前行是数字开头，就用data保存
             data_content += file_content
 
     # 处理头文件中的采集数据
@@ -70,12 +76,12 @@ def read_file_num(file_name):
         items.append(item)
     if len(items[-1]) != 0:  # 如果列表中最后一个列表中没有值，直接返回
         return items
-    return items[:-1]
-
+    items_array = np.array(items[:-1])
+    return items_array
 
 # channel_dict = read_file_header('/home/spider/Music/asc/guan2019-08-14_100001 ( 0.00-12.63 s).asc')
 # print(channel_dict)
 # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
 
-items = read_file_num('/home/spider/Music/大众/EPGN_INGO/100001 ( 0.00-12.63 s).asc')
-print(items)
+# items = read_file_num('/home/spider/Music/大众/EPGN_INGO/100001 ( 0.00-12.63 s).asc')
+# print(items)

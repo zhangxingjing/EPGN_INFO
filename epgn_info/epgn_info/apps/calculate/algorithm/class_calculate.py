@@ -7,99 +7,52 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from matplotlib.ticker import MaxNLocator
-
-absolute_dir = os.getcwd() + '/'
-
-
-def readAscFile(file_path):
-    """
-    通过文件绝对路径，获取当前文件中的数据
-    :return:
-    """
-    head_content = ""
-    data_content = ""
-    fileRead = open(file_path, 'r', encoding='gbk')
-    while True:
-        file_content = fileRead.readline()
-        if not file_content:
-            break
-        if not file_content[0].isdigit():  # if begin with str
-            head_content += file_content
-        elif file_content[0].isdigit():  # if begin with num
-            data_content += file_content
-    content_line_list = data_content.split('\n')  # devide data_content by '\n'
-    datas = []
-    content_list = content_line_list[0].split(' ')
-    if len(content_list) != 1:
-        splitTag = ' '
-    else:
-        content_list = content_line_list[0].split('\t')
-        if len(content_list) != 1:
-            splitTag = '\t'
-    for read_line in content_line_list:
-        content_list = read_line.split(splitTag)
-        items = []
-        for contents in content_list:
-            try:
-                items.append(float(contents))
-            except:
-                continue
-        datas.append(items)
-    datas = datas[:-1]
-
-    data_matrix = np.array(datas)
-    return data_matrix
+from epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from epgn_info.settings.dev_setting import BASE_DIR
 
 
-class Calculate():
-
-    def __init__(self):
-        self.absolute_dir = os.getcwd() + '/'
-        self.file_path = '/home/spider/Music/大众/EPGN_INGO/100032 ( 0.00-53.35 s).asc'
-        self.raw_time = readAscFile(self.file_path)[:, 0]
-        self.raw_data = readAscFile(self.file_path)[:, 1]
-        self.raw_rpm = readAscFile(self.file_path)[:, 8]
-
-        self.rpm_step = 10
-        self.rpmtype = 'falling'
-        self.timeWeighting = 0.125
+class Calculate_Object(object):
+    def __init__(self, file_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
-        self.orderResolution = 0.5
-        self.orderWidth = 0.5
-        self.smoothFrac = 0.1
         self.order = 2
-
-        self.spectrum_size = 16384
         self.overlap = 75
         self.weighting = 1
-        # sig, window_size = None
+        self.rpm_step = 10
+        self.smoothFrac = 0.1
+        self.orderWidth = 0.5
+        self.rpmtype = 'falling'
+        self.timeWeighting = 0.125
+        self.orderResolution = 0.5
+        self.spectrum_size = 16384
+        self.item = read_file_num(file_name)
+        self.absolute_dir = os.getcwd() + '/'
+        self.raw_time = self.item[:, raw_time_num]
+        self.raw_data = self.item[:, raw_data_num]
+        self.raw_rpm = self.item[:, raw_rpm_num]
+        self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
         fs_type = [4096, 8192, 16384, 32768, 65536, 22050, 44100, 48000]
         fs_type = np.array(fs_type)
-        fsd = len(self.raw_time) / self.raw_time[-1]
-        fs = fs_type[abs(fs_type - fsd) < 1]
+        fsd = len(self.raw_time) / self.raw_time[-1]  # 数据采样率，指单位时间的采样点数
+        fs = fs_type[abs(fs_type - fsd) < 1]  # [44100]
         if len(fs) == 1:
             return float(fs)
-        else:
-            return fsd
+        return fsd
 
     def dataA(self):  # need to be improved
-        fs = self.detectFs()
         n = len(self.raw_time)
         if n % 2 == 0:
-            f = fs * np.arange(n // 2) / n
+            f = self.fs * np.arange(n // 2) / n
             fa = librosa.A_weighting(f)
             temp1 = np.fft.fft(self.raw_data)
-            # temp2 = 20*np.log10(temp1/2e-5)
             faf = 10 ** (fa / 20)  # *2e-5
             faf2 = faf[::-1]
             fafc = np.hstack((faf, faf2))
         else:
-            f = fs * np.arange(n // 2 + 1) / n
+            f = self.fs * np.arange(n // 2 + 1) / n
             fa = librosa.A_weighting(f)
             temp1 = np.fft.fft(self.raw_data)
-            # temp2 = 20*np.log10(temp1/2e-5)
             faf = 10 ** (fa / 20)  # *2e-5
             faf2 = faf[::-1]
             fafc = np.hstack((faf, faf2[1:]))
@@ -133,19 +86,30 @@ class Calculate():
             rpmf = t01[::-1]
         return rpmf, rpml
 
-    def sum_db(self, raw_data, windowType='none'):
+    def sum_db(self, raw_data=None, windowType='none'):
         raw_data_info = self.raw_data
-        if raw_data:
+        if raw_data is not None:
             raw_data_info = raw_data
         data_recovery = 10 ** (raw_data_info / 20) * 2e-5
+        sum_db = []
         if windowType == 'none':
             sum_db = 20 * np.log10(sum(data_recovery ** 2) ** 0.5 / 2e-5)
         elif windowType == 'hann':
             sum_db = 20 * np.log10(sum((data_recovery / 2 * 1.633) ** 2) ** 0.5 / 2e-5)
         return sum_db
 
+    def save_img(self):
+        figure_path = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
+        path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
+        image_path = path + figure_path
+        plt.savefig(image_path)
+        plt.show()
+        plt.close()
+        return image_path
+
+
+class LevelTime(Calculate_Object):
     def level_time(self):
-        fs = self.detectFs()
         raw_data = self.raw_data
         if self.A == 1:
             raw_data = self.dataA()
@@ -162,7 +126,7 @@ class Calculate():
         ff2 = np.fft.ifft(ff)
         ff2r = ff2.real
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
-        pa = (ff2rs / fs / self.timeWeighting) ** 0.5
+        pa = (ff2rs / self.fs / self.timeWeighting) ** 0.5
         lpa = 20 * np.log10(pa / 2e-5)
         return lpa
 
@@ -174,20 +138,21 @@ class Calculate():
             lpr[i] = lpa[int(rpmf[i])]
         return rpml, lpr
 
+
+class OederVfft(Calculate_Object):
     def order_vfft(self):
-        fs = self.detectFs()
         (rpmf, rpml) = self.rpmSelect2()
         dbo = np.zeros(np.size(rpml))
         for i in range(np.size(rpml)):
             fsResolution = rpml[i] / 60 * self.orderResolution
-            blockSize = fs / fsResolution
+            blockSize = self.fs / fsResolution
             try:
                 x = self.raw_data[int(rpmf[i] - blockSize // 2 + 1): int(rpmf[i] + blockSize // 2 + 1)]
                 n = len(x)
                 wn = hann(n)
                 xx = x * wn
                 y = fft(xx)
-                f = fs * np.arange(n // 2 + 1) / n
+                f = self.fs * np.arange(n // 2 + 1) / n
                 p = np.abs(y / n)
                 p1 = p[:n // 2 + 1]
                 p1[1: -1] *= 2
@@ -206,6 +171,7 @@ class Calculate():
                     dbo[i] = 20 * np.log10(pef / 2e-5)
             except:
                 dbo[i] = dbo[i]
+        t01 = []
         for i in range(len(rpml)):
             t01 = np.where(dbo != 0)
         rpml = rpml[t01[0]]
@@ -217,7 +183,6 @@ class Calculate():
         return rpml, dbo
 
     def rms(self, sig, window_size=None):
-        # sig, window_size = None
         fun = lambda a, size: np.sqrt(np.sum([a[size - i - 1:len(a) - i] ** 2 for i in range(size - 1)]) / size)
         if len(sig.shape) == 2:
             return np.array([self.rms(each, window_size) for each in sig])
@@ -226,19 +191,20 @@ class Calculate():
                 window_size = len(sig)
             return fun(sig, window_size)
 
+
+class FftInfo(LevelTime, OederVfft):
     def fft_average(self):
-        # raw_data, spectrum_size, fs, overlap, weighting
         stepping = np.floor(self.spectrum_size * (100 - self.overlap) / 100)
         window_data = int((len(self.raw_time) - self.spectrum_size) // stepping + 1)
         pp = np.zeros((window_data, self.spectrum_size // 2 + 1))  # fft_vs_time
         n = self.spectrum_size  # Length for FFT
         wn = hann(n)  # 汉宁窗
+        f = []
         for i in range(window_data):
             x = self.raw_data[int(i * stepping):int(i * stepping + self.spectrum_size)]  # 获得分块数据'=
             xx = x * wn  # 分块数据加窗
             y = fft(xx)
-            fs = self.detectFs()
-            f = fs * np.arange(n // 2 + 1) / n  # 频域取FFT结果的前一半
+            f = self.fs * np.arange(n // 2 + 1) / n  # 频域取FFT结果的前一半
             p = np.abs(y / n)  # FFT结果取模值
             p1 = p[:n // 2 + 1]  # FFT结果取前半部分
             p1[1: -1] *= 2  # FFT后半部分幅值叠加到前半部分
@@ -254,19 +220,18 @@ class Calculate():
             return f, db
 
     def fft_time(self):
-        # raw_time, raw_data, spectrum_size, overlap, weighting
-        fs = self.detectFs()
         stepping = np.floor(self.spectrum_size * (100 - self.overlap) / 100)
         window_data = int((len(self.raw_time) - self.spectrum_size) // stepping + 1)
-        time_array = np.arange(self.spectrum_size / 2, self.spectrum_size / 2 + stepping * (window_data), stepping) / fs
+        time_array = np.arange(self.spectrum_size / 2, self.spectrum_size / 2 + stepping * (window_data), stepping) / self.fs
         pp = np.zeros((self.spectrum_size // 2 + 1, window_data))  # 预分配fft_vs_time 矩阵
+        f = []
         for i in range(window_data):
             x = self.raw_data[int(i * stepping):int(i * stepping + self.spectrum_size)]  # 获得分块数据'=
             n = self.spectrum_size  # Length for FFT
             wn = hann(n)
             xx = x * wn
             y = fft(xx)
-            f = fs * np.arange(n // 2 + 1) / n
+            f = self.fs * np.arange(n // 2 + 1) / n
             p = np.abs(y / n)
             p1 = p[:n // 2 + 1]
             p1[1: -1] *= 2
@@ -274,7 +239,6 @@ class Calculate():
             p2 = p2 * 2 ** -0.5  # peak to rms
             pp[0:, i] = p2  # 生成所有分块数据的FFT矩阵
         pm = 20 * np.log10(pp / 2e-5)
-        #    pm = pm.transpose()
         if self.weighting == 1:
             for i in range(window_data):
                 pm[:, i] = pm[:, i] + librosa.A_weighting(f)
@@ -283,7 +247,8 @@ class Calculate():
             return f, time_array, pm
 
     def fft_rpm(self):
-        # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, spectrum_size, fs, weighting
+        t01 = []
+        f = []
         (rpmf, rpml) = self.rpmSelect2()
         pp = np.zeros((self.spectrum_size // 2 + 1, len(rpml)))
         for i in range(len(rpml)):
@@ -293,8 +258,7 @@ class Calculate():
                 wn = hann(n)
                 xx = x * wn
                 y = fft(xx)
-                fs = self.detectFs()
-                f = fs * np.arange(n // 2 + 1) / n
+                f = self.fs * np.arange(n // 2 + 1) / n
                 p = np.abs(y / n)
                 p1 = p[:n // 2 + 1]
                 p1[1: -1] *= 2
@@ -308,7 +272,11 @@ class Calculate():
         rpml = rpml[t01[0]]
         pp = pp[:, t01[0]]
         pm = 20 * np.log10(pp / 2e-5)
-        #    pm = pm.transpose()
+
+        """
+        如果上面执行的是except里面的代码，这里在哪里拿到f
+        """
+
         if self.weighting == 1:
             for i in range(len(rpml)):
                 pm[:, i] = pm[:, i] + librosa.A_weighting(f)
@@ -317,7 +285,6 @@ class Calculate():
             return f, rpml, pm
 
     def octave_fft(self):
-        # raw_data, spectrum_size, fs, overlap, weighting
         (fl, db) = self.fft_average()
         fb = np.array([22.5, 45, 90, 180, 355, 710, 1400, 2800, 5600, 11200])
         fc = np.array([31.5, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000])
@@ -330,7 +297,6 @@ class Calculate():
         return fc, octave
 
     def figure_inner(self):
-        # raw_time, raw_data, raw_rpm, rpm_step, order
         (rpml, lpr) = self.level_rpm()
         plt.figure()
         plt.plot(rpml, lpr)
@@ -341,16 +307,13 @@ class Calculate():
         plt.grid(b=bool, which='both')
         plt.tight_layout()
         plt.legend(('level(A)', '2nd order'))
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_fft_average(self):
-        # raw_time, raw_data, spectrum_size, overlap, weighting
-        # zz2 = figure_fft_average(raw_time, raw_data, 16384, 75, 1)
+
+# FFT
+class FftCalculate(FftInfo):
+    def run(self):
         (f, db) = self.fft_average()
         plt.figure()
         plt.plot(f, db)
@@ -361,15 +324,14 @@ class Calculate():
         plt.grid(b=bool, which='both')
         plt.title('fft average')
         plt.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_fft_time(self):
-        # raw_time, raw_data, spectrum_size, overlap, weighting
+
+# FFT对时间
+class FftVsTime(FftInfo):
+    def run(self):
+        self.overlap = 25
         (f, ta, pm) = self.fft_time()
         x2, y2 = np.meshgrid(ta, f)
         levels = MaxNLocator(nbins=50).tick_values(pm.min(), pm.max())
@@ -380,16 +342,14 @@ class Calculate():
         fig.colorbar(cf, ax=ax)
         ax.set_title('contourf for fft versus time')
         fig.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_fft_rpm(self):
-        # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, spectrum_size, weighting
-        (f, rpml, pm) = self.fft_rpm()  # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, spectrum_size, fs, weighting
+
+# FFT对转速
+class FftVsRpm(FftInfo):
+    def run(self):
+        (f, rpml, pm) = self.fft_rpm()
         x2, y2 = np.meshgrid(rpml, f)
         levels = MaxNLocator(nbins=50).tick_values(pm.min(), pm.max())
         fig, ax = plt.subplots()
@@ -399,15 +359,14 @@ class Calculate():
         fig.colorbar(cf, ax=ax)
         ax.set_title('contourf for fft versus rpm')
         fig.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_octave_fft(self):  # raw_time, raw_data, spectrum_size, overlap, weighting
-        (fc, db) = self.octave_fft()  # raw_data, spectrum_size, fs, overlap, weighting
+
+# 倍频程
+class OctaveFft(FftInfo):
+    def run(self):
+        (fc, db) = self.octave_fft()
         plt.figure()
         ind = np.arange(len(fc))
         plt.bar(ind, db)
@@ -417,17 +376,14 @@ class Calculate():
         plt.ylabel('db(A)')
         plt.title('Octave fft 16384')
         plt.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_order_vfft(
-            self):  # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, order, orderResolution, orderWidth, smoothFrac
-        (rpml,
-         dbo) = self.order_vfft()  # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, order, orderResolution, orderWidth, smoothFrac
+
+# 二阶对转速
+class OrderVsVfft(OederVfft):
+    def run(self):
+        (rpml, dbo) = self.order_vfft()
         plt.figure()
         plt.plot(rpml, dbo)
         plt.xlabel('rpm')
@@ -435,15 +391,14 @@ class Calculate():
         plt.title('2nd order')
         plt.grid(b=bool, which='both')
         plt.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_level_time(self):  # raw_time, raw_data, timeWeighting, A
-        lpa = self.level_time()  # raw_time, raw_data, timeWeighting, A
+
+# LEVEL对时间
+class LevelVsTime(LevelTime):
+    def run(self):
+        lpa = self.level_time()
         plt.figure()
         plt.plot(self.raw_time, lpa)
         plt.grid('on')
@@ -451,16 +406,15 @@ class Calculate():
         plt.ylabel('db')
         plt.title('level versus time')
         plt.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
-    def figure_level_rpm(self):  # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, timeWeighting, A
+
+# LEVEL对转速
+class LevelVsRpm(LevelTime):
+    def run(self):
         self.timeWeighting = 1  # 初始化timeWeighting
-        (rpml, lpr) = self.level_rpm()  # raw_time, raw_data, raw_rpm, rpm_step, rpmtype, timeWeighting, A
+        (rpml, lpr) = self.level_rpm()
         plt.figure()
         plt.plot(rpml, lpr)
         plt.grid('on')
@@ -468,13 +422,10 @@ class Calculate():
         plt.ylabel('db')
         plt.title('level versus rpm')
         plt.tight_layout()
-        plt.show()
-        figurepath = absolute_dir + 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + str(
-            np.random.randint(1000, 9999))
-        plt.savefig(figurepath)
-        plt.close()
-        return figurepath
+        image_path = self.save_img()
+        return image_path
 
 
-a = Calculate()
-a.figure_level_rpm()
+# zz0 = LevelVsTime("100032 ( 0.00-53.35 s)", 0, 1, 8)
+# image_path = zz0.run()
+# print(image_path)

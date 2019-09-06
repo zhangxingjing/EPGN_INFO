@@ -7,10 +7,4 @@ urlpatterns = [
 
     # 访问算法
     url(r'^calculate/$', views.calculate),
-
-    # 使用FFT
-    url(r'^fft/$', views.run_fft),
-
-    # 使用内部噪声
-    url(r'^inner/$', views.run_inner),
 ]

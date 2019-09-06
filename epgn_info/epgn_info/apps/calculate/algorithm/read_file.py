@@ -1,5 +1,7 @@
 import re
 import numpy as np
+from epgn_info.settings.dev_setting import FileSavePath
+
 
 def read_file_header(file_name):
     """
@@ -7,10 +9,9 @@ def read_file_header(file_name):
     :param file_name:
     :return:
     """
-    # print(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
     head_content = ""
-    # file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
-    file = open(file_name, "r", encoding="gbk", errors="ignore")
+    file_path = FileSavePath + file_name + '.asc'
+    file = open(file_path, "r", encoding="gbk", errors="ignore")
     while True:
         file_content = file.readline()
         if not file_content:
@@ -49,7 +50,7 @@ def read_file_num(file_name):
     items = []
     data_content = ""
     split_tag = ' '  # # 编码不同的时候，使用不同的读取方式
-    file_path = '/home/spider/Music/大众/EPGN_INGO/' + file_name + '.asc'
+    file_path = FileSavePath + file_name + '.asc'
     file = open(file_path, "r", encoding="gbk", errors="ignore")
 
     while True:

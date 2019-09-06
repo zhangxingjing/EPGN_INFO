@@ -261,3 +261,6 @@ LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址�
 
 XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
 XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
+
+# 配置全局`文件`路径
+FileSavePath = '/home/spider/Music/大众/EPGN_INGO/'

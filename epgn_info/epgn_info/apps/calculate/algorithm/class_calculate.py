@@ -222,7 +222,8 @@ class FftInfo(LevelTime, OederVfft):
     def fft_time(self):
         stepping = np.floor(self.spectrum_size * (100 - self.overlap) / 100)
         window_data = int((len(self.raw_time) - self.spectrum_size) // stepping + 1)
-        time_array = np.arange(self.spectrum_size / 2, self.spectrum_size / 2 + stepping * (window_data), stepping) / self.fs
+        time_array = np.arange(self.spectrum_size / 2, self.spectrum_size / 2 + stepping * (window_data),
+                               stepping) / self.fs
         pp = np.zeros((self.spectrum_size // 2 + 1, window_data))  # 预分配fft_vs_time 矩阵
         f = []
         for i in range(window_data):
@@ -424,8 +425,3 @@ class LevelVsRpm(LevelTime):
         plt.tight_layout()
         image_path = self.save_img()
         return image_path
-
-
-# zz0 = LevelVsTime("100032 ( 0.00-53.35 s)", 0, 1, 8)
-# image_path = zz0.run()
-# print(image_path)

@@ -100,7 +100,8 @@ class Calculate_Object(object):
 
     def save_img(self):
         figure_path = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
-        path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
+        # path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
+        path = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR))) + "/epgn_front_end/calculate_image/"
         image_path = path + figure_path
         plt.savefig(image_path)
         plt.show()

@@ -110,7 +110,7 @@
                             </div>
 
                             <!-- 零部件 -->
-                            <label class="layui-form-label">测试项目</label>
+                            <label class="layui-form-label" style="width: 85px">测试项目</label>
                             <div class="layui-input-inline">
                                 <select class="layui-input-inline" lay-verify="required" v-model="form_data.parts_id"
                                         id="part"
@@ -121,18 +121,27 @@
                             </div>
 
                             <!-- 工况 -->
-                            <label class="layui-form-label">工况</label>
+                            <label class="layui-form-label" style="width: 83px">工况</label>
                             <div class="layui-input-inline">
-                                <select class="layui-input-inline" lay-verify="required" v-model="form_data.working_id"
+                                <select onchange="judge_option()" class="layui-input-inline" lay-verify="required"
+                                        v-model="form_data.working_id"
                                         id="status"
                                         style="border-color: #e6e6e6; padding-left: 10px;height: 38px;border-width: 1px;border-style: solid; background-color: #fff;">
                                     <option value="">请选择</option>
                                     <option v-for="working in workings" v-bind:value=working.id>[[ working.name ]]
                                     </option>
+                                    <option value="">自定义输入</option>
                                 </select>
                             </div>
+                            <div class="layui-inline" style="margin-right:0px;display: none" id="custom-staus">
+                                <label class="layui-form-label" style="width: 85px;">自定义工况</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="other_need" id="self-statusInfo" placeholder="自定义工况信息"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
                             <div class="layui-inline" style="margin-right:0px">
-                                <label class="layui-form-label">其他</label>
+                                <label class="layui-form-label" style="width: 84px">其他</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="other_need" id="other_need" placeholder="特殊需求"
                                            autocomplete="off" class="layui-input">
@@ -239,6 +248,17 @@
                 $ = layui.jquery,
                 upload = layui.upload;
         });
+        function judge_option(){
+            var option_text= $('#status option:selected').text();
+            if(option_text=="自定义输入"){
+                var obj = document.getElementById('custom-staus');
+                obj.style.display="inline"
+            }
+            else{
+                var obj = document.getElementById('custom-staus');
+                obj.style.display="none"
+            }
+        }
     </script>
 
     <!-- 使用layui框架 -->
@@ -332,7 +352,15 @@
                             return $('#part').val()
                         },
                         status: function () {
-                            return $("#status").val()
+                            var option_text= $('#status option:selected').text();
+                            if(option_text=="自定义输入"){
+                                console.log($("#self-statusInfo").val());
+                                return $("#self-statusInfo").val()
+                            }
+                            else{
+                               console.log($("#status").val());
+                               return $("#status").val()
+                            }
                         },
                         author: function () {
                             return $('#author').val()

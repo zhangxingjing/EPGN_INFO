@@ -1,7 +1,7 @@
 from .search_indexes import FileIndex
 from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
-from .models import PropulsionPower, Platform, Direction, Fileinfo
+from .models import PropulsionPower, Platform, Direction, Fileinfo, GearBox
 
 
 # 动力总成的序列化器
@@ -69,6 +69,13 @@ class FileSerializer(serializers.ModelSerializer):
         model = Fileinfo  # 绑定对应的模型类
         fields = ["id", "carmodel", "author", "file_name", "platform", "produce", "parts", "status", "car_num",
                   "propulsion", "power", "other_need"]
+
+
+# 返回变速箱信息的序列化器
+class GearBoxSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GearBox # 绑定对应的模型类
+        fields = ["id", "name"]
 
 
 # 处理搜索引擎返回数据的序列化器

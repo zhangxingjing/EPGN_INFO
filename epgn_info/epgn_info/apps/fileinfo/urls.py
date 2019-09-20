@@ -38,6 +38,9 @@ urlpatterns = [
     # 获取零部件和工况
     url(r'^direction_num/(?P<pk>\d+)/$', views.DirectionView.as_view({'get': 'power'})),
 
+    # 获取变速箱信息
+     url(r'gearbox/$', views.GearBoxView.as_view({'get':'get_gearbox'})),
+
     # 用户添加对比列表
     # url(r'^contrast/$', views.SaveContrastView.as_view()),
 

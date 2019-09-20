@@ -17,6 +17,7 @@ class Fileinfo(models.Model):
     file_name = models.CharField(max_length=255, verbose_name='文件名')
     file_type = models.CharField(max_length=40, verbose_name="文件类型")
     other_need = models.CharField(max_length=40, verbose_name="其他需求")
+    gearbox = models.CharField(max_length=40, verbose_name="变速箱信息")
 
     # 可以添加什么属性来确定当前文件是实验数据还是报告数据
 
@@ -66,3 +67,12 @@ class Direction(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# 变速箱信息
+class GearBox(models.Model):
+    name = models.CharField(max_length=40, verbose_name="变速箱")
+
+    class Meta:
+        db_table = 'tb_gearbox'  # 对应的数据表名字
+        verbose_name_plural = verbose_name = '变速箱信息'

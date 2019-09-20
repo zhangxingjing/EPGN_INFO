@@ -1,5 +1,6 @@
 import os
 import json
+import re
 import time
 from urllib import parse
 
@@ -92,6 +93,13 @@ class DirectionView(ViewSet):
         parts_obj = Direction.objects.get(pk=pk)
         serializer = PartsWorkSerializer(parts_obj)
         return Response(serializer.data)
+
+# 前端获取变速箱信息
+class GearBoxView(ViewSet):
+    def get_gearbox(self, request):
+        gearbox = GearBox.objects.all()
+        gearbox_info = GearBoxSerializer(gearbox, many=True)
+        return Response(gearbox_info.data)
 
 
 # 把用户选择的数据存到本地cookie中
@@ -270,11 +278,14 @@ def upload(request):
     power_id = request.POST.get("power")  # 功率
     create_date = request.POST.get("date_hash")  # 时间
     files = request.FILES.get("file")  # 文件
-    other_need = request.POST.get("other_need")
+    gearbox = request.POST.get('gearbox')
     filename = str(files)
+
+    """这里是非必选参数"""
     kv = request.POST.get('kv')
     EPG = request.POST.get('EPG')
     other = request.POST.get('other')
+    other_need = request.POST.get("other_need")
 
     # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
     # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
@@ -292,11 +303,15 @@ def upload(request):
     power = PropulsionPower.objects.get(id=power_id).num
     direction = Direction.objects.get(id=direction_id).name
     parts = Direction.objects.get(id=part_id).name
-    status = Direction.objects.get(id=status_id).name
 
-    # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date)
+    # 在获取到前端的工况数据时，判断是否是数字 ==> 自定义工况
+    status = status_id
+    if status_id.isdigit():
+        status = Direction.objects.get(id=status_id).name
+    # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
+    # return HttpResponse(json.dumps({"data":gearbox}))
 
-    if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce:
+    if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
         # 用户名 + 文件名
         new_name = create_date + "_" + filename
         # 在这里判断下文件格式 ==> 分开保存
@@ -307,14 +322,14 @@ def upload(request):
                 for chunk in files.chunks():
                     new_file_hdf.write(chunk)
                 new_file_hdf.close()
-
-                # 写入数据库
+    #
+    #             # 写入数据库
                 file_type = "KV" + str(kv) + "EPG" + str(EPG) + "other" + str(other)
                 Fileinfo(platform=platform, carmodel=car_model, direction=direction, parts=parts,
                          status=status, author=author,
                          car_num=car_num, propulsion=propulsion, power=power, create_date=create_date,
                          file_name=new_name, file_type=file_type, other_need=other_need,
-                         produce=produce).save()
+                         produce=produce, gearbox=gearbox).save()
 
                 # 返回文件上传完成
                 res_dict = {

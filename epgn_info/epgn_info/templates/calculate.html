@@ -84,10 +84,10 @@
             <form class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
                     <label class="layui-form-label">复选框</label>
-                    <div class="layui-input-block">
+                    <div class="layui-input-block" lay-demo="changeTree"  lay-submit="" lay-filter="formCheckbox" >
                         <input type="checkbox" name="pipeline" title="Vorn Links" value="Vorn Links">
                         <input type="checkbox" name="EngineRPM" title="EngineRPM" value="EngineRPM">
-                        <input type="checkbox" name="AGA_M" title="AGA_M" value="AGA_M">
+                        <input type="checkbox" name="AGA" title="AGA" value="AGA">
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -140,6 +140,7 @@
         var channelselect = [];
         var checkedData1;
         var judge_pic = 0;
+        var old_tree =[11];
 
         function getTree() {
             var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
@@ -150,7 +151,8 @@
                 type: "post",
                 data: JSON.stringify({"file_info": send_message}),
                 success: function (result) {
-                    console.log(result.file_info);
+                    old_tree = result.file_info;
+                    console.log(old_tree);
                     layui.use(['tree', 'util'], function () {
                         var tree = layui.tree
                             , layer = layui.layer
@@ -176,6 +178,9 @@
                                 console.log(checkedData);
                             }
                             ,
+                            changeTree: function(){
+                                changeTreeView();
+                            },
                             pic_data: function () {
                                 checkedData1 = tree.getChecked('demoId12'); //获取选中节点的数据
                                 layer.alert(JSON.stringify(checkedData1), {shade: 0});
@@ -197,9 +202,49 @@
 
                 }
             });
-        }
+        };
 
         getTree();
+
+        function changeTreeView() {
+            layui.use('form', function () {
+                var tree = layui.tree;
+                var form = layui.form;
+                var channellist =[];
+                  form.on('submit(formCheckbox)', function (data) {
+
+                      for (var key in data.field) {
+                          channellist.push(data.field[key]);
+                      }
+                      ;
+                      console.log(channelselect);
+                      for (let i = 0; i < old_tree[0].children.length; i++) {
+                          for (let t = old_tree[0].children[i].children.length - 1; t >= 0; t--) {
+                              if (channellist.includes(old_tree[0].children[i].children[t].title)) {
+                                  old_tree[0].children[i].children[t]['checked'] = true;
+                              } else {
+                                  old_tree[0].children[i].children[t]['checked'] = false;
+                              }
+
+                          }
+                      }
+                      console.log(old_tree[0]);
+
+                      tree.render({
+                          elem: '#file_tree'
+                          , data: old_tree
+                          , showCheckbox: true  //是否显示复选框
+                          , id: 'demoId12'
+                          , isJump: true //是否允许点击节点时弹出新窗口跳转
+                          , click: function (obj) {
+                              var data = obj.data;  //获取当前点击的节点数据
+                              layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                          }
+                      });
+                      return false
+                  });
+            });
+        };
 
         function getchannellist() {
             layui.use('form', function () {

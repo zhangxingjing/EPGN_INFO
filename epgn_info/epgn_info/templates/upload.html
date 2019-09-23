@@ -68,7 +68,7 @@
 
                             <!-- 动力总成 功率 -->
                             <div class="layui-form-item layui-input-inline" id="propulsion_power">
-                                <label class="layui-form-label">动力总成</label>
+                                <label class="layui-form-label">发动机</label>
                                 <div class="layui-input-inline">
                                     <select class="layui-input-inline" v-model="form_power.propulsion_id"
                                             id="propulsion"
@@ -151,9 +151,20 @@
 
                         <!-- 第三行表单数据 -->
                         <div class="layui-form layui-form-item" lay-filter="example">
+                             <div >
+                                <label class="layui-form-label">变速箱</label>
+                                <div class="layui-input-inline">
+                                    <select name="car_gearbox" lay-verify="required" id="car_gearbox" 　lay-search="">
+                                        <option value="">直接选择或搜索选择</option>
+                                        <option v-for="car_gearbox in car_gearboxs" 　v-bind:value=car_gearbox.name>[[
+                                            car_gearbox.name ]]
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
                             <!-- 日期选择 -->
                             <div class="layui-inline">
-                                <label class="layui-form-label">试验时间</label>
+                                <label class="layui-form-label" style="padding: 9px 18px">试验时间</label>
                                 <div class="layui-input-inline">
                                     <input name="date_hash" id="date_hash" lay-verify="date_hash"
                                            placeholder="请选择试验日期..."
@@ -163,7 +174,7 @@
 
                             <!-- 作者名 -->
                             <div class="layui-inline" style="margin-right:0px">
-                                <label class="layui-form-label">试验员</label>
+                                <label class="layui-form-label" style="padding: 9px 10px">试验员</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="author" id="author" lay-verify="username"
                                            placeholder="请输入试验员..." autocomplete="off" class="layui-input">
@@ -184,7 +195,7 @@
                                 <div style="width: 100px" class="layui-input-inline">
                                     <input id="other" type="text" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
-                                <div class="layui-form-mid layui-word-aux">这里是选择上传的什么文件(KV_EPG_其他_)
+{#                                <div class="layui-form-mid layui-word-aux">这里是选择上传的什么文件(KV_EPG_其他_)#}
                                 </div>
                             </div>
 
@@ -248,15 +259,15 @@
                 $ = layui.jquery,
                 upload = layui.upload;
         });
-        function judge_option(){
-            var option_text= $('#status option:selected').text();
-            if(option_text=="自定义输入"){
+
+        function judge_option() {
+            var option_text = $('#status option:selected').text();
+            if (option_text == "自定义输入") {
                 var obj = document.getElementById('custom-staus');
-                obj.style.display="inline"
-            }
-            else{
+                obj.style.display = "inline"
+            } else {
                 var obj = document.getElementById('custom-staus');
-                obj.style.display="none"
+                obj.style.display = "none"
             }
         }
     </script>
@@ -352,14 +363,13 @@
                             return $('#part').val()
                         },
                         status: function () {
-                            var option_text= $('#status option:selected').text();
-                            if(option_text=="自定义输入"){
+                            var option_text = $('#status option:selected').text();
+                            if (option_text == "自定义输入") {
                                 console.log($("#self-statusInfo").val());
                                 return $("#self-statusInfo").val()
-                            }
-                            else{
-                               console.log($("#status").val());
-                               return $("#status").val()
+                            } else {
+                                console.log($("#status").val());
+                                return $("#status").val()
                             }
                         },
                         author: function () {
@@ -374,6 +384,7 @@
                         power: function () {
                             return $('#power').val()
                         },
+                        gearbox: function(){return $('#car_gearbox').val()},
                         date_hash: function () {
                             return $("#date_hash").val()
                         },
@@ -480,6 +491,27 @@
                     .catch(error => {
                         // alert(error.response.data);
                         alert("这里是发送车型的请求")
+                    })
+            }
+        })
+    </script>
+    <script>
+        var vm = new Vue({
+            el: "#car_gearbox",
+            delimiters: ['[[', ']]'],
+            data: {
+                car_gearboxs: [],
+            },
+            mounted: function () {
+                axios.get('/gearbox/', {
+                    responseType: 'json'
+                })
+                    .then(response => {
+                        this.car_gearboxs = response.data;
+                    })
+                    .catch(error => {
+                        // alert(error.response.data);
+                        alert("这里是发送 变速箱的请求")
                     })
             }
         })

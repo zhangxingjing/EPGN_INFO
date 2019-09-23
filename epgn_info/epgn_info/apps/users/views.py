@@ -1,5 +1,4 @@
 import json
-
 from .models import User
 from . import serializers
 from django.contrib import auth

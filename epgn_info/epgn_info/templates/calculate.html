@@ -252,21 +252,7 @@
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
 
-                    for (var key in data.field) {
-                        channelselect.push(data.field[key]);
-                    }
-                    ;
 
-                    for (let i = 0; i < checkedData1[0].children.length; i++) {
-                        for (let t = checkedData1[0].children[i].children.length - 1; t >= 0; t--) {
-                            if (channelselect.includes(checkedData1[0].children[i].children[t].title)) {
-
-                            } else {
-                                checkedData1[0].children[i].children.splice(t, 1);
-                            }
-
-                        }
-                    }
                     console.log(checkedData1[0]);
                     var calculatename = $("#calculate option:selected").val();
                     $.ajax({
@@ -286,10 +272,10 @@
                                     );
                                 } else {
                                     var obj = document.getElementsByClassName("pic1")[0];
-                                    obj.style.width = "48%";
+                                    obj.style.width = "37%";
                                     // console.log(result.data[i].image_path);
                                     $(".pic-container").append(
-                                        `<div class="pic" style="width:48%">
+                                        `<div class="pic" style="width:37%">
                                     <img src="${result.data[i].img_path}">
                                 </div>`
                                     );

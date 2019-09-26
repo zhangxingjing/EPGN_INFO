@@ -55,6 +55,6 @@ urlpatterns = [
 ]
 
 # 搜索引擎的URL
-router.register('fileinfo/search', views.FileSearchViewSet, base_name='fileinfo_search')
+# router.register('fileinfo/search', views.FileSearchViewSet, base_name='fileinfo_search')
 
 urlpatterns += router.urls

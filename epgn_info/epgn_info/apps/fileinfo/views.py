@@ -16,7 +16,7 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from django.http import StreamingHttpResponse
-from drf_haystack.viewsets import HaystackViewSet
+# from drf_haystack.viewsets import HaystackViewSet
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -166,10 +166,10 @@ class GearBoxView(ViewSet):
 
 
 # 使用elasticsearch搜索引擎
-class FileSearchViewSet(HaystackViewSet):
-    """Fileinfo搜索"""
-    index_models = [Fileinfo]
-    serializer_class = FileIndexSerializer
+# class FileSearchViewSet(HaystackViewSet):
+#     """Fileinfo搜索"""
+#     index_models = [Fileinfo]
+#     serializer_class = FileIndexSerializer
 
 
 # 查询检索 + 分页查询 ==> 表格重载  ==> 使用模糊搜索
@@ -267,30 +267,32 @@ def upload(request):
 
     a = time.time()
     # 从前端获取的数据
-    car_model_id = request.POST.get("car_model")  # 车型
-    produce = request.POST.get("produce")  # 生产阶段
-    direction_id = request.POST.get("direction")  # 方向
-    part_id = request.POST.get("parts")  # 零部件
-    status_id = request.POST.get("status")  # 工况
-    author = request.POST.get("author")  # 用户名
-    car_num = request.POST.get("car_num")  # 车号
-    propulsion_id = request.POST.get("propulsion")  # 动力总成
-    power_id = request.POST.get("power")  # 功率
-    create_date = request.POST.get("date_hash")  # 时间
+    car_model_id = request.POST.get("car_model", None)  # 车型
+    produce = request.POST.get("produce", None)  # 生产阶段
+    direction_id = request.POST.get("direction", None)  # 方向
+    part_id = request.POST.get("parts", None)  # 零部件
+    status_id = request.POST.get("status", None)  # 工况
+    author = request.POST.get("author", None)  # 用户名
+    car_num = request.POST.get("car_num", None)  # 车号
+    propulsion_id = request.POST.get("propulsion", None)  # 动力总成
+    power_id = request.POST.get("power", None)  # 功率
+    create_date = request.POST.get("date_hash", None)  # 时间
     files = request.FILES.get("file")  # 文件
-    gearbox = request.POST.get('gearbox')
+    # gearbox = request.POST.get('gearbox')
     filename = str(files)
 
     """这里是非必选参数"""
     kv = request.POST.get('kv')
     EPG = request.POST.get('EPG')
     other = request.POST.get('other')
+    gearbox = request.POST.get('gearbox', None)
     other_need = request.POST.get("other_need")
 
     # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
     # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
     # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-    save_path = "/home/spider/Music/"  # work
+    # save_path = "/home/spider/Music/"  # work
+    save_path = "/media/sf_Y_DRIVE/2019_Daten/"  # work
 
     # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
     car_model = Platform.objects.get(id=car_model_id).name
@@ -311,7 +313,7 @@ def upload(request):
     # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
     # return HttpResponse(json.dumps({"data":gearbox}))
 
-    if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
+    if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform:
         # 用户名 + 文件名
         new_name = create_date + "_" + filename
         # 在这里判断下文件格式 ==> 分开保存
@@ -371,10 +373,13 @@ def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
-    file_path = "/home/spider/Music/hdf/" + file_name
-    if not os.path.isfile(file_path):
+    file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name  # guan文件位置
+    if os.path.isfile(file_path):  # 老数据
         # 判断下载文件是否存在
-        return HttpResponse("Sorry but Not Found the File")
+        file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
+
+    else:  # 网盘
+        file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
 
     def file_iterator(file_path, chunk_size=512):
         """

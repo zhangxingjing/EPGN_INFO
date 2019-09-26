@@ -279,14 +279,14 @@
 
         </div>
         <div class="bulletbox-button">
-            <a href="/calculate/">
-                <button class="data-submit">
-                    确认计算
-                </button>
-            </a>
+            <button class="data-submit">
+                确认计算
+            </button>
             <button class="data-download" onclick="data_download()">
                 下载
             </button>
+
+
         </div>
     </div>
 {% endblock right_data %}
@@ -567,8 +567,13 @@
                             judge_sessionValue = sessionStorage.getItem("sessionString");
                             if (judge_sessionValue == null) {
                                 sessionArray = add_arrayData;
-                                sessionString = JSON.stringify(sessionArray);
-                                document.getElementById('dataContrastList').style.display = "block";
+                                if (sessionArray.length == 0) {
+                                    return false;
+                                } else {
+                                    sessionString = JSON.stringify(sessionArray);
+                                    document.getElementById('dataContrastList').style.display = "block";
+                                }
+
 
                             } else {
                                 var result = [];
@@ -588,12 +593,10 @@
                                 }
 
                                 get_sameArray();
-                                console.log(result);
                                 add_arrayData = add_arrayData.filter(item => {
                                     let idList = result.map(v => v.file_name)
                                     return !idList.includes(item.file_name)
                                 })
-                                console.log(add_arrayData);
                                 sessionArray = sessionArray.concat(add_arrayData);
                                 sessionString = JSON.stringify(sessionArray);
                             }

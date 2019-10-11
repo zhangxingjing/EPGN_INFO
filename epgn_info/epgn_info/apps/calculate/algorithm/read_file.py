@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from epgn_info.settings.dev_setting import FileSavePath
+from epgn_info.epgn_info.settings.dev_setting import FileSavePath
 
 
 def read_file_header(file_name):

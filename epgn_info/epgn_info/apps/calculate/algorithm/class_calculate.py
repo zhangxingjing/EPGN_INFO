@@ -7,8 +7,8 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from matplotlib.ticker import MaxNLocator
-from epgn_info.apps.calculate.algorithm.read_file import read_file_num
-from epgn_info.settings.dev_setting import BASE_DIR
+from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from epgn_info.epgn_info.settings.dev_setting import BASE_DIR
 
 
 class Calculate_Object(object):

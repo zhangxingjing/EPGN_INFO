@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}HOME{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
+{% endblock %}
+
+{% block content %}
+    <div class="layui-body" id="LAY_app_body" style="top:5%">
+        <div class="layui-fluid" style="padding:15px">
+            <title>404 页面不存在</title>
+            <div class="layui-fluid">
+                <div class="layadmin-tips">
+                    <i class="layui-icon" face>&#xe664;</i>
+                    <div class="layui-text">
+                        <h1>
+                            <span class="layui-anim layui-anim-loop layui-anim-">4</span>
+                            <span class="layui-anim layui-anim-loop layui-anim-rotate">0</span>
+                            <span class="layui-anim layui-anim-loop layui-anim-">4</span>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script>
+        layui.config({
+            base: '../../../epgn_front_end/home/' //静态资源所在路径
+        }).use('index', function () {
+            var layer = layui.layer,
+                admin = layui.admin,
+                element = layui.element;
+        });
+    </script>
+{% endblock %}

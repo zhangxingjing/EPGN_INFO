@@ -65,9 +65,9 @@
             <!-- 右侧 -->
             <ul class="layui-nav layui-layout-right" id="user_info" lay-filter="layadmin-layout-right">
                 <ul class="layui-nav-item">
-                    <li class="layui-nav-item"><a href="/userinfo/">[[ username ]]，你好！</a></li>
+                    <li class="layui-nav-item"><a href="/userinfo/">Hi, [[ username ]]！</a></li>
                     {#                    <li class="layui-nav-item"><a href="/userinfo/">{{ username }}，你好！</a></li>#}
-                    <li class="layui-nav-item"><a @click="logout">退出登录</a></li>
+                    <li class="layui-nav-item"><a @click="logout">Sign Out</a></li>
                     <!--<li class="layui-nav-item"><a href="">请登录</a></li>
                         <li class="layui-nav-item"><a href="">退出登录</a></li>-->
                 </ul>
@@ -89,20 +89,20 @@
                     <li data-name="get" class="layui-nav-item">
                         <a href="/" lay-tips="主页" lay-direction="2">
                             <i class="layui-icon layui-icon-home"></i>
-                            <cite>主页</cite>
+                            <cite>Home</cite>
                         </a>
                     </li>
                     <li data-name="get" class="layui-nav-item">
                         <a href="/upload/" lay-tips="上传" lay-direction="2">
                             <i class="layui-icon layui-icon-upload-circle"></i>
-                            <cite>上传</cite>
+                            <cite>Upload</cite>
                         </a>
                     </li>
                     <!--<li data-name="home" class="layui-nav-item layui-nav-itemed">-->
                     <li data-name="home" class="layui-nav-item layui-nav-itemed">
                         <a href="javascript:;" lay-tips="检索" lay-direction="2">
                             <i class="layui-icon layui-icon-search"></i>
-                            <cite>检索</cite>
+                            <cite>Search</cite>
                             <span class="layui-nav-more"></span></a>
                         <dl class="layui-nav-child" id="platforms">
                             <dd data-name="console" v-for="platform in platforms">
@@ -114,7 +114,7 @@
                         <a href="/calculate/" lay-tips="算法" lay-direction="2">
                             {#                        <a href="" lay-tips="算法" lay-direction="2">#}
                             <i class="layui-icon layui-icon-template-1"></i>
-                            <cite>算法</cite>
+                            <cite>Algorithm</cite>
                         </a>
                     </li>
                     <!--<li data-name="get" class="layui-nav-item">

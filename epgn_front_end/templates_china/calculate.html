@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+
+{% block title %}CALCULATE{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
+    <script src="../../../epgn_front_end/js/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="../../../epgn_front_end/js/vue_2.6.10.js"></script>
+    <script type="text/javascript" src="../../../epgn_front_end/js/axios-0.18.0.min.js"></script>
+    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
+    <style>
+        .data_list {
+            float: left;
+            width: 320px;
+            overflow: scroll;
+            overflow-y: hidden
+        }
+
+        .layui-icon-file {
+            display: none
+        }
+
+        .pic-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            width: 100%;
+            height: 750px;
+            overflow: scroll
+        }
+
+        .pic {
+            width: 100%;
+            margin: 10px 0px;
+        }
+
+        .pic img {
+            width: 100%
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-fluid">
+        <!-- 左侧从cookie中获取到的数据 -->
+        <div class="data_list">
+
+            <!-- 已选数据的筛选在这里使用layui中的表格实现 ==> 显示一个文件名，同时添加右上方的功能区 -->
+            <div class="layui-btn-group demoTable" style="margin-right: 10px">
+                <button class="layui-btn layui-btn-sm" data-type=" getCheckData"
+                        style="margin-top: 10px;height: 37.89px" lay-demo="getChecked">获取
+                </button>
+            </div>
+            <div class="layui-form" style="float: left;width: 155px;margin-top: 10px;">
+                <select name="direction" lay-verify="required" id="direction" lay-search="">
+                    <option value="">搜索关键字</option>
+                    <option value="1">这里显示勾选的文件名</option>
+                </select>
+            </div>
+            <!-- <table id="data" lay-filter="test"></table> -->
+            <table>
+                <div id="file_tree"></div>
+            </table>
+
+
+        </div>
+
+        <!-- 右侧关于算法部分==>Tab样式 -->
+        <div class="layui-form layui-tab layui-tab-card" style="width:80%;float: left;">
+            <!-- <form class="layui-form" action="" lay-filter="example" style="margin-top: 10px"> -->
+            <div class="layui-inline layui-form">
+                <label class="layui-form-label">算法选择:</label>
+                <div class="layui-input-inline">
+                    <select lay-verify="required" id="calculate" lay-filter="calculatename">
+                        <option value="">直接选择或搜索选择</option>
+                        <option value="FFT">FFT</option>
+                        <option value="2">倍频程</option>
+                        <option value="LEVEL对时间">LEVEL对时间</option>
+                    </select>
+                </div>
+            </div>
+            <form class="layui-form" action="">
+                <div class="layui-form-item" style="margin-top: 10px">
+                    <label class="layui-form-label">复选框</label>
+                    <div class="layui-input-block" lay-demo="changeTree"  lay-submit="" lay-filter="formCheckbox" >
+                        <input type="checkbox" name="pipeline" title="Vorn Links" value="Vorn Links">
+                        <input type="checkbox" name="EngineRPM" title="EngineRPM" value="EngineRPM">
+                        <input type="checkbox" name="AGA" title="AGA" value="AGA">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" id="run" lay-submit="" lay-filter="formDemo" lay-demo="pic_data">
+                            Run
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-normal">Reset</button>
+                    </div>
+                </div>
+            </form>
+            <!-- </form> -->
+
+            <!-- <ul class="layui-tab-title">
+                <li class="layui-this">FFT</li>
+                <li>1/3倍频程</li>
+            </ul> -->
+            <!-- 这里对应上面li标签里面的内容 -->
+            <div class="layui-tab-content" style="height: auto;">
+                <div class="layui-tab-item layui-show">
+                    <div class="pic-container">
+                        <div class="pic1">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="layui-btn" lay-submit="" lay-filter="demo1"
+                    style="margin: 0px 10px 10px 0px; float: right">立即导出
+            </button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="../../../epgn_front_end/layui/layui.js"></script>
+    <script>
+        layui.config({base: '../../../epgn_front_end/home/'}).use('index', function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                admin = layui.admin,
+                element = layui.element,
+                table = layui.table,
+                form = layui.form;
+        });
+    </script>
+
+    <script>
+        var channelselect = [];
+        var checkedData1;
+        var judge_pic = 0;
+        var old_tree =[11];
+
+        function getTree() {
+            var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
+            console.log(send_message);
+            $.ajax({
+                url: "/channel/",
+                dataType: "json",
+                type: "post",
+                data: JSON.stringify({"file_info": send_message}),
+                success: function (result) {
+                    old_tree = result.file_info;
+                    console.log(old_tree);
+                    layui.use(['tree', 'util'], function () {
+                        var tree = layui.tree
+                            , layer = layui.layer
+                            , util = layui.util
+                        //基本演示
+                        tree.render({
+                            elem: '#file_tree'
+                            , data: result.file_info
+                            , showCheckbox: true  //是否显示复选框
+                            , id: 'demoId12'
+                            , isJump: true //是否允许点击节点时弹出新窗口跳转
+                            , click: function (obj) {
+                                var data = obj.data;  //获取当前点击的节点数据
+                                layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                            }
+                        });
+
+                        //按钮事件
+                        util.event('lay-demo', {
+                            getChecked: function (othis) {
+                                var checkedData = tree.getChecked('demoId12'); //获取选中节点的数据
+                                layer.alert(JSON.stringify(checkedData), {shade: 0});
+                                console.log(checkedData);
+                            }
+                            ,
+                            changeTree: function(){
+                                changeTreeView();
+                            },
+                            pic_data: function () {
+                                checkedData1 = tree.getChecked('demoId12'); //获取选中节点的数据
+                                layer.alert(JSON.stringify(checkedData1), {shade: 0});
+                                checkedData1 = JSON.parse(JSON.stringify(checkedData1));
+                                getchannellist();
+                                console.log(checkedData1)
+                            },
+                            setChecked: function () {
+                                tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+                            }
+                            , reload: function () {
+                                //重载实例
+                                tree.reload('demoId1', {});
+
+                            }
+                        });
+                    });
+
+
+                }
+            });
+        };
+
+        getTree();
+
+        function changeTreeView() {
+            layui.use('form', function () {
+                var tree = layui.tree;
+                var form = layui.form;
+                var channellist =[];
+                  form.on('submit(formCheckbox)', function (data) {
+
+                      for (var key in data.field) {
+                          channellist.push(data.field[key]);
+                      }
+                      ;
+                      console.log(channelselect);
+                      for (let i = 0; i < old_tree[0].children.length; i++) {
+                          for (let t = old_tree[0].children[i].children.length - 1; t >= 0; t--) {
+                              if (channellist.includes(old_tree[0].children[i].children[t].title)) {
+                                  old_tree[0].children[i].children[t]['checked'] = true;
+                              } else {
+                                  old_tree[0].children[i].children[t]['checked'] = false;
+                              }
+
+                          }
+                      }
+                      console.log(old_tree[0]);
+
+                      tree.render({
+                          elem: '#file_tree'
+                          , data: old_tree
+                          , showCheckbox: true  //是否显示复选框
+                          , id: 'demoId12'
+                          , isJump: true //是否允许点击节点时弹出新窗口跳转
+                          , click: function (obj) {
+                              var data = obj.data;  //获取当前点击的节点数据
+                              layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                          }
+                      });
+                      return false
+                  });
+            });
+        };
+
+        function getchannellist() {
+            layui.use('form', function () {
+                var form = layui.form;
+                //监听提交
+                form.on('submit(formDemo)', function (data) {
+
+
+                    console.log(checkedData1[0]);
+                    var calculatename = $("#calculate option:selected").val();
+                    $.ajax({
+                        url: "/calculate/",
+                        dataType: "json",
+                        type: "post",
+                        data: JSON.stringify({"calculate": calculatename, "file_info": checkedData1[0]}),
+                        success: function (result) {
+                            console.log(result.data);
+                            for (let i = 0; i < result.data.length; i++) {
+                                if (judge_pic == 0) {
+                                    judge_pic = 1;
+                                    $(".pic1").append(
+                                        `<div class="pic">
+                                        <img src="${result.data[i].img_path}">
+                                    </div>`
+                                    );
+                                } else {
+                                    var obj = document.getElementsByClassName("pic1")[0];
+                                    obj.style.width = "37%";
+                                    // console.log(result.data[i].image_path);
+                                    $(".pic-container").append(
+                                        `<div class="pic" style="width:37%">
+                                    <img src="${result.data[i].img_path}">
+                                </div>`
+                                    );
+                                }
+
+                            }
+                        }
+
+                    })
+                    return false
+                });
+            });
+        }
+
+
+    </script>
+
+    <script>
+        layui.use(['form', 'table'], function () {
+            var $ = layui.jquery,
+                table = layui.table;
+
+            //方法级渲染
+            tableIns = table.render({
+                width: 200,
+                elem: '#data',
+                page: false,
+                height: 'full-130',
+                // height: 800,
+                url: "http://127.0.0.1:8000/car/",
+                cols: [
+                    [{
+                        type: 'checkbox',
+                        LAY_CHECKED: true,
+                    }, {
+                        field: 'file_name',
+                        title: '文件名',
+                        unresize: true,
+                    }]
+                ],
+            });
+
+            var $ = layui.$,
+                active = {
+                    getCheckData: function () { //获取选中数据
+                        var checkStatus = table.checkStatus('idTest'),
+                            data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                    }
+                };
+        });
+    </script>
+
+{% endblock %}

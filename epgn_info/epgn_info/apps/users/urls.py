@@ -11,4 +11,7 @@ urlpatterns = [
 
     # 用户修改密码
     url('^userinfo/$', views.user_info),
+
+    # 返回home
+    url('^home/$', views.home)
 ]

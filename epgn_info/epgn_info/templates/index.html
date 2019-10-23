@@ -3,16 +3,168 @@
 {% block title %}HOME{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="/epgn_front_end/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/epgn_front_end/layui/css/admin.css" media="all">
+    <link rel="stylesheet" href="/epgn_front_end/layui/css/modules/layer/default/layer.css">
 {% endblock %}
 
 {% block content %}
-    <div class="layui-fluid" id="layui-fluid" style="padding:15px">
-        <h3>[[ job_number ]]</h3>
-        <h3>[[ username ]]</h3>
-    </div>
+     <div class="tips">
+                        <div class="tips-block">
+                                <div class="tips-block-title">
+                                    <div>Page View</div>
+                                    <div class="time-frequency day" >day</div>
+                                </div>
+                                <div class="tips-block-datadisplay">
+                                    <div class="now-data">116</div>
+                                    <div class="tips-block-all-data">
+                                            <div>Total Page View</div>
+                                            <div>58,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                                        </div>
+                                </div>
+                        </div>
+                    <div class="tips-block">
+                            <div class="tips-block-title">
+                                <div>File upload volume</div>
+                                <div class="time-frequency week">week</div>
+                            </div>
+                            <div class="tips-block-datadisplay">
+                                <div class="now-data">886</div>
+                                <div class="tips-block-all-data">
+                                        <div>Total files uploaded</div>
+                                        <div>25,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                                    </div>
+                            </div>
+                    </div>
+
+                    <div class="tips-block">
+                            <div class="tips-block-title">
+                                <div>File download volume</div>
+                                <div class="time-frequency month">month</div>
+                            </div>
+                            <div class="tips-block-datadisplay">
+                                <div class="now-data">2,317</div>
+                                <div class="tips-block-all-data">
+                                        <div>Total file downloads</div>
+                                        <div>31,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                                    </div>
+                            </div>
+                    </div>
+
+                    <div class="tips-block">
+                            <div class="tips-block-title">
+                                <div>Number of tasks</div>
+                                <div class="time-frequency" style="background-color: #009688">week</div>
+                            </div>
+                            <div class="tips-block-datadisplay">
+                                <div class="now-data">16</div>
+                                <div class="tips-block-all-data">
+                                        <div>Total tasks completed</div>
+                                        <div>1,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                                    </div>
+                            </div>
+                    </div>
+
+
+
+
+                </div>
+               <div class="index-body">
+                    <div class="data-chart">
+                        <div class="chart-title" style="font-weight:bold;font-size: 21px;color: #333;">Data overview</div>
+                        <div style="display: flex;justify-content: flex-start;;">
+                            <div id="main" style="width: 96%;height:400px;margin-left: 2%"></div>
+
+                        </div>
+                    </div>
+                    <div  style="width: 22.8%;margin-left: 1.2%;background: white;">
+                            <div id="main2" style="width: 82%;height:400px;padding-left: 9%;margin-top: 20px;"></div>
+                    </div>
+
+                    <div class="schedule">
+                            <div class="tips-block-title" style="font-size: 19px;font-weight: bold">
+                                    <div>Pending task</div>
+                                    <div class="time-frequency week">week</div>
+                            </div>
+                            <div class="task-list">
+                                <div>1.提交BMPV发动机噪声测试数据。</div>
+                                <div>2.提交辅助总成噪声测试试验报告。</div>
+                                <div>3.提交Octavia A8测试数据。</div>
+                                <div>4.完成Octavia A8进排气噪声测试。</div>
+                            </div>
+                    </div>
+                </div>
+
+                <div class="layui-form">
+                        <table class="layui-table" style="background: white;width: 94.2%;margin-left: 1%">
+                          <colgroup>
+                            <col width="150">
+                            <col width="150">
+                            <col width="200">
+                            <col>
+                          </colgroup>
+                          <thead>
+                            <tr>
+                              <th>Vehicle number</th>
+                              <th>Production stage</th>
+                              <th>Test condition</th>
+                              <th>file name</th>
+                              <th>Others</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>A8N-206</td>
+                              <td>PT</td>
+                              <td>(N)100 km/h</td>
+                              <td>2019-06-05_A8N-206 OCTAVIA a8 hinten boden without daempfung NEW N 100 run13.hdf</td>
+                              <td>CKD</td>
+                            </tr>
+                            <tr>
+                              <td>A8N-206</td>
+                              <td>PT</td>
+                              <td>(N)100 km/h</td>
+                              <td>2019-06-05_A8N-206 OCTAVIA a8 hinten boden without daempfung NEW N 100 run11.hdf</td>
+                              <td></td>
+                            </tr>
+                            <tr>
+                              <td>H07-316</td>
+                              <td>VFF</td>
+                              <td>(N) Stuckern 40-80</td>
+                              <td>2019-03-22_Polo 316 CKD GL stuckern run08.hdf</td>
+                              <td>CKD</td>
+                            </tr>
+                            <tr>
+                              <td>H07-316</td>
+                              <td>VFF</td>
+                              <td>(N) Stuckern 40-80</td>
+                              <td>2019-03-22_Polo 316 Jianxin LC GL stuckern run06.hdf</td>
+                              <td>JIANXIN LC GL</td>
+                            </tr>
+                            <tr>
+                              <td>H07-316</td>
+                              <td>VFF</td>
+                              <td>(Squar) SS</td>
+                              <td>2019-03-22_Polo 316 Jianxin LC GL SS run04.hdf</td>
+                              <td>JIANXIN LC GL</td>
+                            </tr>
+                            <tr>
+                                    <td>H07-316</td>
+                                    <td>VFF</td>
+                                    <td>(N) Stuckern 40-80</td>
+                                    <td>2019-03-22_Polo 316 CKD GL stuckern run08.hdf</td>
+                                    <td>CKD</td>
+                                  </tr>
+                                  <tr>
+                                    <td>H07-316</td>
+                                    <td>VFF</td>
+                                    <td>(N) Stuckern 40-80</td>
+                                    <td>2019-03-22_Polo 316 Jianxin LC GL stuckern run06.hdf</td>
+                                    <td>JIANXIN LC GL</td>
+                                  </tr>
+                          </tbody>
+                        </table>
+                      </div>
 {% endblock %}
 
 {% block javascript %}

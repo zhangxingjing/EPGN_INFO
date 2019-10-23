@@ -12,8 +12,8 @@ urlpatterns = [
     url(r'^favicon\.ico$', RedirectView.as_view(url=r'epgn_front_end/image/favicon.ico')),
 
     # 这是直接访问IP时, 浏览器展示的页面 ==> templates文件夹中的文件
-    url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
-    # url(r'^$', TemplateView.as_view(template_name='login_2.html'), name='login'),
+    # url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
+    url(r'^$', TemplateView.as_view(template_name='login.html'), name='login'),
 
     # 用户访问需要登录
     url(r'^authorizations/$', obtain_jwt_token),

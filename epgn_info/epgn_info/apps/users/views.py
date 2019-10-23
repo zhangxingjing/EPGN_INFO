@@ -72,3 +72,8 @@ def user_info(request):
             return HttpResponse(json.dumps({"msg": "您没有权限修改当前用户信息！"}))
         return HttpResponse(json.dumps({"msg": "两次密码不一致，请重新填写！"}))
     return HttpResponse(json.dumps({"msg": "旧密码错误，请重新填写！"}))
+
+
+# home页面
+def home(request):
+    return render(request, 'home.html')

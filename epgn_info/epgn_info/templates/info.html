@@ -127,7 +127,7 @@
             <ul class="select" style="width: 100%">
                 <li class="select-list">
                     <dl id="select1">
-                        <dt>Model：</dt>
+                        <dt>Vehicle：</dt>
                         <dd class="select-all selected"><a href="#">unlimited</a></dd>
                         {% for car in cars %}
                             {% for car_model in car.subs %}
@@ -138,7 +138,7 @@
                 </li>
                 <li class="select-list">
                     <dl id="select2">
-                        <dt>Powertrain：</dt>
+                        <dt>Motor：</dt>
                         <dd class="select-all selected"><a href="#">unlimited</a></dd>
                         {% for propulsion in propulsions %}
                             <dd><a href="#">{{ propulsion.num }}</a></dd>
@@ -156,7 +156,7 @@
                 </li>
                 <li class="select-list">
                     <dl id="select4">
-                        <dt>Professional direction：</dt>
+                        <dt>Parts：</dt>
                         <dd class="select-all selected"><a href="#">unlimited</a></dd>
                         {% for part in parts %}
                             <dd><a href="#">{{ part.name }}</a></dd>
@@ -246,7 +246,7 @@
                 </li>
                 <li class="select-result">
                     <dl>
-                        <dt class="layui-btn" data-type="reload" style="color: aliceblue;">Click to query</dt>
+                        <dt class="layui-btn" data-type="reload" style="color: aliceblue;">Search</dt>
                         <dd class="select-no">&nbsp;</dd>
                     </dl>
                 </li>
@@ -349,7 +349,7 @@
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
         <div class="demoTable">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">Contrast</button>
             <!--
             <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button>
             <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
@@ -437,23 +437,23 @@
                         LAY_CHECKED: false,
                     }, {
                         field: 'car_num',
-                        title: 'Car number',
+                        title: 'Vehicle Number',
                         width: '10%',
                         sort: true,     // 开启排序
                         align: 'center'   // 居中显示
                     }, {
                         field: 'produce',
-                        title: 'Production stage',
+                        title: 'Production Stage',
                         width: '10%',
                         sort: true,
                         align: 'center'
                     }, {
                         field: 'status',
-                        title: 'Test condition',
+                        title: 'Test Condition',
                         width: '20%'
                     }, {
                         field: 'author',
-                        title: 'Test Members',
+                        title: 'Tester',
                         width: '12%',
                         hide: true,
                         align: 'center'
@@ -464,7 +464,7 @@
                         sort: true,
                     }, {
                         field: 'other_need',
-                        title: 'Other',
+                        title: 'Else',
                         width: 280,
                     }]
                 ],

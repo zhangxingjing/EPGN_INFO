@@ -23,14 +23,14 @@
                             </blockquote>
                         </div>
                         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 50px;">
-                            <legend>Test information table</legend>
+                            <legend>Test Information</legend>
                         </fieldset>
 
                         <!-- 第一行表单数据 -->
                         <div>
                             <!-- 车型 -->
                             <div class="layui-form-item layui-input-inline">
-                                <label class="layui-form-label">Model</label>
+                                <label class="layui-form-label">Vehicle</label>
                                 <div class="layui-input-inline">
                                     <select name="car_model" lay-verify="required" id="car_model" 　lay-search=""
                                             style="border: 1px solid #e6e6e6;height: 38px;line-height:38px;width:190px;padding-left: 10px">
@@ -45,7 +45,7 @@
 
                             <!-- 生产阶段 -->
                             <div class="layui-form layui-form-item layui-input-inline">
-                                <label class="layui-form-label">Production stage</label>
+                                <label class="layui-form-label">Production Stage</label>
                                 <div class="layui-input-inline">
                                     <select name="produce" lay-verify="required" id="produce" lay-search="">
                                         <option value="">Choose</option>
@@ -61,7 +61,7 @@
 
                             <!-- 车号 -->
                             <div class="layui-form-item layui-input-inline">
-                                <label class="layui-form-label">Car number</label>
+                                <label class="layui-form-label">Vehicle NO.</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="car_num" id="car_num" lay-verify="required"
                                            placeholder="Please enter the car number..." autocomplete="off" class="layui-input">
@@ -70,7 +70,7 @@
 
                             <!-- 动力总成 功率 -->
                             <div class="layui-form-item layui-input-inline" id="propulsion_power">
-                                <label class="layui-form-label">Engine</label>
+                                <label class="layui-form-label">Motor</label>
                                 <div class="layui-input-inline">
                                     <select class="layui-input-inline" v-model="form_power.propulsion_id"
                                             id="propulsion"
@@ -114,7 +114,7 @@
                             <!-- 专业方向 -->
 
 
-                            <label class="layui-form-label">Professional direction</label>
+                            <label class="layui-form-label">Parts</label>
                             <div class="layui-input-inline">
                                 <select class="layui-input-inline" v-model="form_data.direction_id" id="direction"
                                         lay-verify="required"
@@ -139,7 +139,7 @@
 
 
                             <!-- 工况 -->
-                            <label class="layui-form-label" style="width: 83px">Working condition</label>
+                            <label class="layui-form-label" style="width: 83px">Test Condition</label>
                             <div class="layui-input-inline">
                                 <select class="layui-input-inline" lay-verify="required"
                                         v-model="form_data.working_id"
@@ -159,7 +159,7 @@
                                 </div>
                             </div>
                             <div class="layui-inline" style="margin-right:0px" id="special_need">
-                                <label class="layui-form-label" style="width: 84px">Other</label>
+                                <label class="layui-form-label" style="width: 84px">Else</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="other_need" id="other_need" placeholder="特殊需求"
                                            autocomplete="off" class="layui-input">
@@ -173,7 +173,7 @@
 
                             <!-- 日期选择 -->
                             <div class="layui-inline">
-                                <label class="layui-form-label" style="padding: 9px 18px">Test time</label>
+                                <label class="layui-form-label" style="padding: 9px 18px">Date</label>
                                 <div class="layui-input-inline">
                                     <input name="date_hash" id="date_hash" lay-verify="date_hash"
                                            placeholder="请选择试验日期..."
@@ -183,7 +183,7 @@
 
                             <!-- 作者名 -->
                             <div class="layui-inline" style="margin-right:0px">
-                                <label class="layui-form-label" style="padding: 9px 10px">Test Members</label>
+                                <label class="layui-form-label" style="padding: 9px 10px">Tester</label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="author" id="author" lay-verify="username"
                                            placeholder="请输入试验员..." autocomplete="off" class="layui-input">
@@ -200,7 +200,7 @@
                                 <div style="width: 100px" class="layui-input-inline">
                                     <input id="EPG" type="text" placeholder="报告" autocomplete="off" class="layui-input">
                                 </div>
-                                <label class="layui-form-label" style="width: 50px">Other</label>
+                                <label class="layui-form-label" style="width: 50px">Else</label>
                                 <div style="width: 100px" class="layui-input-inline">
                                     <input id="other" type="text" placeholder="" autocomplete="off" class="layui-input">
                                 </div>
@@ -213,7 +213,7 @@
 
                     <!-- 文件上传 -->
                     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-                        <legend>File Upload</legend>
+                        <legend>Upload</legend>
                     </fieldset>
 
                     <div class="layui-upload">

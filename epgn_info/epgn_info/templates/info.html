@@ -127,8 +127,8 @@
             <ul class="select" style="width: 100%">
                 <li class="select-list">
                     <dl id="select1">
-                        <dt>Vehicle：</dt>
-                        <dd class="select-all selected"><a href="#">unlimited</a></dd>
+                        <dt>车型：</dt>
+                        <dd class="select-all selected"><a href="#">不限</a></dd>
                         {% for car in cars %}
                             {% for car_model in car.subs %}
                                 <dd><a href="#">{{ car_model.name }}</a></dd>
@@ -138,8 +138,8 @@
                 </li>
                 <li class="select-list">
                     <dl id="select2">
-                        <dt>Motor：</dt>
-                        <dd class="select-all selected"><a href="#">unlimited</a></dd>
+                        <dt>动力总成：</dt>
+                        <dd class="select-all selected"><a href="#">不限</a></dd>
                         {% for propulsion in propulsions %}
                             <dd><a href="#">{{ propulsion.num }}</a></dd>
                         {% endfor %}
@@ -147,8 +147,8 @@
                 </li>
                 <li class="select-list">
                     <dl id="select3">
-                        <dt>Power：</dt>
-                        <dd class="select-all selected"><a href="#">unlimited</a></dd>
+                        <dt>功率：</dt>
+                        <dd class="select-all selected"><a href="#">不限</a></dd>
                         {% for power in powers %}
                             <dd><a href="#">{{ power.num }}</a></dd>
                         {% endfor %}
@@ -156,8 +156,8 @@
                 </li>
                 <li class="select-list">
                     <dl id="select4">
-                        <dt>Parts：</dt>
-                        <dd class="select-all selected"><a href="#">unlimited</a></dd>
+                        <dt>专业方向：</dt>
+                        <dd class="select-all selected"><a href="#">不限</a></dd>
                         {% for part in parts %}
                             <dd><a href="#">{{ part.name }}</a></dd>
                         {% endfor %}
@@ -165,8 +165,8 @@
                 </li>
                 <li class="select-list">
                     <dl id="select5">
-                        <dt>Test items：</dt>
-                        <dd class="select-all selected sec5"><a href="#">unlimited</a></dd>
+                        <dt>测试项目：</dt>
+                        <dd class="select-all selected sec5"><a href="#">不限</a></dd>
                         <div id="secSection">
                             <div id="sec1" class="sec">
                                 <dd><a href="#">整车内部噪声</a></dd>
@@ -246,7 +246,7 @@
                 </li>
                 <li class="select-result">
                     <dl>
-                        <dt class="layui-btn" data-type="reload" style="color: aliceblue;">Search</dt>
+                        <dt class="layui-btn" data-type="reload" style="color: aliceblue;">点击查询</dt>
                         <dd class="select-no">&nbsp;</dd>
                     </dl>
                 </li>
@@ -261,7 +261,7 @@
                                 <input class="layui-input" name="id" id="demoReload" autocomplete="off"
                                        placeholder="这里是模糊搜索字段...">
                             </div>
-                            <button class="layui-btn" id="search-work" data-type="reload">Fuzzy search</button>
+                            <button class="layui-btn" id="search-work" data-type="reload">模糊搜索</button>
                             <table id="info" lay-filter="test"></table>
                         </div>
                     </div>
@@ -274,16 +274,16 @@
 
 {% block right_data %}
     <div class="dataContrastList" id="dataContrastList">
-        <div class="list-title">Selected data:</div>
+        <div class="list-title">已选数据:</div>
         <div class="data-list">
 
         </div>
         <div class="bulletbox-button">
             <button class="data-submit">
-                Calculation
+                确认计算
             </button>
             <button class="data-download" onclick="data_download()">
-                Download
+                下载
             </button>
 
 
@@ -349,7 +349,7 @@
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
         <div class="demoTable">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">Contrast</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
             <!--
             <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button>
             <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
@@ -437,34 +437,34 @@
                         LAY_CHECKED: false,
                     }, {
                         field: 'car_num',
-                        title: 'Vehicle Number',
+                        title: '车辆编号',
                         width: '10%',
                         sort: true,     // 开启排序
                         align: 'center'   // 居中显示
                     }, {
                         field: 'produce',
-                        title: 'Production Stage',
+                        title: '生产阶段',
                         width: '10%',
                         sort: true,
                         align: 'center'
                     }, {
                         field: 'status',
-                        title: 'Test Condition',
+                        title: '试验工况',
                         width: '20%'
                     }, {
                         field: 'author',
-                        title: 'Tester',
+                        title: '试验员',
                         width: '12%',
                         hide: true,
                         align: 'center'
                     }, {
                         field: 'file_name',
-                        title: 'File name',
+                        title: '文件名',
                         width: '40%',
                         sort: true,
                     }, {
                         field: 'other_need',
-                        title: 'Else',
+                        title: '其他',
                         width: 280,
                     }]
                 ],

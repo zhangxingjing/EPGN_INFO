@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}EPGN HOME{% endblock %}
+{% block title %}HOME{% endblock %}
 
 {% block style %}
     <link rel="stylesheet" href="/epgn_front_end/layui/css/layui.css" media="all">
@@ -137,7 +137,8 @@
 
 {% block content %}
     <div class="layui-body" id="LAY_app_body" style="top:7%">
-        <div class="tips">
+    <div class="layui-body" id="LAY_app_body" style="padding:15px">
+        <!--<div class="tips">
             <div class="tips-block">
                 <div class="tips-block-title">
                     <div>Page View</div>
@@ -289,7 +290,9 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
+        </div>-->
+        <h3>[[ job_number ]]</h3>
+        <h3>[[ username ]]</h3>
     </div>
 {% endblock %}
 

@@ -2,15 +2,16 @@ import re
 import json
 import numpy
 import pymysql
-from apps.calculate.algorithm.calculate_name import CalculateNameDict
+from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict
 from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate import *
 
 
 class FileArrayInfo():
     """
     业务逻辑
-        1. 手动运行脚本，获取当前文件中的数据信息（算法处理后的）
-        2. 讲文件数据信息，插入数据库
+        1. 手动运行脚本，读取当前文件
+        2. 将当前文件数据通过算法处理后返回
+        2. 将文件数据信息，插入数据库
     数据调用
         1. 从前端获取当前查询的文件名
         2. 通过文件名，对比数据库中的`原始文件名`，获取当前文件的结果数据库路径
@@ -103,6 +104,7 @@ class FileArrayInfo():
         :param original_file_name: 指定的文件名（绝对路径）
         :return: 当前数据的固定算法结果
         """
+        print(channel_info, original_file_name)
         sql = "select * from result_info where original_file_name=\'%s\'" % original_file_name
         self.cursor.execute(sql)
         result_file_path = self.cursor.fetchall()[0][2]  # 获取当前文件名对应的json文件位置
@@ -110,13 +112,12 @@ class FileArrayInfo():
         with open(result_file_path, 'r') as f:
             for item in f.readlines():
                 result.append(item.strip())
-            f.close()
         result_dict = json.loads(result[0])
         # array_data = result_dict["LR_Oberende_X--LevelVsRpm"]  # 在这里获取到当前文件中指定的通道和算法结果
         array_data = result_dict[channel_info]
         item = numpy.array(array_data)  # 转换为数组
-        print(item)
-        # return item
+        # print(item)
+        return item
 
     def run(self):
         """
@@ -148,6 +149,6 @@ class FileArrayInfo():
                 print(file_name, "中没有指定RPM项！")
 
 
-file_info = FileArrayInfo()
-file_info.run()  # 获取文件信息写入数据库
-file_info.get_from_sql("LR_Oberende_X--LevelVsRpm", "/home/zheng/Documents/EPGN/700011 ( 0.00-30.00 s).asc")  # 读取数据库索引及文件信息
+# file_info = FileArrayInfo()
+# file_info.run()  # 获取文件信息写入数据库
+# file_info.get_from_sql("LR_Oberende_X--LevelVsRpm", "/home/zheng/Documents/EPGN/700011 ( 0.00-30.00 s).asc")  # 读取数据库索引及文件信息

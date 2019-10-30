@@ -7,4 +7,7 @@ urlpatterns = [
 
     # 访问算法
     url(r'^calculate/$', views.calculate),
+
+    # 调用结果
+    url(r'^get_file_result/$', views.get_file_result),
 ]

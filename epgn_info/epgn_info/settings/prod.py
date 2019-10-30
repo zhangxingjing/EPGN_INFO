@@ -9,7 +9,6 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-# ALLOWED_HOSTS = ['api.epgn.site', '127.0.0.1', 'localhost', 'www.csvw.com']
 ALLOWED_HOSTS = ['*', ]
 
 # 子应用
@@ -24,10 +23,10 @@ INSTALLED_APPS = [
     'rest_framework',
 
     # 注册CORS
-    # 'corsheaders',
+    'corsheaders',
 
     # 注册全文检索
-    # 'haystack',
+    'haystack',
 
     # 使用xadmin
     'xadmin',
@@ -51,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'epgn_info.urls'
+ROOT_URLCONF = 'epgn_info.epgn_info.urls'
 
 # 模板文件
 TEMPLATES = [
@@ -80,7 +79,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'EPGN_INFO'  # 新建数据库
+        'NAME': 'EPGN_INFO'  # 新建数据库==> 使用xadmin
     }
 }
 
@@ -99,7 +98,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# 语言、时区    from rest_framework_jwt.views import ObtainJSONWebToken, jwt_response_payload_handler
+# 语言、时区
 LANGUAGE_CODE = 'zh-hans'
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -113,35 +112,35 @@ USE_TZ = True
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://0.0.0.0:6379/0",  # 修改redis数据库配置
+        "LOCATION": "redis://127.0.0.1:6379/0",  # 修改redis数据库配置
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://0.0.0.0:6379/1",
+        "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     'verifications': {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://0.0.0.0:6379/2",
+        "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     "history": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://0.0.0.0:6379/3",
+        "LOCATION": "redis://127.0.0.1:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
     'contrast': {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://0.0.0.0:6379/5",
+        "LOCATION": "redis://127.0.0.1:6379/5",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -195,17 +194,17 @@ LOGGING = {
     }
 }
 
-# # Haystack 对接elasticsearch搜索引擎
-# HAYSTACK_CONNECTIONS = {
-#     'default': {
-#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-#         'URL': 'http://127.0.0.1:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
-#         'INDEX_NAME': 'epgn_info',  # 指定elasticsearch建立的索引库的名称
-#     },
-# }
+# Haystack 对接elasticsearch搜索引擎
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
+        'INDEX_NAME': 'epgn_info',  # 指定elasticsearch建立的索引库的名称
+    },
+}
 
 # 当添加、修改、删除数据时，自动生成索引
-# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # DRF配置
 REST_FRAMEWORK = {
@@ -219,15 +218,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',
 }
 
 # CORS
 CORS_ORIGIN_WHITELIST = (
-    '127.0.0.1:8000',
-    'localhost:8000',
-    'www.epgn.site:8000',
-    'api.epgn.site:8000'
+    'https://127.0.0.1:8000',
+    'https://localhost:8000',
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -238,7 +235,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'
+DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # 静态文件目录
 STATIC_URL = '/epgn_front_end/'
@@ -246,16 +243,22 @@ STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'ep
 
 # 用户认证 ==> JWT
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1), # 指明token的有效期
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',  # 指定使用的JWT返回的函数
 }
 
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
-AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend', 'django.contrib.auth.backends.ModelBackend']
+AUTHENTICATION_BACKENDS = [
+    'users.utils.UsernameMobileAuthBackend',  # JWT用户认证登录
+    'django.contrib.auth.backends.ModelBackend'  # Admin用户登录
+]
 
 # 配置用户登录链接
 LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址来设置
 
-XADMIN_TITLE = "EPGN_INFO 后台管理" # 左上方的文字
-XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com" # 最下面的文字
+XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
+XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
+
+# 配置全局`文件`路径
+FileSavePath = '/home/spider/Music/大众/EPGN_INGO/'

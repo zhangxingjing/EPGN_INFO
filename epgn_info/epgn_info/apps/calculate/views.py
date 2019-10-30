@@ -1,11 +1,13 @@
-import json
 import re
+import json
 from pprint import pprint
 from django.shortcuts import render
 from .algorithm.class_calculate import *
 from django.http import JsonResponse, HttpResponse
 from .algorithm.calculate_name import CalculateNameDict
 from .algorithm.read_file import read_file_header, read_file_num
+from epgn_info.scripts.upload_read_file import FileArrayInfo
+from epgn_info.epgn_info.settings.devp import FileSavePath
 
 
 # 通道：url(r'^channel/$', views.get_file_header)
@@ -71,9 +73,36 @@ def calculate(request):
                 if channel['title'] in ["EngineRPM"]:  # 把不同的通道名，名字换成一样的 ==> 在上面可以修改文件名如果在这个列表里面就直接修改名字
                     channel_front_list.remove(channel)
             for channel_info in channel_front_list:
-                img_path = eval(calculate_class_name)(filename, 0, channel_location[channel_info["title"]], channel_location["EngineRPM"]).run()  # 工厂模式
+                img_path = eval(calculate_class_name)(filename, 0, channel_location[channel_info["title"]],
+                                                      channel_location["EngineRPM"]).run()  # 工厂模式
                 # 这时候返回的img_path是图片绝对路径 ==> 处理
                 img_path = re.match(r'.*?(/epgn_front_end/calculate_image/.*)', img_path).group(1)
                 data.append({"filename": filename, "img_path": img_path})
-        return JsonResponse({"data":data})
+        return JsonResponse({"data": data})
     return render(request, 'calculate.html')
+
+
+# 调用结果：url(r'^get_file_result/$', views.get_file_result),
+def get_file_result(request):
+    """
+    1. 从前端获取当前选择的文件，以及用户选择的通道信息
+    2. 通过通道信息-文件名，获取当前文件的结果数据
+    3. 将结果数据传递到绘图的函数中，返回结果
+    """
+    if request.method == "POST":
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+
+        calculate_name = body_json["calculate"]
+        calculate_class_name = CalculateNameDict[calculate_name]  # 算法名
+        for info_dict in body_json["file_info"]["children"]:
+            filename = info_dict["title"]  # 文件名
+            channel_name = info_dict["children"][0]["title"]  # 通道名
+
+            if channel_name not in ["EngineRPM"]:  # 提出RPM
+                dict_key = channel_name + "--" + calculate_class_name
+                file_path = FileSavePath + filename
+                result_item = FileArrayInfo().get_from_sql(dict_key, file_path)  # 面向对象，result_item就是结果数据
+                print(result_item)  # 在这里拿到结果数据之后，把数据传递到绘图的函数里面
+        return HttpResponse("OK")

@@ -51,8 +51,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'epgn_info.epgn_info.urls'
-# ROOT_URLCONF = 'epgn_info.urls'
+# ROOT_URLCONF = 'epgn_info.epgn_info.urls'
+ROOT_URLCONF = 'epgn_info.urls'
 
 # 模板文件
 TEMPLATES = [
@@ -212,8 +212,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',
-    # 'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',
+    # 'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',
+    'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',
     # 认证方式
     # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -222,8 +222,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',
-    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
+    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
 }
 
 # CORS
@@ -268,4 +268,4 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 # FileSavePath = '/home/spider/Music/大众/EPGN_INGO/'
-FileSavePath = '/home/zheng/Documents/EPGN'
+FileSavePath = '/home/zheng/Documents/EPGN/'

@@ -1,10 +1,15 @@
 import json
+
+from fileinfo.serializers import UserFileSerializer
+from fileinfo.models import Fileinfo
 from .models import User
 from . import serializers
+from django.core import serializers as dc_serializers
 from django.contrib import auth
 from django.db import transaction
-from django.http import HttpResponse
-from .serializers import AuthUserSerializer
+from rest_framework import viewsets
+from django.http import HttpResponse, JsonResponse
+from .serializers import AuthUserSerializer, UserDetailSerializer, UserFileSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
 from django.contrib.auth import authenticate, login
@@ -42,36 +47,44 @@ class UserDetailView(RetrieveAPIView):
         return self.request.user
 
 
-# 修改密码：url('^userinfo/$', views.user_info),
-def user_info(request):
-    if request.method == "GET":
-        return render(request, 'userinfo.html')
+class UserInfoViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserFileSerializer
 
-    # 获取数据
-    username = request.POST.get("username", None)
-    old_password = request.POST.get("old_password", None)
-    new_password = request.POST.get("new_password", None)
-    re_password = request.POST.get("re_password", None)
-    # print(username, old_password, new_password, re_password)
+    # 改： "PATCH" /user_name/3/
+    def update(self, request, *args, **kwargs):
+        # 获取数据
+        username = request.POST.get("username", None)
+        old_password = request.POST.get("old_password", None)
+        new_password = request.POST.get("new_password", None)
+        re_password = request.POST.get("re_password", None)
 
-    user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
-    if user is not None:  # 判断old_password
-        if new_password == re_password:  # 判断两次密码
-            if user.is_active:  # 判断用户权限
-                user = User.objects.get(username=username)
-                data = {"msg": "密码修改失败，请联系超管！"}
-                with transaction.atomic():  # 数据库回滚
-                    try:
-                        user.set_password(new_password)
-                        user.save()
-                        data = {"msg": "密码修改成功，请重新登录！"}
-                    except Exception as error:
-                        user = user
-                        data = {"msg": "密码修改失败，请联系超管！"}
-                return HttpResponse(json.dumps(data))
-            return HttpResponse(json.dumps({"msg": "您没有权限修改当前用户信息！"}))
-        return HttpResponse(json.dumps({"msg": "两次密码不一致，请重新填写！"}))
-    return HttpResponse(json.dumps({"msg": "旧密码错误，请重新填写！"}))
+        user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
+        if user is None:
+            return JsonResponse({"info": "当前密码输入错误，请重新输入！"})
+        if new_password != re_password:
+            return JsonResponse({"info": "两次密码输入不同，请重新输入！"})
+        if user.is_active:  # 判断当前用户是否登录
+            return JsonResponse({"items": "当前用户未登录，请 登录 后修改密码！"})
+        user = User.objects.get(username=username)
+        with transaction.atomic():  # 数据库回滚
+            try:
+                user.set_password(new_password)
+                user.save()
+                data = {"info": "密码修改成功，请重新登录！"}
+            except Exception as error:
+                user = user
+                data = {"info": "密码修改失败，请联系超管！"}
+        return JsonResponse(data)
+
+    # 查： "GET" /user_name/3/
+    def list(self, request, *args, **kwargs):
+        job_number = request.GET.get("job_number")
+        username = User.objects.get(job_number=job_number)
+
+        file_info = Fileinfo.objects.filter(author=username)  # 获取当前用户名的数据
+        items = json.loads(dc_serializers.serialize("json", file_info))  # 序列化
+        return JsonResponse({"items": items})
 
 
 # home页面

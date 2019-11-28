@@ -52,13 +52,20 @@ class PartsWorkSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "subs"]
 
 
-# cookie存储的序列化器
-class ContrasCartSerializer(serializers.ModelSerializer):
-    file_name = serializers.IntegerField(label='文件名', read_only=True)
-
+# 返回变速箱信息的序列化器
+class GearBoxSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Fileinfo
-        fields = ['id', 'file_name']
+        model = GearBox  # 绑定对应的模型类
+        fields = ["id", "name"]
+
+
+# cookie存储的序列化器
+# class ContrasCartSerializer(serializers.ModelSerializer):
+#     file_name = serializers.IntegerField(label='文件名', read_only=True)
+#
+#     class Meta:
+#         model = Fileinfo
+#         fields = ['id', 'file_name']
 
 
 # 返回的文件信息序列化器
@@ -71,12 +78,11 @@ class FileSerializer(serializers.ModelSerializer):
                   "propulsion", "power", "other_need"]
 
 
-# 返回变速箱信息的序列化器
-class GearBoxSerializer(serializers.ModelSerializer):
+# 用户数据的序列化器
+class UserFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GearBox # 绑定对应的模型类
-        fields = ["id", "name"]
-
+        model = Fileinfo
+        fields = ['id', 'car_num', 'produce', 'status', 'file_name', 'other_need']
 
 # 处理搜索引擎返回数据的序列化器
 # class FileIndexSerializer(HaystackSerializer):

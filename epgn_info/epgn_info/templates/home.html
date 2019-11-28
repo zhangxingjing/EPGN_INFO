@@ -136,59 +136,58 @@
 {% endblock %}
 
 {% block content %}
-    <div class="layui-body" id="LAY_app_body" style="top:7%">
     <div class="layui-body" id="LAY_app_body" style="padding:15px">
-        <!--<div class="tips">
+        <div class="tips">
             <div class="tips-block">
                 <div class="tips-block-title">
-                    <div>Page View</div>
-                    <div class="time-frequency day">day</div>
+                    <div>访问量</div>
+                    <div class="time-frequency day">日</div>
                 </div>
                 <div class="tips-block-datadisplay">
                     <div class="now-data">116</div>
                     <div class="tips-block-all-data">
-                        <div>Total Page View</div>
-                        <div>58,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                        <div>总访问量</div>
+                        <div>28,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
             </div>
             <div class="tips-block">
                 <div class="tips-block-title">
-                    <div>Upload Volume</div>
-                    <div class="time-frequency week">week</div>
+                    <div>文件上传量</div>
+                    <div class="time-frequency week">周</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">886</div>
+                    <div class="now-data">186</div>
                     <div class="tips-block-all-data">
-                        <div>Total files uploaded</div>
-                        <div>25,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                        <div>文件上传总量</div>
+                        <div>5,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
             </div>
 
             <div class="tips-block">
                 <div class="tips-block-title">
-                    <div>Download Volume</div>
-                    <div class="time-frequency month">month</div>
+                    <div>文件下载量</div>
+                    <div class="time-frequency month">月</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">2,317</div>
+                    <div class="now-data">317</div>
                     <div class="tips-block-all-data">
-                        <div>Total file downloads</div>
-                        <div>31,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
+                        <div>文件下载总量</div>
+                        <div>1,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
             </div>
 
             <div class="tips-block">
                 <div class="tips-block-title">
-                    <div>Task Quantity</div>
-                    <div class="time-frequency" style="background-color: #009688">week</div>
+                    <div>待完成任务数量</div>
+                    <div class="time-frequency" style="background-color: #009688">周</div>
                 </div>
                 <div class="tips-block-datadisplay">
                     <div class="now-data">16</div>
                     <div class="tips-block-all-data">
-                        <div>Total tasks completed</div>S
+                        <div>已完成任务总量</div>
                         <div>1,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
@@ -198,7 +197,7 @@
         </div>
         <div class="index-body">
             <div class="data-chart">
-                <div class="chart-title" style="font-weight:bold;font-size: 21px;color: #333;">Tendency</div>
+                <div class="chart-title" style="font-weight:bold;font-size: 18px;">数据概览</div>
                 <div style="display: flex;justify-content: flex-start;;">
                     <div id="main" style="width: 96%;height:400px;margin-left: 2%"></div>
 
@@ -210,13 +209,14 @@
 
             <div class="schedule">
                 <div class="tips-block-title" style="font-size: 19px;font-weight: bold">
-                    <div>Pending task</div>
-                    <div class="time-frequency week">week</div>
+                    <div>待办事项</div>
+                    <div class="time-frequency week">周</div>
                 </div>
                 <div class="task-list">
-                    <div>1. EPG_GA Lavida NF oil pump noise <br/>Analysis.</div>
-                    <div>2. KW41 Lavida NF Klima Noise Analysis.</div>
-
+                    <div>1.提交BMPV发动机噪声测试数据。</div>
+                    <div>2.提交辅助总成噪声测试试验报告。</div>
+                    <div>3.提交Octavia A8测试数据。</div>
+                    <div>4.完成Octavia A8进排气噪声测试。</div>
                 </div>
             </div>
         </div>
@@ -231,11 +231,11 @@
                 </colgroup>
                 <thead>
                 <tr>
-                    <th>Vehicle Number</th>
-                    <th>Production Stage</th>
-                    <th>Test Condition</th>
-                    <th>File Name</th>
-                    <th>Else</th>
+                    <th>车辆编号</th>
+                    <th>生产阶段</th>
+                    <th>试验工况</th>
+                    <th>文件名</th>
+                    <th>其他</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -290,10 +290,9 @@
                 </tr>
                 </tbody>
             </table>
-        </div>-->
-        <h3>[[ job_number ]]</h3>
-        <h3>[[ username ]]</h3>
+        </div>
     </div>
+
 {% endblock %}
 
 {% block javascript %}

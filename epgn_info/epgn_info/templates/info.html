@@ -283,6 +283,19 @@
                 确认计算
             </button>
             <button class="data-download" onclick="data_download()">
+                自动统计
+            </button>
+
+
+        </div>
+    </div>
+     <div class="dataContrastList" id="dataDownload">
+        <div class="list-title">已选数据:</div>
+        <div class="data-list">
+
+        </div>
+        <div class="bulletbox-button">
+            <button class="data-download" onclick="data_download()">
                 下载
             </button>
 
@@ -349,7 +362,9 @@
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
         <div class="demoTable">
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">下载</button>
             <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
+
             <!--
             <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button>
             <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>

@@ -7,8 +7,8 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from matplotlib.ticker import MaxNLocator
-from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
 from epgn_info.epgn_info.settings.prod import BASE_DIR
+from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
 
 
 class Calculate_Object(object):
@@ -426,3 +426,6 @@ class LevelVsRpm(LevelTime):
         plt.tight_layout()
         image_path = self.save_img()
         return image_path
+
+# for calculate_class_name in CalculateNameDict.values():
+#     a = eval(calculate_class_name)(file_path, 0, int(num), int(RPM_NUM)).run()

@@ -1,28 +1,28 @@
 import re
 import numpy as np
-from epgn_info.epgn_info.settings.prod import FileSavePath
-# from epgn_info.settings.devp import FileSavePath
+from epgn_info.settings.devp import FileSavePath
+# from epgn_info.epgn_info.settings.prod import FileSavePath
 
 
 def read_file_header(file_name):
     """
-    # 读取指定文件中的通道信息
-    :param file_name:
+    # read channel information in the specified file
+    :param file_name: we can add filepath to filename front ==> filepath + filename
     :return:
     """
     head_content = ""
-    file_path = file_name + '.asc'
+    file_path = FileSavePath + file_name
     file = open(file_path, "r", encoding="gbk", errors="ignore")
     while True:
         file_content = file.readline()
         if not file_content:
             break
-        if not file_content[0].isdigit():  # 如果当前行是字母开头，就用data保存
+        if not file_content[0].isdigit():  # if the current line is the beginning of a letter, save it with data
             head_content += file_content
         elif file_content[0].isdigit():
             break
 
-    # 处理头文件中的channel字典
+    # handing channel dictionary in the header file
     try:
         header_info = re.match(r"(.*?)\[CodedChannel0](.*?)\[Channel\d](.*)", head_content, re.S).group(1)
     except AttributeError as error:
@@ -44,15 +44,16 @@ def read_file_header(file_name):
 
 def read_file_num(file_name):
     """
-    读取文件数组数据
+    read file array data
     :param file_name:
     :return:
     """
     items = []
     data_content = ""
-    split_tag = ' '  # # 编码不同的时候，使用不同的读取方式
+    split_tag = ' ' # 编码不同的时候，使用不同的读取方式
     # file_path = FileSavePath + file_name + '.asc'
-    file = open(file_name, "r", encoding="gbk", errors="ignore")
+    file_path = FileSavePath + file_name
+    file = open(file_path, "r", encoding="gbk", errors="ignore")
 
     while True:
         file_content = file.readline()
@@ -60,12 +61,12 @@ def read_file_num(file_name):
             break
         if not file_content[0].isdigit():
             continue
-        if file_content[0].isdigit():  # 如果当前行是数字开头，就用data保存
+        if file_content[0].isdigit():  # if the current line is the beginning of number，save it with data
             data_content += file_content
 
-    # 处理头文件中的采集数据
-    content_line_list = data_content.split('\n')  # 以换行获取每行数据，放入列表
-    if len(content_line_list[0].split(split_tag)) == 0:  # 如果第一行取值获得的列表不正确，就换别的分隔符  ==> 9
+    # processing the collected data in the header file
+    content_line_list = data_content.split('\n')  # get each line of
+    if len(content_line_list[0].split(split_tag)) == 0:  # if the list obtained by thr first row value is incorrect, change the separator  ==> 9
         split_tag = '\t'
     for read_line in content_line_list:
         content_list = read_line.split(split_tag)
@@ -76,7 +77,7 @@ def read_file_num(file_name):
             except:
                 continue
         items.append(item)
-    if len(items[-1]) != 0:  # 如果列表中最后一个列表中没有值，直接返回
+    if len(items[-1]) != 0:  # if there is no value in the last list in the list, return directly
         return items
     items_array = np.array(items[:-1])
     return items_array

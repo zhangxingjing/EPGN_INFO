@@ -3,6 +3,7 @@ from django.conf.urls import url
 from rest_framework.routers import SimpleRouter, DefaultRouter
 
 router = SimpleRouter()
+router.register(r'^parse_file', views.FileInfoViewSet)
 
 urlpatterns = [
     # 检索 ==> 表格重载
@@ -51,7 +52,11 @@ urlpatterns = [
     url(r'^base/(?P<pk>\d+)/$', views.parse_template),
 
     # 用户撤销文件上传
-    url(r'^cancel/$', views.cancel),
+    # url(r'^cancel/$', views.cancel),
+
+    # 获取"当前用户"上传的数据信息
+    # url(r'user_file_info/$', views.user_file_info),
+
 ]
 
 # 搜索引擎的URL

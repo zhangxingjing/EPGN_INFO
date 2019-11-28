@@ -1,7 +1,7 @@
 from django.db import models
 
 
-# 单条数据信息
+# single piece of data information
 class Fileinfo(models.Model):
     platform = models.CharField(max_length=25, verbose_name="平台")
     carmodel = models.CharField(max_length=25, verbose_name='车型')
@@ -19,15 +19,15 @@ class Fileinfo(models.Model):
     other_need = models.CharField(max_length=40, verbose_name="其他需求")
     gearbox = models.CharField(max_length=40, verbose_name="变速箱信息")
 
-    # 可以添加什么属性来确定当前文件是实验数据还是报告数据
+    # what properties can be added to determine if the current file is experimental or reporting
 
     class Meta:
         ordering = ['-id']
-        db_table = 'tb_car'  # 对应的数据表名字
+        db_table = 'tb_car'  # corresponding data table name
         verbose_name_plural = verbose_name = '汽车数据信息'
 
 
-# 动力总成-功率
+# powertrain - power
 class PropulsionPower(models.Model):
     num = models.CharField(max_length=20, verbose_name='功率')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
@@ -41,7 +41,7 @@ class PropulsionPower(models.Model):
         return self.num
 
 
-# 平台-车型
+# plotform - model
 class Platform(models.Model):
     name = models.CharField(max_length=20, verbose_name='车型')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
@@ -55,7 +55,7 @@ class Platform(models.Model):
         return self.name
 
 
-# 专业方向-零部件-工况
+# professional direction - parts - working conditions
 class Direction(models.Model):
     name = models.CharField(max_length=50, verbose_name='工况')
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
@@ -69,10 +69,10 @@ class Direction(models.Model):
         return self.name
 
 
-# 变速箱信息
+# gearbox
 class GearBox(models.Model):
     name = models.CharField(max_length=40, verbose_name="变速箱")
 
     class Meta:
-        db_table = 'tb_gearbox'  # 对应的数据表名字
+        db_table = 'tb_gearbox'  # corresponding data table name
         verbose_name_plural = verbose_name = '变速箱信息'

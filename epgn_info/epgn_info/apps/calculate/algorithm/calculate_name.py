@@ -1,5 +1,5 @@
 CalculateNameDict = {
-    # "页面上面展示的"： 对应的类名
+    # the front end page： Corresponding class name
     "FFT": "FftCalculate",
     "FFT对时间": "FftVsTime",
     "FFT对转速": "FftVsRpm",

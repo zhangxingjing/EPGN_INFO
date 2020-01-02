@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}USER{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -38,7 +40,8 @@
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">用户名</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="username" id="username" value="{{ username }}" readonly=""
+                                        <input type="text" name="username" id="username" value="{{ username }}"
+                                               readonly=""
                                                class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
@@ -49,7 +52,8 @@
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">当前密码</label>
                                         <div class="layui-input-inline">
-                                            <input type="password" name="oldPassword" id="oldPassword" lay-verify="required"
+                                            <input type="password" name="oldPassword" id="oldPassword"
+                                                   lay-verify="required"
                                                    lay-vertype="tips" class="layui-input">
                                         </div>
                                     </div>
@@ -94,7 +98,7 @@
 {% block javascript %}
     <script>
         layui.config({
-            base: '../../../epgn_front_end/home/' //静态资源所在路径
+            base: '{% static 'home/' %}' //静态资源所在路径
         }).use('index', function () {
             var layer = layui.layer,
                 admin = layui.admin,
@@ -131,8 +135,8 @@
                 },//使用变量sendData
                 //执行成功的回调函数
                 success: function (data) {
-                    if data.msg ==1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
-                    location.href = '../../../epgn_front_end/login_2.html';
+                    if data.msg == 1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
+                        location.href = '../../../epgn_front_end/login_2.html';
                 },
                 //执行失败或错误的回调函数
                 error: function (data) {

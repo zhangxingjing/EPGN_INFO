@@ -1,5 +1,7 @@
+"""
+封装后的算法文件
+"""
 import os
-import time
 import librosa
 import numpy as np
 import statsmodels.api as sm
@@ -7,12 +9,12 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from matplotlib.ticker import MaxNLocator
-from epgn_info.epgn_info.settings.prod import BASE_DIR
-from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from epgn_info.settings.prod import BASE_DIR
+from epgn_info.apps.calculate.algorithm.read_file import read_file_num
 
 
 class Calculate_Object(object):
-    def __init__(self, file_name, raw_time_num, raw_data_num, raw_rpm_num):
+    def __init__(self, file_name, item, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
         self.overlap = 75
@@ -24,11 +26,13 @@ class Calculate_Object(object):
         self.timeWeighting = 0.125
         self.orderResolution = 0.5
         self.spectrum_size = 16384
-        self.item = read_file_num(file_name)
+        self.filename = file_name
+        # self.item = read_file_num(file_name)
         self.absolute_dir = os.getcwd() + '/'
-        self.raw_time = self.item[:, raw_time_num]
-        self.raw_data = self.item[:, raw_data_num]
-        self.raw_rpm = self.item[:, raw_rpm_num]
+        self.raw_time = item[:, raw_time_num]
+        self.raw_data = item[:, raw_data_num]
+        self.raw_rpm = item[:, raw_rpm_num]
+        self.channel_name = channel_name
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -99,13 +103,10 @@ class Calculate_Object(object):
         return sum_db
 
     def save_img(self):
-        figure_path = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
-        # path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
+        figure_path = self.filename + "_" + self.channel_name + ".png"
         path = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR))) + "/epgn_front_end/calculate_image/"
         image_path = path + figure_path
         plt.savefig(image_path)
-        plt.show()
-        plt.close()
         return image_path
 
 
@@ -317,6 +318,7 @@ class FftInfo(LevelTime, OederVfft):
 class FftCalculate(FftInfo):
     def run(self):
         (f, db) = self.fft_average()
+        # return f, db
         plt.figure()
         plt.plot(f, db)
         plt.xscale('log')
@@ -324,7 +326,7 @@ class FftCalculate(FftInfo):
         plt.xlabel('fs/Hz')
         plt.ylabel('dB(A)')
         plt.grid(b=bool, which='both')
-        plt.title('fft average')
+        plt.title('fft average', )
         plt.tight_layout()
         image_path = self.save_img()
         return image_path
@@ -390,7 +392,7 @@ class OrderVsVfft(OederVfft):
         plt.plot(rpml, dbo)
         plt.xlabel('rpm')
         plt.ylabel('db')
-        plt.title('2nd order')
+        plt.title(self.channel_name + "  " + '2nd order')
         plt.grid(b=bool, which='both')
         plt.tight_layout()
         image_path = self.save_img()
@@ -426,6 +428,3 @@ class LevelVsRpm(LevelTime):
         plt.tight_layout()
         image_path = self.save_img()
         return image_path
-
-# for calculate_class_name in CalculateNameDict.values():
-#     a = eval(calculate_class_name)(file_path, 0, int(num), int(RPM_NUM)).run()

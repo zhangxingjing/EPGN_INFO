@@ -1,15 +1,11 @@
 // 顶部筛选
 $(document).ready(function () {
-
-
 		var oUl = document.getElementById('select4');
 		var Lis = oUl.getElementsByTagName('dd');
 		for(var i = 0;i<Lis.length;i++){
 			 Lis[i].index = i;
 			Lis[i].onclick = function(){
 
-
-				
 			// alert("sec"+this.index )
 			var app = document.getElementById('secSection');
 			var qq = app.getElementsByTagName('div');

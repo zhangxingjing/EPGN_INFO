@@ -4,6 +4,7 @@
         return f.isWindow(a) ? a : a.nodeType === 9 ? a.defaultView || a.parentWindow : !1
     }
 
+
     function cv(a) {
         if (!ck[a]) {
             var b = c.body,

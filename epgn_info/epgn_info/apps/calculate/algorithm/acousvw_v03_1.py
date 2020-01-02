@@ -1,24 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
-Created on Wed Aug  7 08:49:55 2019
-update log:
-fft_time: add overlap
-fft_average: add overlap
-rpmSelect2: add falling and update all algorithm depend on rpmSelect
-@author: k
+未封装的算法文件
 """
-import numpy as np
 import librosa
-import time
-import os
+import numpy as np
 import statsmodels.api as sm
-import matplotlib.pyplot as plt
-from scipy.signal.windows import hann
 from scipy.fftpack.basic import fft
-
-# from matplotlib.ticker import LinearLocator, FormatStrFormatter
-from .read_file import read_file_num
+from scipy.signal.windows import hann
 
 
 def detectFs(raw_time):  # seems to be completed
@@ -129,7 +116,8 @@ def level_time(raw_time, raw_data):
     ff2rs = ff2r[len(raw_time) - 1:len(raw_time) * 2 - 1]
     pa = (ff2rs / fs / timeWeighting) ** 0.5
     lpa = 20 * np.log10(pa / 2e-5)
-    return np.vstack([raw_time, lpa])
+    # return np.vstack([raw_time, lpa])
+    return raw_time, lpa
 
 
 # level VS RPM
@@ -260,14 +248,18 @@ def octave_fft(raw_time, raw_data):
         octave = np.hstack((octave, octave_db))
     return np.vstack([fc, octave])
 
+
 """
-item = read_file_num('/home/zheng/Documents/EPGN/700004 ( 0.00-30.00 s).asc')
+item = read_file_num('/home/zheng/Music/EPGN_DATA/B/BM7-324 Ausgang F3 VZ run01 ( 0.00-15.16 s).asc')
 raw_time = item[:, 0]
 raw_data = item[:, 1]
 raw_rpm = item[:, 6]
 
 # level_time
-lpa = level_time(raw_time, raw_data)
-print(type(lpa),np.size(lpa),lpa.shape)
+raw_time, lpa = level_time(raw_time, raw_data)
+data_front = []
+for a, b in zip(raw_time, lpa):
+    data_front.append([a,b])
+with open('FFT3.txt', 'a') as f:
+    f.write(json.dumps({"asxdasd":data_front}))
 """
-

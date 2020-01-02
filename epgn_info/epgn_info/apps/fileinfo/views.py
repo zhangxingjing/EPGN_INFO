@@ -50,7 +50,9 @@ class PropulsionPowerView(ViewSet):
                 item["id"] = i.id
                 item["num"] = i.num
                 data.append(item)
-        return Response(data)
+        item = ["12", '123']
+
+        return Response(item)
 
 
 # 前端访问到页面的时候就发送查询`平台`的请求, 选择平台之后在发送`车型`的请求
@@ -115,8 +117,16 @@ class FileInfoViewSet(viewsets.ModelViewSet):
     serializer_class = FileSerializer
 
     # 增 : POST /parse_file/
-    def post(self, request):
-        permission_classes = (IsAuthenticated,)  # 限定必须是已经认证的用户
+    def create(self, request, *args, **kwargs):
+        print(request.method)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+        print("进入了POST请求的数据上传")
+        # permission_classes = (IsAuthenticated,)  # 限定必须是已经认证的用户
         if request.method == "GET":
             # 获取session中的数据
             return render(request, 'upload.html')
@@ -166,7 +176,7 @@ class FileInfoViewSet(viewsets.ModelViewSet):
         status = status_id
         if status_id.isdigit():
             status = Direction.objects.get(id=status_id).name
-        # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
+        print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
         # return HttpResponse(json.dumps({"data":gearbox}))
 
         if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform:
@@ -180,8 +190,8 @@ class FileInfoViewSet(viewsets.ModelViewSet):
                     for chunk in files.chunks():
                         new_file_hdf.write(chunk)
                     new_file_hdf.close()
-                    #
-                    #             # 写入数据库
+
+                    # 写入数据库
                     file_type = "KV" + str(kv) + "EPG" + str(EPG) + "other" + str(other)
                     Fileinfo(platform=platform, carmodel=car_model, direction=direction, parts=parts,
                              status=status, author=author,
@@ -220,7 +230,8 @@ class FileInfoViewSet(viewsets.ModelViewSet):
             }
         }
         # return render(request, 'upload.html', json.dumps(res_dict))
-        return HttpResponse(res_dict)
+        # return HttpResponse(res_dict)
+        return Response(res_dict, status=status.HTTP_201_CREATED, headers=headers)
 
     # 删 : DELETE /parse_file/1/
     def destroy(self, request, *args, **kwargs):
@@ -260,8 +271,8 @@ class FileInfoViewSet(viewsets.ModelViewSet):
                 raise
 
     # 改 : PATCH /parse_file/1/
-    # def update(self, request, *args, **kwargs):
-    #     pass
+    def update(self, request, *args, **kwargs):
+        pass
 
     # 查 : GET /parse_file/ (/parse_file/1/)
     def list(self, request, *args, **kwargs):
@@ -339,69 +350,6 @@ class FileInfoViewSet(viewsets.ModelViewSet):
         }
 
         return JsonResponse(res)
-
-
-# 把用户选择的数据存到本地cookie中
-# class SaveContrastView(APIView):
-#     def perform_authentication(self, request):
-#         pass
-#
-#     def post(self, request):
-#         # 添加到cookie中存储
-#         # print(info.getlist(["data"], default=None))   # 获取QueryDict中的值（getlist中必须是个可哈希的
-#
-#         info = request.data.dict()  # 拿到前端请求, 使用QueryDict中的dict()放法转换成字典类型
-#         cookie_info = []
-#         for num in info.values():
-#             cookie_info.append(int(num))
-#         contrast_cookie = request.COOKIES.get('contrast', None)
-#
-#         # 校验当前浏览器是否有保存cookie
-#         if contrast_cookie:
-#             # old_cookie_contrast = json.loads(contrast_cookie)  # 获取之前cookie里面的值 ==> list
-#             old_cookie_contrast = parse.unquote(contrast_cookie).split(',')
-#
-#             # 拿到前端已有的cookie之后,要判断一下现在的值在不在cookie中
-#             list_1 = []
-#             for i in cookie_info:
-#                 if str(i) not in old_cookie_contrast:
-#                     list_1.append(int(i))
-#             cookie_contrast = old_cookie_contrast + list_1
-#
-#             # 再遍历一次是为了去除 ''
-#             contrast = []
-#             for son in cookie_contrast:
-#                 if son:
-#                     contrast.append(son)
-#         else:
-#             contrast = cookie_info
-#
-#         a_n = ''
-#         for n in contrast:
-#             a_n += str(n) + ','
-#         response = Response(info, status=201)
-#         # response.delete_cookie('contrast')
-#         # response.set_cookie('contrast', json.dumps(contrast), max_age=60 * 60 * 24 * 365)
-#         response.set_cookie('contrast', parse.quote(a_n), max_age=60 * 60 * 24 * 365)
-#         return response
-#
-#     def get(self, request):
-#         # 点击查看的时候在这里返回cookie里面保存的数据
-#         contrast_cookie = request.COOKIES.get('contrast', None)
-#         # 获取cookie, 如果cookie 存在, 就拿到转码后的contrast_cookie
-#         if contrast_cookie:
-#             contrast = json.loads(contrast_cookie)
-#         else:
-#             contrast = {}
-#
-#         print(contrast)
-#         cars = []
-#         for cars_info in contrast:
-#             # 拿到每个商品sku, 设置其个别属性
-#             cars = Fileinfo.objects.get(id=1)
-#
-#         serializer = ContrasCartSerializer(cars, many=True)
-#         return Response(serializer)
 
 
 # 使用elasticsearch搜索引擎
@@ -617,13 +565,13 @@ def parse_template(request, pk):
 
     # 功率
     items = PropulsionPower.objects.all()
-    data = []
+    data = value_data = []
     for i in items:
-        if i.parent_id:
-            item = {}
-            item["id"] = i.id
-            item["num"] = i.num
-            data.append(item)
+        if i.parent_id:  # 先判断i是不是功率
+            number = int(re.search(r'\d+', i.num).group())
+            if number not in value_data:
+                value_data.append(number)
+    data.sort()
     power = data
 
     # 专业方向
@@ -631,19 +579,12 @@ def parse_template(request, pk):
     parts_num = DirectionSerializer(parts, many=True)
     parts = parts_num.data
 
-    # 测试项目
-    # parts_obj = Direction.objects.get(pk=pk)
-    # serializer_status = PartsWorkSerializer(parts_obj)
-    # status = serializer_status.data
-
     data = {
         "platforms": platforms,
         "cars": cars,
         "propulsions": propulsions,
         "powers": power,
         "parts": parts,
-        # "status": status
-
     }
     return render(request, 'info.html', data)
 
@@ -663,10 +604,12 @@ def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
-    file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name  # guan文件位置
+    # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name  # guan文件位置
+    file_path = "/home/zheng/Music/asc/" + file_name  # guan文件位置
     if os.path.isfile(file_path):  # 老数据
         # 判断下载文件是否存在
-        file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
+        # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
+        file_path = "/home/zheng/Music/asc/" + file_name
 
     else:  # 网盘
         file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name

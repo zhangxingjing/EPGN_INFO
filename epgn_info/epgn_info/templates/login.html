@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +11,7 @@
             padding: 0px;
             width: 100%;
             background-size: 100% auto;
-            background-image: url("/epgn_front_end/image/back_pic.jpg");
+            background-image: url("{% static 'image/back_pic.jpg' %}");
             background-repeat: no-repeat;
         }
 
@@ -29,7 +31,7 @@
         }
 
         .login-block h3 {
-            background-image: url("/epgn_front_end/image/login.jpg");
+            background-image: url("{% static 'image/login.jpg' %}");
             width: 50%;
             height: 74px;
             background-size: 100% auto;
@@ -39,23 +41,26 @@
 
         .login-block-bottom {
             background: rgba(255, 255, 255, 0.35);
-            width: 320px;
-            height: 240px;
+            width: 360px;
+            height: 300px;
             margin-left: 10%;
         }
 
         .login-block-bottom div input {
-            width: 70%;
-            margin-left: 15%;
+            width: 60%;
+            margin-left: 2%;
             height: 35px;
             line-height: 35px;
-            border: 0px;
+            border:0px ;
             border-radius: 5px;
             margin-top: 6%;
-            padding-left: 12px;
+            padding-left: 10px;
             font-size: 18px;
         }
-
+       .login-block-bottom div span {
+              display: inline-block;
+              top: 10%;
+            }
         .button-login button {
             width: 75%;
             margin-left: 15%;
@@ -73,29 +78,35 @@
         .rember-sercret {
             display: flex;
             justify-content: flex-start;
-            margin-left: 15.5%;
+            margin-left: 8.5%;
             align-items: center;
             margin-top: 5%;
-            margin-bottom: 5%;
+            margin-bottom: 8%;
         }
     </style>
 </head>
-<script src="/epgn_front_end/js/vue_2.6.10.js"></script>
+<script src="{% static 'js/vue_2.6.10.js' %}"></script>
 <body>
 <div class="back-pic">
+    <div style="position: absolute;top: 12%;left: 10%;color: #666666;font-size: 35px;font-weight: bold">
+        <div style="width: 120%;text-align: center;margin-bottom: 18px;letter-spacing: 6px;">声学数据管理系统</div>
+        <div style="width: 120%;text-align: center;font-size: 31px;">Acoustic data management system</div>
+    </div>
     <div class="login-block">
         <h3></h3>
         <div class="login-block-bottom">
-            <div style="padding-top: 4%"><input placeholder="User name"></div>
-            <div><input placeholder="password" type="password"></div>
+           <div style="padding-top: 4%;display: flex;justify-content: flex-start;"><div style="line-height: 35px;margin-top: 6%;width: 20%;margin-left: 7%;font-size: 18px;letter-spacing: 1.5px;font-weight: bold;color: black;">用户名:</div><input placeholder="User name"></div>
+                <div style="padding-top: 1%;display: flex;justify-content: flex-start;"><div style="line-height: 35px;margin-top: 6%;width: 20%;margin-left: 7%;font-size: 18px;letter-spacing: 9px;font-weight: bold;color: rgba(255, 255, 255, 1);color: black;">密码:</div><input placeholder="password" type="password"></div>
             <div class="rember-sercret">
-                <div style="width: 12px;height: 12px;border: 1px solid 	#696969"></div>
-                <div style="font-size: 14px;margin-left: 11px;color: #696969">Remember me</div>
+                <div style="width: 14px;height: 14px;border: 1px solid 	#696969"></div>
+                <div style="font-size: 14px;margin-left: 8px;color: #696969">记住密码</div>
             </div>
             <div class="button-login">
-                <button>
-                    <a href="/home/">Login</a>
-                </button>
+                <a href="/home/">
+                    <button>
+                        登录
+                    </button>
+                </a>
             </div>
 
         </div>

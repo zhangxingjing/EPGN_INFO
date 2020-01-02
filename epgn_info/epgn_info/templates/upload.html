@@ -1,13 +1,29 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}UPLOAD{% endblock %}
 
 {% block link %}
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/layui.css" media="all">
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/admin.css" media="all">
-    <script type="text/javascript" src="../../../epgn_front_end/js/vue_2.6.10.js"></script>
-    <script type="text/javascript" src="../../../epgn_front_end/js/axios-0.18.0.min.js"></script>
-    <link rel="stylesheet" href="../../../epgn_front_end/layui/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <style>
+        .layui-form-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .layui-elem-field legend {
+            font-weight: bold;
+        }
+
+        .layui-table td, .layui-table th {
+            font-weight: bold;
+        }
+    </style>
+    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -124,14 +140,12 @@
                                     </option>
                                 </select>
                             </div>
-                            
+
                         </div>
 
                         <!-- 第二行表单数据 -->
                         <div class="layui-form-item layui-input-inline" id="direction_parts" lay-filter="example">
                             <!-- 专业方向 -->
-
-
                             <label class="layui-form-label">
                                 <span style="display: inline-block;padding-top: 10px;font-size: 22px;color: red;vertical-align:middle">*</span>
                                 专业方向
@@ -175,7 +189,7 @@
                                     <option value="">请选择</option>
                                     <option v-for="working in workings" v-bind:value=working.id>[[ working.name ]]
                                     </option>
-{#                                    <option value="self-input">自定义输入</option>#}
+                                    {#                                    <option value="self-input">自定义输入</option>#}
                                 </select>
                             </div>
                             <div class="layui-inline" style="margin-right:0px;display: none" id="custom-staus">
@@ -315,7 +329,8 @@
         {#        var obj1 = document.getElementById('special_need');#}
         {#        obj1.style.marginTop = "0px"#}
         {#    }#}
-        {#}#}
+        {
+        #}#}
     </script>
 
     <!-- 使用layui框架 -->
@@ -386,7 +401,9 @@
                 uploadListIns = upload.render({
                     title: '上传文件： ',
                     elem: '#testList',
+                    // url: '/parse_file/',
                     url: '/upload/',
+                    // method: 'POST'
                     accept: 'file',
                     multiple: true,
                     headers: {
@@ -412,7 +429,7 @@
                             var option_text = $('#status option:selected').text();
                             if (option_text == "自定义输入") {
                                 console.log($("#self-statusInfo").val());
-                                var diyStatus = "DIY-"+ $("#self-statusInfo").val();
+                                var diyStatus = "DIY-" + $("#self-statusInfo").val();
                                 console.log(diyStatus);
                                 return diyStatus
                             } else {

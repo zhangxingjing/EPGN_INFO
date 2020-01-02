@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Calculate{% endblock %}
+
+{% block style %}
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <style>
+        .select {
+            display: inline-block;
+            width: 200px;
+            position: relative;
+            vertical-align: middle;
+            padding: 0;
+            overflow: hidden;
+            background-color: #fff;
+            color: #555;
+            border: 1px solid #aaa;
+            text-shadow: none;
+            border-radius: 4px;
+            transition: box-shadow 0.25s ease;
+            z-index: 2;
+        }
+
+        .select:hover {
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        .select:before {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+            border-top-color: #ccc;
+            top: 14px;
+            right: 10px;
+            cursor: pointer;
+            z-index: -2;
+        }
+         .layui-table-cell{
+            font-size: 18px !important;
+        }
+
+        .select select {
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            background: transparent;
+            background-image: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .select select:focus {
+            outline: none;
+        }
+
+        .block-display-orgin {
+            margin-top: 4px;
+            height: 25px;
+            line-height: 12px;
+            width: 55px;
+            padding-top: 10px;
+            background: #D3D3D3;
+            color: white;
+            text-align: center;
+            margin-right: 2px;
+        }
+
+        .block-display-high {
+            margin-top: 4px;
+            height: 25px;
+            line-height: 5px;
+            width: 55px;
+            padding-top: 10px;
+            background: red;
+            color: white;
+            text-align: center;
+            margin-right: 2px;
+        }
+
+        .block-display-middle {
+            margin-top: 4px;
+            height: 25px;
+            line-height: 7px;
+            width: 55px;
+            padding-top: 10px;
+            background: #FFD700;
+            color: white;
+            text-align: center;
+            margin-right: 2px;
+        }
+
+        .block-display-low {
+            margin-top: 4px;
+            height: 25px;
+            line-height: 7px;
+            width: 55px;
+            padding-top: 10px;
+            background: #00CD00;
+            color: white;
+            text-align: center;
+            margin-right: 2px;
+        }
+
+        .datalist-blobk {
+            margin-top: 50px;
+        }
+
+        .datalist-blobk div {
+            margin-top: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-body" id="LAY_app_body" style="top:5%">
+        <div class="layui-fluid" style="padding:15px">
+            <div style="display: flex;justify-content: space-between;width: 40%;">
+                <div class="select">
+                    <select>
+                        <option>选择通道</option>
+                        <option>VR</option>
+                        <option>VL</option>
+                        <option>HR</option>
+                        <option>HL</option>
+                        <option>EngineRPM</option>
+                    </select>
+                </div>
+                <div class="select">
+                    <select>
+                        <option>选择算法</option>
+                        <option>FFT</option>
+                        <option>Octave</option>
+                        <option>FFT Vs RPM</option>
+                        <option>FFT Vs Time</option>
+                        <option>Level Vs RPM</option>
+                        <option>Level Vs Time</option>
+                        <option>2nd Order Vs RPM</option>
+                    </select>
+                </div>
+                <div style="line-height: 24px;">
+                    <button
+                            style="line-height: 40px;text-align: center;width: 100px;background: #009688;border: 0px #A9A9A9 solid;border-radius: 5px;color: white"
+                            onclick="adddealy()">确认计算
+                    </button>
+                </div>
+            </div>
+            <div style="margin-top: 50px;" class="datalist-blobk">
+                <div style="display: flex;justify-content: flex-start;height: 40px;line-height: 40px;display:none">
+                    <div><input type="checkbox" style="width: 18px;height: 18px"></div>
+                    <div><span>hdejqwejqwee-2131231.hdf</span></div>
+                    <div class="result-block" style="display: flex;justify-content: flex-start;">
+                        <div class="block-display-high">高</div>
+                        <div class="block-display-orgin"></div>
+                        <div class="block-display-orgin"></div>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: flex-start;display:none">
+                    <div><input type="checkbox" style="width: 18px;height: 18px"></div>
+                    <div><span>331wee-2131231.hdf</span></div>
+                    <div class="result-block" style="display: flex;justify-content: flex-start;">
+                        <div class="block-display-orgin"></div>
+                        <div class="block-display-orgin"></div>
+                        <div class="block-display-low">低</div>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: flex-start;display:none">
+                    <div><input type="checkbox" style="width: 18px;height: 18px"></div>
+                    <div><span>331wee-2131231.hdf</span></div>
+                    <div class="result-block" style="display: flex;justify-content: flex-start;">
+                        <div class="block-display-low"></div>
+                        <div class="block-display-low"></div>
+                        <div class="block-display-low">低</div>
+                    </div>
+                </div>
+                <div style="display: flex;justify-content: flex-start;display:none">
+                    <div><input type="checkbox" style="width: 18px;height: 18px"></div>
+                    <div><span>331wee-2131231.hdf</span></div>
+                    <div class="result-block" style="display: flex;justify-content: flex-start;">
+                        <div class="block-display-middle"></div>
+                        <div class="block-display-middle">中</div>
+                        <div class="block-display-orgin"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="testdemo"></div>
+            <table class="layui-hide" id="test" lay-filter="test"></table>
+            <div class="testdemo"></div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+        <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+{#    <script src="../../../epgn_front_end/js/jquery-1.7.2.min.js"></script>#}
+    <script>
+        var i = 1;
+
+        function adddealy() {
+            layer.msg("计算中，请稍等……")
+            setTimeout("addData()", 2450)
+        }
+
+        function addData() {
+
+            var app = document.getElementsByClassName('laytable-cell-1-0-2');
+
+            high = '<div class="result-block" style="display: flex;justify-content: flex-start;"><div class="block-display-low">低</div><div class="block-display-orgin"></div><div class="block-display-orgin"></div></div>'
+            middle = '<div class="result-block" style="display: flex;justify-content: flex-start;"><div class="block-display-orgin"></div><div class="block-display-middle">中</div><div class="block-display-orgin"></div></div>'
+            low = '<div class="result-block" style="display: flex;justify-content: flex-start;"><div class="block-display-orgin"></div><div class="block-display-orgin"></div><div class="block-display-high">高</div></div>'
+            // for(let i =6;i<app.length;i++){
+
+            //     $('.laytable-cell-1-0-2')[i].innerHTML=row
+            //     // app[i].append(row)
+            // }
+            // if (i % 3 == 0) {
+            //     $('.laytable-cell-1-0-2')[i].innerHTML = high;
+            //     i++;
+            // }
+            // if (i % 3 == 1) {
+            //     $('.laytable-cell-1-0-2')[i].innerHTML = middle;
+            //     i++;
+            // }
+            // if (i % 3 == 2) {
+            //     $('.laytable-cell-1-0-2')[i].innerHTML = low;
+            //     i++;
+            // };
+            $('.laytable-cell-1-0-2')[1].innerHTML = high;
+            $('.laytable-cell-1-0-2')[2].innerHTML = high;
+            $('.laytable-cell-1-0-2')[3].innerHTML = middle;
+            $('.laytable-cell-1-0-2')[4].innerHTML = high;
+            $('.laytable-cell-1-0-3')[1].innerHTML = "无";
+            $('.laytable-cell-1-0-3')[2].innerHTML = "无";
+            $('.laytable-cell-1-0-3')[3].innerHTML = "风险转速：2300rpm，高于限值2dB";
+            $('.laytable-cell-1-0-3')[4].innerHTML = "无";
+
+
+            //     $('.laytable-cell-1-0-2').empty();
+            //     var row = '' 
+            //     $('.laytable-cell-1-0-2').append(
+            //         `
+            //         <div class="result-block" style="display: flex;justify-content: flex-start;">
+            //                         <div class="block-display-middle"></div>
+            //                         <div class="block-display-middle">中</div>
+            //                         <div class="block-display-orgin"></div>
+
+            // </div>`
+
+            //     );
+        }
+
+        layui.config({
+            base: './home/' //静态资源所在路径
+        }).use('index', function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                admin = layui.admin,
+                element = layui.element,
+                table = layui.table,
+                form = layui.form;
+        });
+    </script>
+    <script type="text/html" id="toolbarDemo">
+        <!-- <div class="layui-btn-container"> -->
+        <!-- <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button> -->
+        <!-- </div> -->
+    </script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script src="../../../epgn_front_end/layui/layui.js"></script>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+
+            table.render({
+                elem: '#test'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                    title: '提示'
+                    , layEvent: 'LAYTABLE_TIPS'
+                    , icon: 'layui-icon-tips'
+                }]
+                , title: '用户数据表'
+                , cols: [[
+                    {type: 'checkbox', fixed: 'left'}
+                    , {field: 'username', title: '文件名', width: 750,}
+                    , {field: 'sign', title: '风险程度', width: 180,}
+                    , {field: 'joinTime', title: '风险说明', width: 320}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 200}
+                ]],
+                data: [{
+                    "id": "10001"
+                    , "username": "2019-11-13_Ausgang F3 VZ run07 ( 0.00-53.00 s).asc"
+                    , "email": "xianxin@layui.com"
+                    , "sex": "男"
+                    , "city": "浙江杭州"
+                    , "experience": "116"
+                    , "ip": "192.168.0.8"
+                    , "logins": "108"
+                    , "joinTime": ""
+                }, {
+                    "id": "10002"
+                    , "username": "2019-11-13_Ausgang F3 VZ run10 ( 0.00-51.60 s).asc"
+                    , "email": "xianxin@layui.com"
+                    , "sex": "男"
+                    , "city": "浙江杭州"
+                    , "experience": "12"
+                    , "ip": "192.168.0.8"
+                    , "logins": "106"
+                    , "joinTime": ""
+                }, {
+                    "id": "10003"
+                    , "username": "2019-11-13_Ausgang F3 VZ run05 ( 0.00-51.00 s).asc"
+                    , "email": "xianxin@layui.com"
+                    , "sex": "男"
+                    , "city": "浙江杭州"
+                    , "experience": "65"
+                    , "ip": "192.168.0.8"
+                    , "logins": "106"
+                    , "joinTime": ""
+                }, {
+                    "id": "10004"
+                    , "username": "2019-11-13_Ausgang F3 VZ run02 ( 0.00-50.80 s).asc"
+                    , "email": "xianxin@layui.com"
+                    , "sex": "男"
+                    , "city": "浙江杭州"
+                    , "experience": "666"
+                    , "ip": "192.168.0.8"
+                    , "logins": "106"
+                    , "joinTime": ""
+                }]
+
+
+            });
+
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                //console.log(obj)
+                if (obj.event === 'del') {
+                    layer.confirm('真的删除行么', function (index) {
+                        obj.del();
+                        layer.close(index);
+                    });
+                } else if (obj.event === 'edit') {
+                    layer.prompt({
+                        formType: 2
+                        , value: data.email
+                    }, function (value, index) {
+                        obj.update({
+                            email: value
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+            // table.on('checkbox(test)', function (obj) {
+            //     // layer.msg(obj.checked)  // 是否选中状态
+            //     // layer.msg(obj.data["pk"]) // 当前行数据
+            //     // layer.msg(obj.type);    //如果触发的是全选，则为：all，如果触发的是单选，则为：one
+            //     var data = obj.data;
+
+            //     layer.alert(JSON.stringify(data), {
+            //         title: '当前行数据：'
+            //     });
+
+            //     //标注选中样式
+            //     obj.tr.addClass('layui-table-click').siblings().removeClass('layui-table-click');
+
+
+            // });
+        });
+
+    </script>
+{% endblock %}

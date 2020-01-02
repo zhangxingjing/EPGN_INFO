@@ -3,7 +3,7 @@ from django.conf.urls import url
 from rest_framework.routers import SimpleRouter, DefaultRouter
 
 router = SimpleRouter()
-router.register(r'^parse_file', views.FileInfoViewSet)
+router.register(r'parse_file', views.FileInfoViewSet)
 
 urlpatterns = [
     # 检索 ==> 表格重载
@@ -40,7 +40,7 @@ urlpatterns = [
     url(r'^direction_num/(?P<pk>\d+)/$', views.DirectionView.as_view({'get': 'power'})),
 
     # 获取变速箱信息
-     url(r'gearbox/$', views.GearBoxView.as_view({'get':'get_gearbox'})),
+    url(r'gearbox/$', views.GearBoxView.as_view({'get': 'get_gearbox'})),
 
     # 用户添加对比列表
     # url(r'^contrast/$', views.SaveContrastView.as_view()),

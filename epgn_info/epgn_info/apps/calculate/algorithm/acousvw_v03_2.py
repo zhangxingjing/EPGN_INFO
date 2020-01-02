@@ -1,3 +1,6 @@
+"""
+直接返回数据的算法文件（复制+删除）
+"""
 import os
 import time
 import librosa
@@ -128,7 +131,7 @@ class LevelTime(Calculate_Object):
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
         pa = (ff2rs / self.fs / self.timeWeighting) ** 0.5
         lpa = 20 * np.log10(pa / 2e-5)
-        return raw_data,lpa
+        return raw_data, lpa
 
     def level_rpm(self):
         lpa = self.level_time()
@@ -316,8 +319,9 @@ class FftInfo(LevelTime, OederVfft):
 class FftCalculate(FftInfo):
     def run(self):
         (f, db) = self.fft_average()
-        return_data = np.hstack([f,db])
+        return_data = np.hstack([f, db])
         return return_data
+
 
 # 倍频程
 class OctaveFft(FftInfo):
@@ -326,6 +330,7 @@ class OctaveFft(FftInfo):
         return_data = np.hstack([fc, db])
         return return_data
 
+
 # 二阶对转速
 class OrderVsVfft(OederVfft):
     def run(self):
@@ -333,11 +338,12 @@ class OrderVsVfft(OederVfft):
         return_data = np.hstack([rpml, dbo])
         return return_data
 
+
 # LEVEL对时间
 class LevelVsTime(LevelTime):
     def run(self):
-        (raw_time,lpa) = self.level_time()
-        return_data = np.hstack([raw_time,lpa])
+        (raw_time, lpa) = self.level_time()
+        return_data = np.hstack([raw_time, lpa])
         return return_data
 
 

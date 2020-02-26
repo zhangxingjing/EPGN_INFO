@@ -199,7 +199,7 @@ def rms(sig, window_size=None):
         return fun(sig, window_size)
 
 
-# fft
+# fft(滚动噪声RG --> 80～20)
 def fft_average(raw_time, raw_data):
     spectrum_size = 16384
     fs = detectFs(raw_time)

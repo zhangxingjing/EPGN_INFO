@@ -22,6 +22,7 @@ from django.http import StreamingHttpResponse
 # from drf_haystack.viewsets import HaystackViewSet
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from users.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
@@ -503,8 +504,8 @@ def upload(request):
                 for chunk in files.chunks():
                     new_file_hdf.write(chunk)
                 new_file_hdf.close()
-                #
-                #             # 写入数据库
+
+                # 写入数据库
                 file_type = "KV" + str(kv) + "EPG" + str(EPG) + "other" + str(other)
                 Fileinfo(platform=platform, carmodel=car_model, direction=direction, parts=parts,
                          status=status, author=author,
@@ -522,6 +523,27 @@ def upload(request):
                         "file_new_name": new_name,
                     }
                 }
+
+                """在这里修改当前用户的用户上传量"""
+                # 先获取当前用户的上传量
+                # 修改用户上传量
+                # 保存数据库
+                # 如果用户数据保存失败==>删除当前数据，并返回请求失败
+                try:
+                    author = User.objects.get(author=author)
+                    author.update_files_data += 1
+                    author.save(update_fields=['update_files_data'])
+                except FileExistsError as error:
+                    os.remove(save_path + filename[-3:] + "/" + new_name)
+                    res_dict = {
+                        "code": 1,
+                        "msg": "File upload failed...",
+                        "data": {
+                            "info": "Server Error..."
+                        }
+                    }
+                    return HttpResponse(json.dumps(res_dict))
+
                 print(new_name, "上传时间: ", time.time() - a)
                 return HttpResponse(json.dumps(res_dict))
         except FileExistsError as error:
@@ -639,6 +661,17 @@ def file_down(request, pk):
         # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
         from django.utils.http import urlquote
         response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+
+        """在这里修改用户下载数据量"""
+        try:
+            # 首先获取用户id
+            # 用户下载数据时，把当前用户信息提交到后台
+            author = "UserInfo"
+            author = User.objects.get(author=author)
+            author.download_files_data += 1
+            author.save(update_fields=['download_files_data'])
+        except:
+            return HttpResponse("Sorry but Data storage error")
     except:
         return HttpResponse("Sorry but Not Found the File")
     return response

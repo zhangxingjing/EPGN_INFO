@@ -1,5 +1,5 @@
 """
-直接返回数据的算法文件（复制+删除）
+直接返回数据的算法文件（复制 + 删除）
 """
 import os
 import time
@@ -9,12 +9,12 @@ import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
-from epgn_info.epgn_info.settings.prod import BASE_DIR
-from epgn_info.epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from scripts.read_hdf import read_hdf
+from epgn_info.settings.prod import BASE_DIR
 
 
 class Calculate_Object(object):
-    def __init__(self, file_name, raw_time_num, raw_data_num, raw_rpm_num):
+    def __init__(self, file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
         self.overlap = 75
@@ -26,11 +26,15 @@ class Calculate_Object(object):
         self.timeWeighting = 0.125
         self.orderResolution = 0.5
         self.spectrum_size = 16384
-        self.item = read_file_num(file_name)
+        # self.item = read_hdf(file_name)
         self.absolute_dir = os.getcwd() + '/'
-        self.raw_time = self.item[:, raw_time_num]
-        self.raw_data = self.item[:, raw_data_num]
-        self.raw_rpm = self.item[:, raw_rpm_num]
+        self.raw_time = channel_data[raw_time_num]
+        self.raw_data = channel_data[raw_data_num]
+        self.raw_rpm = channel_data[raw_rpm_num]
+        # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
+        # self.raw_time = self.item[:, raw_time_num]
+        # self.raw_data = self.item[:, raw_data_num]
+        # self.raw_rpm = self.item[:, raw_rpm_num]
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -318,39 +322,45 @@ class FftInfo(LevelTime, OederVfft):
 # FFT
 class FftCalculate(FftInfo):
     def run(self):
-        (f, db) = self.fft_average()
-        return_data = np.hstack([f, db])
-        return return_data
+        f, db = self.fft_average()
+        # plt.figure()
+        # plt.plot(f, db)
+        # plt.xscale('log')
+        # plt.xlim(10, 20000)
+        # plt.xlabel('fs/Hz')
+        # plt.ylabel('dB(A)')
+        # plt.grid(b=bool, which='both')
+        # plt.title('fft average', )
+        # plt.tight_layout()
+        # image_path = self.save_img()
+        # print(image_path)
+        return f, db
 
 
 # 倍频程
 class OctaveFft(FftInfo):
     def run(self):
-        (fc, db) = self.octave_fft()
-        return_data = np.hstack([fc, db])
-        return return_data
+        fc, db = self.octave_fft()
+        return fc, db
 
 
 # 二阶对转速
 class OrderVsVfft(OederVfft):
     def run(self):
-        (rpml, dbo) = self.order_vfft()
-        return_data = np.hstack([rpml, dbo])
-        return return_data
+        rpml, dbo = self.order_vfft()
+        return rpml, dbo
 
 
-# LEVEL对时间
+# LEVEL对时间（A）
 class LevelVsTime(LevelTime):
     def run(self):
-        (raw_time, lpa) = self.level_time()
-        return_data = np.hstack([raw_time, lpa])
-        return return_data
+        raw_time, lpa = self.level_time()
+        return raw_time, lpa
 
 
 # LEVEL对转速
 class LevelVsRpm(LevelTime):
     def run(self):
         self.timeWeighting = 1  # 初始化timeWeighting
-        (rpml, lpr) = self.level_rpm()
-        return_data = np.hstack([rpml, lpr])
-        return return_data
+        rpml, lpr = self.level_rpm()
+        return rpml, lpr

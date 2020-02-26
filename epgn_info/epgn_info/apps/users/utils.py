@@ -1,3 +1,4 @@
+import datetime
 import re
 from .models import User
 from django.dispatch import receiver
@@ -37,6 +38,12 @@ class UsernameMobileAuthBackend(ModelBackend):
 # 自定义jwt认证成功返回的数据 ==> 用户登录成功返回的数据
 def jwt_response_payload_handler(token, user=None, request=None):
     # 用户登录成功, 后台向session中存储数据
+
+    # 在这里修改用户登录后的配置信息
+    user.is_staff = True    # 修改用户登录状态
+    user.last_login = str(datetime.datetime.today())    # 修改用户最后登录时间
+    print(user.task_data)   # 任务信息表中用户的任务个数
+    user.save()
     return {
         'user_id': user.id,
         'username': user.username,

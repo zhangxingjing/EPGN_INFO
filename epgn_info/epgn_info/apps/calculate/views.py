@@ -1,22 +1,24 @@
-import re
 import json
-import time
+import math
+from pprint import pprint
 
 from django.shortcuts import render
-from rest_framework.viewsets import ViewSet
 
-from .algorithm.class_calcuate import *
-from multiprocessing import cpu_count, Pool, Manager
+from read_hdf import read_hdf
+from scripts.process_gecent import ParseTask
+from numpyencoder import NumpyEncoder
 from epgn_info.settings.devp import FileSavePath
-from django.http import JsonResponse, HttpResponse
 from .algorithm.calculate_name import CalculateNameDict
-from .algorithm.read_file import read_file_header, read_file_num, read_file
+from scripts.read_asc import read_file_header, read_file_num
+from scripts.parse_ppt import *
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList
-from .process_gecent import ParseTask
 
 
 # 单文件通道： url(r'^channel/$', views.get_file_header)
 def get_channel(request):
+    """
+    ASC文件格式
     if request.method == "POST":
         body = request.body
         body_str = body.decode()
@@ -49,6 +51,42 @@ def get_channel(request):
         }]
         return JsonResponse({"file_info": main_info})
     return HttpResponse("POST请求页面，请检查请求方式！")
+    """
+    """可读HDF"""
+    if request.method == "POST":
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+
+        channel_dict_list = []
+        num_1 = 1
+        for file in body_json["file_info"]:
+            file_channel_info = {}
+            file_name = file["file_name"]
+            channel_dict, items = read_hdf(file_name)
+            channel_key_list = []
+
+            for key, value in channel_dict.items():
+                channel_key_list.append({"title": value, "id": num_1})
+                num_1 += 1
+
+            file_channel_info["title"] = file_name
+            file_channel_info["id"] = num_1
+            file_channel_info["spread"] = True
+            file_channel_info["children"] = channel_key_list
+            channel_dict_list.append(file_channel_info)
+            num_1 += 1
+
+        main_info = [{
+            "title": "文件夹名",
+            "id": 1,
+            "field": 'name1',
+            "checked": False,
+            "spread": True,
+            "children": channel_dict_list
+        }]
+        return JsonResponse({"file_info": main_info})
+    return HttpResponse("POST请求页面，请检查请求方式！")
 
 
 # 多文件通道去重: url(r'^channel_list/$', views.get_channel_list),
@@ -64,7 +102,8 @@ def get_channel_list(request):
         for data in data_list:
             file_name = data["file_name"]
             file_list.append(file_name)
-            channel_list = read_file_header(file_name)
+            # channel_list = read_file_header(file_name)    修改为使用可读HDF
+            channel_list, items = read_hdf(file_name)
             for values in channel_list.values():
                 if values not in set_channel_list:
                     set_channel_list.append(values)
@@ -83,29 +122,25 @@ def calculate(request):
         body = request.body
         body_str = body.decode()
         body_json = json.loads(body_str)
+
         items = ParseTask(body_json).run()
-        return JsonResponse({"data": items})
+        for item in items:
+            x_list = list(item["data"]["X"])
+            y_list = list(item["data"]["Y"])
+            line_loc = []
+            for x, y in zip(x_list, y_list):
+                point_loc = []
+                try:
+                    point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                except:
+                    continue
+                point_loc.append(y)
+                line_loc.append(point_loc)
+            item["data"] = line_loc
+        # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
+        # return HttpResponse(data)
+        return JsonResponse({"data_info": items})
     return render(request, 'calculate.html')
-
-
-# call result：url(r'^get_file_result/$', views.get_file_result),
-def get_file_result(request):
-    if request.method == "POST":
-        body = request.body
-        body_str = body.decode()
-        body_json = json.loads(body_str)
-
-        calculate_name = body_json["calculate"]
-        # calculate_class_name = CalculateNameDict[calculate_name]  # algorithm name
-        for info_dict in body_json["file_info"]["children"]:
-            filename = info_dict["title"]  # file name
-            channel_name = info_dict["children"][0]["title"]  # channel name
-
-            if channel_name not in ["EngineRPM"]:  # remove RPM
-                dict_key = channel_name + "--" + calculate_name
-                file_path = FileSavePath + filename
-                result_item = FileArrayInfo().get_limit_line(dict_key, file_path)
-        return HttpResponse("OK")
 
 
 # return_file_list: url(r'file_list/', views.return_file_list),
@@ -124,8 +159,35 @@ def return_file_list(request):
         return JsonResponse({"file_list": file_list})
 
 
-# algorithm page：url(r'^calculate/$', views.calculate),
+# 校验通道: url(r'judge_file_channel/', views.judge_file_channel)
+def judge_file_channel(request):
+    # get parameters from frond end
+    if request.method == "POST":
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+        print(body_json)
+        return JsonResponse({
+            "item": [
+                {
+                    "filename": "这里传递当前文件的文件名",
+                    "check": "True"
+                },
+                {
+                    "filename": "把列表嵌套在JsonResponse里",
+                    "check": "False"
+                }
+            ],
+            "channel_list": [
+                "channel_1",
+                "channel_2"
+            ]
+        })
+    return JsonResponse({"INFO": "当前页面请求出错啦"})
+
+
 """
+# algorithm page：url(r'^calculate/$', views.calculate),
 def calculate(request):
     if request.method == "POST":
         body = request.body
@@ -174,6 +236,28 @@ def calculate(request):
     return render(request, 'calculate.html')
 """
 
+"""
+# call result：url(r'^get_file_result/$', views.get_file_result),
+def get_file_result(request):
+    if request.method == "POST":
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+
+        calculate_name = body_json["calculate"]
+        # calculate_class_name = CalculateNameDict[calculate_name]  # algorithm name
+        for info_dict in body_json["file_info"]["children"]:
+            filename = info_dict["title"]  # file name
+            channel_name = info_dict["children"][0]["title"]  # channel name
+
+            if channel_name not in ["EngineRPM"]:  # remove RPM
+                dict_key = channel_name + "--" + calculate_name
+                file_path = FileSavePath + filename
+                result_item = FileArrayInfo().get_limit_line(dict_key, file_path)
+        return HttpResponse("OK")
+
+"""
+
 
 # get algorithm results: url(r'^algorithm_results/$', views.get_algorithm_results)
 def get_algorithm_results(request):
@@ -195,39 +279,73 @@ def get_algorithm_results(request):
             "algorithm_name": algorithm_name,
             "filename": filename,
             "img": image_path
-        }  # 你想去我们可以找时间过去
+        }
         return JsonResponse(data=data)
     return HttpResponse("当前为POST请求，请检查请求方式")
 
 
-# judge file channel: url(r'judge_file_channel/', views.judge_file_channel)
-def judge_file_channel(request):
-    # get parameters from frond end
+# 下载报告和扉页
+def download_ppt(request):
+    """
+    使用两个接口：
+        接受前端数据生成一个PPT，将PPT的下载链接返回给前端
+        前端模拟a链接点击，后台将PPT读取为二进制数据流，返回给前端
+    """
+    save_path = 'PPTModel/'
     if request.method == "POST":
         body = request.body
         body_str = body.decode()
         body_json = json.loads(body_str)
-        # print(body_json)
-        return JsonResponse({
-            "item": [
-                {
-                    "filename": "这里传递当前文件的文件名",
-                    "check": "True"
-                },
-                {
-                    "filename": "把列表嵌套在JsonResponse里",
-                    "check": "False"
-                }
-            ],
-            "channel_list": [
-                "channel_1",
-                "channel_2"
-            ]
-        })
+
+        # 首先根据前端数据生成PPT，拿到扉页文件的绝对路径
+        ppt_path = ParsePPT(body_json, save_path).run()  # 在本地生成一份指定的PPT
+        file_name = re.search(r'(.*)/(.*\.pptx)', ppt_path).group(2)
+
+        # if os.path.isfile(ppt_path):  # 老数据
+        #     # 判断下载文件是否存在
+        #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
+        #     file_path = "/home/zheng/Music/asc/" + file_name
+        #
+        # else:  # 网盘
+        #     file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
+
+        # 将当前生成的PPT和扉页文件下载到客户端
+        def file_iterator(file_path, chunk_size=512):
+            """
+            文件生成器,防止文件过大，导致内存溢出
+            :param file_path: 文件绝对路径
+            :param chunk_size: 块大小
+            :return: 生成器
+            """
+            with open(file_path, mode='rb') as f:
+                while True:
+                    count = f.read(chunk_size)
+                    if count:
+                        yield count
+                    else:
+                        break
+
+        try:
+            response = StreamingHttpResponse(file_iterator(ppt_path))
+            # 以流的形式下载文件,这样可以实现任意格式的文件下载
+            response['Content-Type'] = 'application/octet-stream'
+            # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
+            # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
+            from django.utils.http import urlquote
+            response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+        except:
+            return HttpResponse("Sorry but Not Found the File")
+        return response
+    # return HttpResponse("PPT已生成，正在下载中！")
+    return render(request, 'test_request.html')
 
 
 # 数据挖掘页面
-def autocalculate(request):
+def auto_calculate(request):
     if request.method == "POST":
         return JsonResponse({"data": "data"})
     return render(request, 'autocalculate.html')
+
+
+def test_request(request):
+    return render(request, 'test_request.html')

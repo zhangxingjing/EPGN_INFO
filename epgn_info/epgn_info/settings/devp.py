@@ -10,7 +10,7 @@ DEBUG = True
 
 # 白名单
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = ['*', 'localhost']
 
 # 子应用
 INSTALLED_APPS = [
@@ -81,8 +81,12 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        # 'NAME': 'epgn_info'  # 新建数据库
-        'NAME': 'EPGN_INFO'  # 新建数据库==> 使用xadmin
+        'NAME': 'epgn',  # 新建数据库
+        # 'NAME': 'EPGN_INFO',  # 新建数据库==> 使用xadmin
+        'OPTIONS': {
+            'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
+            'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',
+        },
     }
 }
 
@@ -267,4 +271,4 @@ XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
 XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
-FileSavePath = '/home/zheng/Music/asc/'
+FileSavePath = "/home/zheng/Desktop/demo/"

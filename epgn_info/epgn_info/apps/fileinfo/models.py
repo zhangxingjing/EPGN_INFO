@@ -44,8 +44,7 @@ class PropulsionPower(models.Model):
 # plotform - model
 class Platform(models.Model):
     name = models.CharField(max_length=20, verbose_name='车型')
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
-                               verbose_name='平台')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='平台')
 
     class Meta:
         db_table = 'tb_platform'
@@ -58,8 +57,7 @@ class Platform(models.Model):
 # professional direction - parts - working conditions
 class Direction(models.Model):
     name = models.CharField(max_length=50, verbose_name='工况')
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
-                               verbose_name='专业方向')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='专业方向')
 
     class Meta:
         db_table = 'tb_direction'

@@ -1,5 +1,6 @@
 import json
 
+from django.views import View
 from fileinfo.serializers import UserFileSerializer
 from fileinfo.models import Fileinfo
 from .models import User
@@ -12,7 +13,7 @@ from django.http import HttpResponse, JsonResponse
 from .serializers import AuthUserSerializer, UserDetailSerializer, UserFileSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import render, redirect, get_object_or_404
@@ -85,6 +86,18 @@ class UserInfoViewSet(viewsets.ModelViewSet):
         file_info = Fileinfo.objects.filter(author=username)  # 获取当前用户名的数据
         items = json.loads(dc_serializers.serialize("json", file_info))  # 序列化
         return JsonResponse({"items": items})
+
+
+# 退出登录
+class LogoutView(View):
+    '''退出登录'''
+    def get(self, request):
+        '''退出登录'''
+        # 清楚用户的session信息
+        logout(request)
+
+        # 跳转到首页
+        return render(request, 'login.html')
 
 
 # home页面

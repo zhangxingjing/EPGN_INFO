@@ -13,6 +13,9 @@ urlpatterns = [
     # 获取用户认证信息
     url('^user/$', views.UserDetailView.as_view()),
 
+    # 退出登录
+    url('^logout/$', views.LogoutView.as_view()),
+
     # 用户修改密码
     # url('^userinfo/$', views.user_info),
 

@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from time import time
 from epgn_info.settings.devp import FileSavePath
 
 
@@ -70,7 +71,7 @@ def read_file_num(file_name):
     return items_array
 
 
-def read_file(file_name):
+def read_asc(file_name):
     # 同时读取当前文件的头文件和数据
     items = []
     head_content = ""
@@ -105,6 +106,7 @@ def read_file(file_name):
     content_line_list = data_content.split('\n')
     if len(content_line_list[0].split(split_tag)) == 0:
         split_tag = ' '
+
     for read_line in content_line_list:
         content_list = read_line.split(split_tag)
         item = []
@@ -116,9 +118,12 @@ def read_file(file_name):
         items.append(item)
 
     items_array = np.array(items[:-1])
-
     return channel_dict, items_array
 
+
+"""代码的执行顺序"""
 # start_time = time()
-# a, b = read_file('2019-12-04_Ausgang F3 VZ run04 ( 0.00- 9.66 s).asc')
-# print(time() - start_time)
+# FileSavePath = "/home/zheng/Desktop/demo/"
+# channel_dict, items_array = read_asc('ASC码数据.asc')
+# print(channel_dict, items_array)  # asc数据
+# print(time() - start_time)  # 读取时间

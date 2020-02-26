@@ -13,7 +13,7 @@ urlpatterns = [
     # url(r'^calculate/$', views.ParseTask.as_view({"post": "parse_tasks"})),  # 使用类视图执行 多任务处理算法数据
 
     # 调用算法结果，直接返回数据
-    url(r'^get_file_result/$', views.get_file_result),
+    # url(r'^get_file_result/$', views.get_file_result),
 
     # return_file_list
     url(r'file_list/', views.return_file_list),
@@ -22,5 +22,11 @@ urlpatterns = [
     url(r'judge_file_channel/', views.judge_file_channel),
 
     # autocalculate
-    url(r'autocalculate/', views.autocalculate),
+    url(r'autocalculate/', views.auto_calculate),
+
+    # download
+    url(r'download_ppt/', views.download_ppt),
+
+    # test_request
+    url(r'test_request/', views.test_request)
 ]

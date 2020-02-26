@@ -1,20 +1,20 @@
 """
-封装后的算法文件
+直接返回数据的算法文件（复制 + 删除）
 """
 import os
+import time
 import librosa
 import numpy as np
 import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
-from matplotlib.ticker import MaxNLocator
 from epgn_info.settings.prod import BASE_DIR
-from epgn_info.apps.calculate.algorithm.read_file import read_file_num
+from scripts.read_hdf import read_hdf
 
 
 class Calculate_Object(object):
-    def __init__(self, file_name, item, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
+    def __init__(self, file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
         self.overlap = 75
@@ -26,13 +26,14 @@ class Calculate_Object(object):
         self.timeWeighting = 0.125
         self.orderResolution = 0.5
         self.spectrum_size = 16384
-        self.filename = file_name
-        # self.item = read_file_num(file_name)
+        # self.item = read_hdf(file_name)
         self.absolute_dir = os.getcwd() + '/'
-        self.raw_time = item[:, raw_time_num]
-        self.raw_data = item[:, raw_data_num]
-        self.raw_rpm = item[:, raw_rpm_num]
-        self.channel_name = channel_name
+        self.raw_time = channel_data[raw_time_num]
+        self.raw_data = channel_data[raw_data_num]
+        self.raw_rpm = channel_data[raw_rpm_num]
+        # self.raw_time = self.item[1][:, raw_time_num]
+        # self.raw_data = self.item[1][:, raw_data_num]
+        # self.raw_rpm = self.item[1][:, raw_rpm_num]
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -103,10 +104,13 @@ class Calculate_Object(object):
         return sum_db
 
     def save_img(self):
-        figure_path = self.filename + "_" + self.channel_name + ".png"
+        figure_path = 'f' + time.strftime("%Y%m%d%H%M%S", time.localtime()) + ".png"
+        # path = os.path.join(os.path.dirname(BASE_DIR)) + "/epgn_info/apps/calculate/algorithm/image/"
         path = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR))) + "/epgn_front_end/calculate_image/"
         image_path = path + figure_path
         plt.savefig(image_path)
+        plt.show()
+        plt.close()
         return image_path
 
 
@@ -130,7 +134,7 @@ class LevelTime(Calculate_Object):
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
         pa = (ff2rs / self.fs / self.timeWeighting) ** 0.5
         lpa = 20 * np.log10(pa / 2e-5)
-        return lpa
+        return raw_data, lpa
 
     def level_rpm(self):
         lpa = self.level_time()
@@ -317,101 +321,33 @@ class FftInfo(LevelTime, OederVfft):
 # FFT
 class FftCalculate(FftInfo):
     def run(self):
-        (f, db) = self.fft_average()
-        # return f, db
-        plt.figure()
-        plt.plot(f, db)
-        plt.xscale('log')
-        plt.xlim(10, 20000)
-        plt.xlabel('fs/Hz')
-        plt.ylabel('dB(A)')
-        plt.grid(b=bool, which='both')
-        plt.title('fft average', )
-        plt.tight_layout()
-        image_path = self.save_img()
-        return image_path
-
-
-# FFT对时间
-class FftVsTime(FftInfo):
-    def run(self):
-        self.overlap = 25
-        (f, ta, pm) = self.fft_time()
-        x2, y2 = np.meshgrid(ta, f)
-        levels = MaxNLocator(nbins=50).tick_values(pm.min(), pm.max())
-        fig, ax = plt.subplots()
-        cf = ax.contourf(x2, y2, pm, levels=levels)
-        ax.set_yscale('log')
-        ax.set_ylim(20, 16000)
-        fig.colorbar(cf, ax=ax)
-        ax.set_title('contourf for fft versus time')
-        fig.tight_layout()
-        image_path = self.save_img()
-        return image_path
-
-
-# FFT对转速
-class FftVsRpm(FftInfo):
-    def run(self):
-        (f, rpml, pm) = self.fft_rpm()
-        x2, y2 = np.meshgrid(rpml, f)
-        levels = MaxNLocator(nbins=50).tick_values(pm.min(), pm.max())
-        fig, ax = plt.subplots()
-        cf = ax.contourf(x2, y2, pm, levels=levels)
-        ax.set_yscale('log')
-        ax.set_ylim(20, 16000)
-        fig.colorbar(cf, ax=ax)
-        ax.set_title('contourf for fft versus rpm')
-        fig.tight_layout()
-        image_path = self.save_img()
-        return image_path
+        f, db = self.fft_average()
+        return_data = np.hstack([f, db])
+        return return_data
 
 
 # 倍频程
 class OctaveFft(FftInfo):
     def run(self):
         (fc, db) = self.octave_fft()
-        plt.figure()
-        ind = np.arange(len(fc))
-        plt.bar(ind, db)
-        plt.xticks(ind, ['31.5', '63', '125', '250', '500', '1k', '2k', '4k', '8k', '16k'])
-        plt.grid(b=bool, which='both', axis='y')
-        plt.xlabel('fs/Hz')
-        plt.ylabel('db(A)')
-        plt.title('Octave fft 16384')
-        plt.tight_layout()
-        image_path = self.save_img()
-        return image_path
+        return_data = np.hstack([fc, db])
+        return return_data
 
 
 # 二阶对转速
 class OrderVsVfft(OederVfft):
     def run(self):
         (rpml, dbo) = self.order_vfft()
-        plt.figure()
-        plt.plot(rpml, dbo)
-        plt.xlabel('rpm')
-        plt.ylabel('db')
-        plt.title(self.channel_name + "  " + '2nd order')
-        plt.grid(b=bool, which='both')
-        plt.tight_layout()
-        image_path = self.save_img()
-        return image_path
+        return_data = np.hstack([rpml, dbo])
+        return return_data
 
 
-# LEVEL对时间
+# LEVEL对时间（A）
 class LevelVsTime(LevelTime):
     def run(self):
-        lpa = self.level_time()
-        plt.figure()
-        plt.plot(self.raw_time, lpa)
-        plt.grid('on')
-        plt.xlabel('time/s')
-        plt.ylabel('db')
-        plt.title('level versus time')
-        plt.tight_layout()
-        image_path = self.save_img()
-        return image_path
+        (raw_time, lpa) = self.level_time()
+        return_data = np.hstack([raw_time, lpa])
+        return return_data
 
 
 # LEVEL对转速
@@ -419,12 +355,5 @@ class LevelVsRpm(LevelTime):
     def run(self):
         self.timeWeighting = 1  # 初始化timeWeighting
         (rpml, lpr) = self.level_rpm()
-        plt.figure()
-        plt.plot(rpml, lpr)
-        plt.grid('on')
-        plt.xlabel('rpm/s')
-        plt.ylabel('db')
-        plt.title('level versus rpm')
-        plt.tight_layout()
-        image_path = self.save_img()
-        return image_path
+        return_data = np.hstack([rpml, lpr])
+        return return_data

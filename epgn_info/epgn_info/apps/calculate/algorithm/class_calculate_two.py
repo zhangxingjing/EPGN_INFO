@@ -9,8 +9,10 @@ import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
-from scripts.read_hdf import read_hdf
-from epgn_info.settings.prod import BASE_DIR
+from epgn_info.scripts.read_hdf import read_hdf   # Nginx
+# from scripts.read_hdf import read_hdf   # manage
+from epgn_info.epgn_info.settings.prod import BASE_DIR    # Nginx
+# from epgn_info.settings.prod import BASE_DIR    # manage
 
 
 class Calculate_Object(object):

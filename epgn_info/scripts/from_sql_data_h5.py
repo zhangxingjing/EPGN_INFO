@@ -2,8 +2,10 @@ import os
 import re
 import h5py
 import pymysql
-from epgn_info.settings.devp import FileSavePath
-from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *
+from epgn_info.epgn_info.settings.devp import FileSavePath    # Ngincx
+# from epgn_info.settings.devp import FileSavePath    # manage
+from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
+# from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage
 
 CalculateNameDict = {
     # the front end page： Corresponding class name

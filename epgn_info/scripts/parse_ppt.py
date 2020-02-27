@@ -2,7 +2,8 @@ import re
 import base64
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from epgn_info.settings.devp import BASE_DIR
+from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
+# from epgn_info.settings.devp import BASE_DIR    # manage
 
 model_path = BASE_DIR + '/apps/calculate/'
 

@@ -1,18 +1,15 @@
 import json
 import math
-from pprint import pprint
-
 from django.shortcuts import render
-
-from read_hdf import read_hdf
-from scripts.process_gecent import ParseTask
-from numpyencoder import NumpyEncoder
-from epgn_info.settings.devp import FileSavePath
-from .algorithm.calculate_name import CalculateNameDict
-from scripts.read_asc import read_file_header, read_file_num
-from scripts.parse_ppt import *
+# from read_hdf import read_hdf   # manage
+from epgn_info.scripts.read_hdf import read_hdf # Nginx
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
-from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList
+from epgn_info.scripts.process_gecent import ParseTask  # Nginx
+# from scripts.process_gecent import ParseTask    # manage
+from epgn_info.scripts.parse_ppt import *   # Nginx
+# from scripts.parse_ppt import * # manage
+from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList # Nginx
+# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList # manage
 
 
 # 单文件通道： url(r'^channel/$', views.get_file_header)
@@ -166,7 +163,6 @@ def judge_file_channel(request):
         body = request.body
         body_str = body.decode()
         body_json = json.loads(body_str)
-        print(body_json)
         return JsonResponse({
             "item": [
                 {

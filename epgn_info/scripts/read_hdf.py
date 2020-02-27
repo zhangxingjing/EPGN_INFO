@@ -1,6 +1,7 @@
 import re
 import h5py
-from epgn_info.settings.devp import FileSavePath
+from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
+# from epgn_info.settings.devp import FileSavePath    # manage
 
 
 def read_hdf(file_name):

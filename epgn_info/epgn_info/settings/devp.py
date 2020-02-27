@@ -51,8 +51,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ROOT_URLCONF = 'epgn_info.epgn_info.urls'
-ROOT_URLCONF = 'epgn_info.urls'
+ROOT_URLCONF = 'epgn_info.epgn_info.urls'   # 使用Nginx
+# ROOT_URLCONF = 'epgn_info.urls'   # 使用manage.py
 
 # 模板文件
 TEMPLATES = [
@@ -216,8 +216,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    # 'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',
-    'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',
+    'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',  # 使用Nginx
+    # 'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',  # 使用manage.py
     # 认证方式
     # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -226,8 +226,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',
-    'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',
+    'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用Nginx
+    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
 }
 
 # CORS
@@ -244,8 +244,8 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-# DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'
-DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'
+DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
+# DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # manage.py
 
 # 静态文件目录
 STATIC_URL = '/epgn_front_end/'

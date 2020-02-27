@@ -1,8 +1,11 @@
 import re
-from scripts.read_hdf import read_hdf
-from epgn_info.apps.calculate.algorithm.class_calculate_two import *
+from epgn_info.scripts.read_hdf import read_hdf   # Nginx
+# from scripts.read_hdf import read_hdf   # manage
 from multiprocessing import cpu_count, Pool, Manager
-from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict
+from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
+# from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
+from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
+# from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # manage
 
 
 class ParseTask():

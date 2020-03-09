@@ -9,14 +9,14 @@ from django.core import serializers as dc_serializers
 from django.contrib import auth
 from django.db import transaction
 from rest_framework import viewsets
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, Http404
 from .serializers import AuthUserSerializer, UserDetailSerializer, UserFileSerializer
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 
 
@@ -91,6 +91,7 @@ class UserInfoViewSet(viewsets.ModelViewSet):
 # 退出登录
 class LogoutView(View):
     '''退出登录'''
+
     def get(self, request):
         '''退出登录'''
         # 清楚用户的session信息

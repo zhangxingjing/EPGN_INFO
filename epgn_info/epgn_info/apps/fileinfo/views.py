@@ -8,8 +8,8 @@ from drf_haystack.viewsets import HaystackViewSet
 from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
-from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
-# from epgn_info.settings.devp import FileSavePath    # manage
+# from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
+from epgn_info.settings.devp import FileSavePath    # manage
 from .serializers import *
 from django.db.models import Q
 from django.db import transaction
@@ -472,7 +472,7 @@ def upload(request):
     # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
     # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
     # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-    save_path = "/home/zheng/Music/"  # work
+    save_path = "/home/zheng/Desktop/demo/"  # work
     # save_path = "/media/sf_Y_DRIVE/2019_Daten/"  # work
 
     # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
@@ -531,7 +531,7 @@ def upload(request):
                 # 保存数据库
                 # 如果用户数据保存失败==>删除当前数据，并返回请求失败
                 try:
-                    author = User.objects.get(author=author)
+                    author = User.objects.get(username=author)
                     author.update_files_data += 1
                     author.save(update_fields=['update_files_data'])
                 except FileExistsError as error:
@@ -545,7 +545,8 @@ def upload(request):
                     }
                     return HttpResponse(json.dumps(res_dict))
 
-                print(new_name, "上传时间: ", time.time() - a)
+                # print(new_name, "上传时间: ", time.time() - a)
+                print(author.update_files_data)
                 return HttpResponse(json.dumps(res_dict))
         except FileExistsError as error:
             os.remove(save_path + filename[-3:] + "/" + new_name)
@@ -609,7 +610,7 @@ def parse_template(request, pk):
         "powers": power,
         "parts": parts,
     }
-    return render(request, 'info.html', data)
+    return render(request, 'datainfo.html', data)
 
 
 # 文档查看
@@ -628,14 +629,15 @@ def file_down(request, pk):
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name  # guan文件位置
-    file_path = "/home/zheng/Music/asc/" + file_name  # guan文件位置
-    if os.path.isfile(file_path):  # 老数据
-        # 判断下载文件是否存在
-        # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
-        file_path = "/home/zheng/Music/asc/" + file_name
-
-    else:  # 网盘
-        file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
+    # file_path = "/home/zheng/Music/asc/" + file_name  # guan文件位置
+    file_path = "/home/zheng/Desktop/demo/hdf/" + file_name  # guan文件位置
+    # if os.path.isfile(file_path):  # 老数据
+    #     # 判断下载文件是否存在
+    #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
+    #     file_path = "/home/zheng/Music/asc/" + file_name
+    #
+    # else:  # 网盘
+    #     file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
 
     def file_iterator(file_path, chunk_size=512):
         """
@@ -662,13 +664,12 @@ def file_down(request, pk):
         # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
         from django.utils.http import urlquote
         response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
-
         """在这里修改用户下载数据量"""
         try:
             # 首先获取用户id
             # 用户下载数据时，把当前用户信息提交到后台
-            author = "UserInfo"
-            author = User.objects.get(author=author)
+            author = "zheng"
+            author = User.objects.get(username=author)
             author.download_files_data += 1
             author.save(update_fields=['download_files_data'])
         except:

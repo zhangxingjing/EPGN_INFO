@@ -1,11 +1,13 @@
+import os
 import re
-from epgn_info.scripts.read_hdf import read_hdf   # Nginx
-# from scripts.read_hdf import read_hdf   # manage
 from multiprocessing import cpu_count, Pool, Manager
-from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
-# from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
-from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
-# from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # manage
+from scripts.read_hdf import read_hdf   # manage
+from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
+from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # manage
+# from epgn_info.scripts.read_hdf import read_hdf   # Nginx
+# from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
+# from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
+from settings.devp import ChannelList
 
 
 class ParseTask():
@@ -37,7 +39,6 @@ class ParseTask():
         # queue = Manager().Queue()
         # 计算: 使用多进程完成CPU密集型
         for channel_file_list, channel_front_list, calculate_class_name, filename, channel_data in self.parse_json():
-
             for channel in channel_front_list:
                 if channel['title'] in ["EngineRPM"]:
                     channel_front_list.remove(channel)
@@ -48,7 +49,15 @@ class ParseTask():
                 channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
                 channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
                 # data_key
-                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
+
+                # TODO： 在这里修改当前获取到的ChannelName
+                if channel["title"] in ChannelList:
+                    channelname = channel["title"]
+                else:
+                    raise Exception
+                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channelname)]
+
+                # channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
                 # rpm_key
                 channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
@@ -90,9 +99,18 @@ class ParseTask():
         # 使用进程间通信 返回多个数据的返回
         # 返回items里面是当前数据计算的结果，而不是当前数据计算结果的图片
         items = []
-        self.parse_file_info()
-        while True:
-            if self.queue.empty():
-                break
-            items.append(self.queue.get())
-        return items
+        # self.parse_file_info()
+        # while True:
+        #     if self.queue.empty():
+        #         break
+        #     items.append(self.queue.get())
+        # return items
+        try:
+            self.parse_file_info()
+            while True:
+                if self.queue.empty():
+                    break
+                items.append(self.queue.get())
+            return items
+        except Exception as e:
+            return items

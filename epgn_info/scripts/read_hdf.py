@@ -1,7 +1,8 @@
 import re
 import h5py
-from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
-# from epgn_info.settings.devp import FileSavePath    # manage
+from time import time
+# from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
+from epgn_info.settings.devp import FileSavePath    # manage
 
 
 def read_hdf(file_name):
@@ -28,6 +29,6 @@ def read_hdf(file_name):
 
 """代码执行顺序"""
 # start_time = time()
-# channel_dict, items = read_hdf('HDF可读数据.hdf')
+# channel_dict, items = read_hdf('2016-11-10_Ori AGA F3 Vollzug run11.hdf')
 # print(channel_dict, items)  # 打印HDF数据
 # print(time() - start_time)  # 读取时间

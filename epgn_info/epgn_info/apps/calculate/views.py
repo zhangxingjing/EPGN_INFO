@@ -1,14 +1,21 @@
 import json
 import math
+from pprint import pprint
+from time import time
+
+from django.views import View
 from django.shortcuts import render
-# from read_hdf import read_hdf   # manage
-from epgn_info.scripts.read_hdf import read_hdf # Nginx
+# from epgn_info.scripts.parse_ppt import *  # Nginx
+# from epgn_info.scripts.read_hdf import read_hdf  # Nginx
+# from epgn_info.scripts.process_gecent import ParseTask  # Nginx
+# from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
+from scripts.parse_ppt import *  # manage
+from read_hdf import read_hdf  # manage
+from scripts.process_gecent import ParseTask  # manage
+from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
-from epgn_info.scripts.process_gecent import ParseTask  # Nginx
-# from scripts.process_gecent import ParseTask    # manage
-from epgn_info.scripts.parse_ppt import *   # Nginx
-# from scripts.parse_ppt import * # manage
-from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList # Nginx
+
+
 # from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList # manage
 
 
@@ -116,11 +123,14 @@ def get_channel_list(request):
 # 多任务处理当前数据计算： url(r'^calculate/$', views.calculate),
 def calculate(request):
     if request.method == "POST":
+        ST = time()
         body = request.body
         body_str = body.decode()
         body_json = json.loads(body_str)
 
         items = ParseTask(body_json).run()
+        if len(items) == 0:
+            return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
         for item in items:
             x_list = list(item["data"]["X"])
             y_list = list(item["data"]["Y"])
@@ -136,6 +146,7 @@ def calculate(request):
             item["data"] = line_loc
         # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
         # return HttpResponse(data)
+        print("当前后台处理时间：", time() - ST)  # 从收到数据到返回数据时间
         return JsonResponse({"data_info": items})
     return render(request, 'calculate.html')
 
@@ -251,7 +262,6 @@ def get_file_result(request):
                 file_path = FileSavePath + filename
                 result_item = FileArrayInfo().get_limit_line(dict_key, file_path)
         return HttpResponse("OK")
-
 """
 
 
@@ -280,62 +290,6 @@ def get_algorithm_results(request):
     return HttpResponse("当前为POST请求，请检查请求方式")
 
 
-# 下载报告和扉页
-def download_ppt(request):
-    """
-    使用两个接口：
-        接受前端数据生成一个PPT，将PPT的下载链接返回给前端
-        前端模拟a链接点击，后台将PPT读取为二进制数据流，返回给前端
-    """
-    save_path = 'PPTModel/'
-    if request.method == "POST":
-        body = request.body
-        body_str = body.decode()
-        body_json = json.loads(body_str)
-
-        # 首先根据前端数据生成PPT，拿到扉页文件的绝对路径
-        ppt_path = ParsePPT(body_json, save_path).run()  # 在本地生成一份指定的PPT
-        file_name = re.search(r'(.*)/(.*\.pptx)', ppt_path).group(2)
-
-        # if os.path.isfile(ppt_path):  # 老数据
-        #     # 判断下载文件是否存在
-        #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
-        #     file_path = "/home/zheng/Music/asc/" + file_name
-        #
-        # else:  # 网盘
-        #     file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
-
-        # 将当前生成的PPT和扉页文件下载到客户端
-        def file_iterator(file_path, chunk_size=512):
-            """
-            文件生成器,防止文件过大，导致内存溢出
-            :param file_path: 文件绝对路径
-            :param chunk_size: 块大小
-            :return: 生成器
-            """
-            with open(file_path, mode='rb') as f:
-                while True:
-                    count = f.read(chunk_size)
-                    if count:
-                        yield count
-                    else:
-                        break
-
-        try:
-            response = StreamingHttpResponse(file_iterator(ppt_path))
-            # 以流的形式下载文件,这样可以实现任意格式的文件下载
-            response['Content-Type'] = 'application/octet-stream'
-            # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
-            # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
-            from django.utils.http import urlquote
-            response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
-        except:
-            return HttpResponse("Sorry but Not Found the File")
-        return response
-    # return HttpResponse("PPT已生成，正在下载中！")
-    return render(request, 'test_request.html')
-
-
 # 数据挖掘页面
 def auto_calculate(request):
     if request.method == "POST":
@@ -343,5 +297,58 @@ def auto_calculate(request):
     return render(request, 'autocalculate.html')
 
 
+# 处理PPT数据：
+def parse_ppt(request):
+    save_path = 'PPTModel/'
+    body = request.body
+    body_str = body.decode()
+    body_json = json.loads(body_str)
+
+    # 首先根据前端数据生成PPT，拿到扉页文件的绝对路径
+    ppt_path = ParsePPT(body_json, save_path).run()  # 在本地生成一份指定的PPT
+    file_name = re.search(r'(.*)/(.*\.pptx)', ppt_path).group(2)
+    print(ppt_path, file_name)
+    return JsonResponse({"path": ppt_path, "file_name": file_name})
+
+
+# 下载PPT：
+def download_ppt(request):
+    body = request.body
+    body_str = body.decode()
+    body_json = json.loads(body_str)
+    ppt_path = body_json["path"]
+    file_name = body_json["file_name"]
+
+    print(ppt_path, file_name)
+
+    def file_iterator(file_path, chunk_size=512):
+        """
+        文件生成器,防止文件过大，导致内存溢出
+        :param file_path: 文件绝对路径
+        :param chunk_size: 块大小
+        :return: 生成器
+        """
+        with open(file_path, mode='rb') as f:
+            while True:
+                count = f.read(chunk_size)
+                if count:
+                    yield count
+                else:
+                    break
+
+    try:
+        response = StreamingHttpResponse(file_iterator(ppt_path))
+        # 以流的形式下载文件,这样可以实现任意格式的文件下载
+        response['Content-Type'] = 'application/octet-stream'
+        # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
+        # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
+        from django.utils.http import urlquote
+        response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+    except:
+        return HttpResponse("Sorry but Not Found the File")
+    return response
+
+
+# 测试当前下载链接
 def test_request(request):
-    return render(request, 'test_request.html')
+    return render(request, 'uploadppt.html')

@@ -51,8 +51,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'epgn_info.epgn_info.urls'   # 使用Nginx
-# ROOT_URLCONF = 'epgn_info.urls'   # 使用manage.py
+# ROOT_URLCONF = 'epgn_info.epgn_info.urls'   # 使用Nginx
+ROOT_URLCONF = 'epgn_info.urls'  # 使用manage.py
 
 # 模板文件
 TEMPLATES = [
@@ -226,8 +226,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用Nginx
-    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
+    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用Nginx
+    'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
 }
 
 # CORS
@@ -244,8 +244,8 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
-# DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # manage.py
+# DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
+DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'  # manage.py
 
 # 静态文件目录
 STATIC_URL = '/epgn_front_end/'
@@ -271,4 +271,5 @@ XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
 XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
-FileSavePath = "/home/zheng/Desktop/demo/"
+ChannelList = ["VR", "VL", "HR", "HL"]
+FileSavePath = "/home/zheng/Desktop/demo/R_HDF/"

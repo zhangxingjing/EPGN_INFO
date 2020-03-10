@@ -162,6 +162,46 @@ insert into `tb_direction` values ('022214', 'ASP_left_P-F', '0222');
 insert into `tb_direction` values ('022215', 'ASP_right_F-P', '0222');
 insert into `tb_direction` values ('022216', 'ASP_right_P-F', '0222');
 
+insert into `tb_direction` values ('0223', '整车内部噪声', '02');
+insert into `tb_direction` values ('022301', '(N)G2 VZ', '0223');
+insert into `tb_direction` values ('022302', '(N)G3 VZ', '0223');
+insert into `tb_direction` values ('022303', '(N)G5 VZ', '0223');
+insert into `tb_direction` values ('022304', '(N)G2 VS', '0223');
+insert into `tb_direction` values ('022305', '(N)G3 VS', '0223');
+insert into `tb_direction` values ('022306', '(N)G5 VS', '0223');
+insert into `tb_direction` values ('022307', '(N)60 km/h', '0223');
+insert into `tb_direction` values ('022308', '(N)80 km/h', '0223');
+insert into `tb_direction` values ('022309', '(N)100 km/h', '0223');
+insert into `tb_direction` values ('022310', '(N)120 km/h', '0223');
+insert into `tb_direction` values ('022311', '(N)20-100km/h VZ', '0223');
+insert into `tb_direction` values ('022312', '(N)20-100km/h VS', '0223');
+insert into `tb_direction` values ('022313', '(N)20-100km/h TZ 30s', '0223');
+
+insert into `tb_direction` values ('0224', '整车滚动噪声', '02');
+insert into `tb_direction` values ('022401', 'KP 80-20', '0224');
+insert into `tb_direction` values ('022402', 'Kerber 60', '0224');
+insert into `tb_direction` values ('022403', 'Kerber 80', '0224');
+insert into `tb_direction` values ('022404', 'Stu 50-30', '0224');
+insert into `tb_direction` values ('022405', 'Schlage 30', '0224');
+
+insert into `tb_direction` values ('0225', '整车怠速启停', '02');
+insert into `tb_direction` values ('022501', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0225');
+insert into `tb_direction` values ('022502', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0225');
+insert into `tb_direction` values ('022503', '(Square&Lab)Leerlauf N Gang mit AC', '0225');
+insert into `tb_direction` values ('022504', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0225');
+insert into `tb_direction` values ('022505', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0225');
+insert into `tb_direction` values ('022506', '(Square&Lab)Leerlauf P Gang mit AC', '0225');
+insert into `tb_direction` values ('022507', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0225');
+insert into `tb_direction` values ('022508', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0225');
+insert into `tb_direction` values ('022509', '(Square&Lab)Leerlauf D Gang mit AC', '0225');
+insert into `tb_direction` values ('022510', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0225');
+insert into `tb_direction` values ('022511', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0225');
+insert into `tb_direction` values ('022512', '(Square&Lab)Leerlauf R Gang mit AC', '0225');
+insert into `tb_direction` values ('022513', '(Square&Lab)St-Sp', '0225');
+
+insert into `tb_direction` values ('0226', '转向柱固有频率', '02');
+insert into `tb_direction` values ('022601', 'Lenkred Frequencoy', '0226');
+
 insert into `tb_direction` values ('03', '进排气及法规声学', NULL);
 insert into `tb_direction` values ('0301', '排气系统', '03');
 insert into `tb_direction` values ('030101', '(Lab) F2 VZ', '0301');
@@ -337,7 +377,45 @@ insert into `tb_direction` values ('031106', '(N) F4 VZ', '0311');
 insert into `tb_direction` values ('031107', '(N) F3 VS', '0311');
 insert into `tb_direction` values ('031108', '(N) F4 VS', '0311');
 
+insert into `tb_direction` values ('0312', '整车内部噪声', '03');
+insert into `tb_direction` values ('031201', '(N)G2 VZ', '0312');
+insert into `tb_direction` values ('031202', '(N)G3 VZ', '0312');
+insert into `tb_direction` values ('031203', '(N)G5 VZ', '0312');
+insert into `tb_direction` values ('031204', '(N)G2 VS', '0312');
+insert into `tb_direction` values ('031205', '(N)G3 VS', '0312');
+insert into `tb_direction` values ('031206', '(N)G5 VS', '0312');
+insert into `tb_direction` values ('031207', '(N)60 km/h', '0312');
+insert into `tb_direction` values ('031208', '(N)80 km/h', '0312');
+insert into `tb_direction` values ('031209', '(N)100 km/h', '0312');
+insert into `tb_direction` values ('031210', '(N)120 km/h', '0312');
+insert into `tb_direction` values ('031211', '(N)20-100km/h VZ', '0312');
+insert into `tb_direction` values ('031212', '(N)20-100km/h VS', '0312');
+insert into `tb_direction` values ('031213', '(N)20-100km/h TZ 30s', '0312');
 
+insert into `tb_direction` values ('0313', '整车滚动噪声', '03');
+insert into `tb_direction` values ('031301', 'KP 80-20', '0313');
+insert into `tb_direction` values ('031302', 'Kerber 60', '0313');
+insert into `tb_direction` values ('031303', 'Kerber 80', '0313');
+insert into `tb_direction` values ('031304', 'Stu 50-30', '0313');
+insert into `tb_direction` values ('031305', 'Schlage 30', '0313');
+
+insert into `tb_direction` values ('0314', '整车怠速启停', '03');
+insert into `tb_direction` values ('031401', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0314');
+insert into `tb_direction` values ('031402', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0314');
+insert into `tb_direction` values ('031403', '(Square&Lab)Leerlauf N Gang mit AC', '0314');
+insert into `tb_direction` values ('031404', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0314');
+insert into `tb_direction` values ('031405', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0314');
+insert into `tb_direction` values ('031406', '(Square&Lab)Leerlauf P Gang mit AC', '0314');
+insert into `tb_direction` values ('031407', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0314');
+insert into `tb_direction` values ('031408', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0314');
+insert into `tb_direction` values ('031409', '(Square&Lab)Leerlauf D Gang mit AC', '0314');
+insert into `tb_direction` values ('031410', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0314');
+insert into `tb_direction` values ('031411', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0314');
+insert into `tb_direction` values ('031412', '(Square&Lab)Leerlauf R Gang mit AC', '0314');
+insert into `tb_direction` values ('031413', '(Square&Lab)St-Sp', '0314');
+
+insert into `tb_direction` values ('0315', '转向柱固有频率', '03');
+insert into `tb_direction` values ('031501', 'Lenkred Frequencoy', '0315');
 
 insert into `tb_direction` values ('04', '动力总成声学', Null);
 insert into `tb_direction` values ('0401', '涡轮增压器', '04');
@@ -406,34 +484,131 @@ insert into `tb_direction` values ('040801', '(N) D 10-120kph VZ', '0408');
 insert into `tb_direction` values ('040802', '(N) B 120-10kph Schub', '0408');
 insert into `tb_direction` values ('040803', '(N) D 60-0Kph Schub mit Bremse', '0408');
 
+insert into `tb_direction` values ('0409', '整车内部噪声', '04');
+insert into `tb_direction` values ('040901', '(N)G2 VZ', '0409');
+insert into `tb_direction` values ('040902', '(N)G3 VZ', '0409');
+insert into `tb_direction` values ('040903', '(N)G5 VZ', '0409');
+insert into `tb_direction` values ('040904', '(N)G2 VS', '0409');
+insert into `tb_direction` values ('040905', '(N)G3 VS', '0409');
+insert into `tb_direction` values ('040906', '(N)G5 VS', '0409');
+insert into `tb_direction` values ('040907', '(N)60 km/h', '0409');
+insert into `tb_direction` values ('040908', '(N)80 km/h', '0409');
+insert into `tb_direction` values ('040909', '(N)100 km/h', '0409');
+insert into `tb_direction` values ('040910', '(N)120 km/h', '0409');
+insert into `tb_direction` values ('040911', '(N)20-100km/h VZ', '0409');
+insert into `tb_direction` values ('040912', '(N)20-100km/h VS', '0409');
+insert into `tb_direction` values ('040913', '(N)20-100km/h TZ 30s', '0409');
 
+insert into `tb_direction` values ('0410', '整车滚动噪声', '04');
+insert into `tb_direction` values ('041001', 'KP 80-20', '0410');
+insert into `tb_direction` values ('041002', 'Kerber 60', '0410');
+insert into `tb_direction` values ('041003', 'Kerber 80', '0410');
+insert into `tb_direction` values ('041004', 'Stu 50-30', '0410');
+insert into `tb_direction` values ('041005', 'Schlage 30', '0410');
+
+insert into `tb_direction` values ('0411', '整车怠速启停', '04');
+insert into `tb_direction` values ('041101', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0411');
+insert into `tb_direction` values ('041102', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0411');
+insert into `tb_direction` values ('041103', '(Square&Lab)Leerlauf N Gang mit AC', '0411');
+insert into `tb_direction` values ('041104', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0411');
+insert into `tb_direction` values ('041105', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0411');
+insert into `tb_direction` values ('041106', '(Square&Lab)Leerlauf P Gang mit AC', '0411');
+insert into `tb_direction` values ('041107', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0411');
+insert into `tb_direction` values ('041108', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0411');
+insert into `tb_direction` values ('041109', '(Square&Lab)Leerlauf D Gang mit AC', '0411');
+insert into `tb_direction` values ('041110', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0411');
+insert into `tb_direction` values ('041111', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0411');
+insert into `tb_direction` values ('041112', '(Square&Lab)Leerlauf R Gang mit AC', '0411');
+insert into `tb_direction` values ('041113', '(Square&Lab)St-Sp', '0411');
+
+insert into `tb_direction` values ('0415', '转向柱固有频率', '04');
+insert into `tb_direction` values ('041501', 'Lenkred Frequencoy', '0415');
 
 insert into `tb_direction` values ('05', '车身及仿真声学', Null);
-insert into `tb_direction` values ('0501', '整车内部噪声', '05');
-insert into `tb_direction` values ('050101', '(N) G2 VZ NTF', '0501');
-insert into `tb_direction` values ('050102', '(N) G3 VZ NTF', '0501');
-insert into `tb_direction` values ('050103', '(N) G5 VZ NTF', '0501');
-insert into `tb_direction` values ('050104', '(N) G2 VS NTF', '0501');
-insert into `tb_direction` values ('050105', '(N) G3 VS NTF', '0501');
-insert into `tb_direction` values ('050106', '(N) G5 VS NTF', '0501');
-insert into `tb_direction` values ('0502', '整车滚动噪声', '05');
-insert into `tb_direction` values ('050201', 'KP 80-20 NTF', '0502');
-insert into `tb_direction` values ('0503', '座椅', '05');
-insert into `tb_direction` values ('050301', 'Stu 50-30 NTF', '0503');
+insert into `tb_direction` values ('0501', '座椅', '05');
+insert into `tb_direction` values ('050101', 'Stu 50-30 NTF', '0501');
 
+insert into `tb_direction` values ('0502', '整车内部噪声', '05');
+insert into `tb_direction` values ('050201', '(N)G2 VZ', '0502');
+insert into `tb_direction` values ('050202', '(N)G3 VZ', '0502');
+insert into `tb_direction` values ('050203', '(N)G5 VZ', '0502');
+insert into `tb_direction` values ('050204', '(N)G2 VS', '0502');
+insert into `tb_direction` values ('050205', '(N)G3 VS', '0502');
+insert into `tb_direction` values ('050206', '(N)G5 VS', '0502');
+insert into `tb_direction` values ('050207', '(N)60 km/h', '0502');
+insert into `tb_direction` values ('050208', '(N)80 km/h', '0502');
+insert into `tb_direction` values ('050209', '(N)100 km/h', '0502');
+insert into `tb_direction` values ('050210', '(N)120 km/h', '0502');
+insert into `tb_direction` values ('050211', '(N)20-100km/h VZ', '0502');
+insert into `tb_direction` values ('050212', '(N)20-100km/h VS', '0502');
+insert into `tb_direction` values ('050213', '(N)20-100km/h TZ 30s', '0502');
+
+insert into `tb_direction` values ('0503', '整车滚动噪声', '05');
+insert into `tb_direction` values ('050301', 'KP 80-20', '0503');
+insert into `tb_direction` values ('050302', 'Kerber 60', '0503');
+insert into `tb_direction` values ('050303', 'Kerber 80', '0503');
+insert into `tb_direction` values ('050304', 'Stu 50-30', '0503');
+insert into `tb_direction` values ('050305', 'Schlage 30', '0503');
+
+insert into `tb_direction` values ('0504', '整车怠速启停', '05');
+insert into `tb_direction` values ('050401', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0504');
+insert into `tb_direction` values ('050402', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0504');
+insert into `tb_direction` values ('050403', '(Square&Lab)Leerlauf N Gang mit AC', '0504');
+insert into `tb_direction` values ('050404', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0504');
+insert into `tb_direction` values ('050405', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0504');
+insert into `tb_direction` values ('050406', '(Square&Lab)Leerlauf P Gang mit AC', '0504');
+insert into `tb_direction` values ('050407', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0504');
+insert into `tb_direction` values ('050408', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0504');
+insert into `tb_direction` values ('050409', '(Square&Lab)Leerlauf D Gang mit AC', '0504');
+insert into `tb_direction` values ('050410', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0504');
+insert into `tb_direction` values ('050411', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0504');
+insert into `tb_direction` values ('050412', '(Square&Lab)Leerlauf R Gang mit AC', '0504');
+insert into `tb_direction` values ('050413', '(Square&Lab)St-Sp', '0504');
+
+insert into `tb_direction` values ('0505', '转向柱固有频率', '05');
+insert into `tb_direction` values ('050501', 'Lenkred Frequencoy', '0505');
 
 insert into `tb_direction` values ('06', '声学包', Null);
-insert into `tb_direction` values ('0601', '整车内部噪声', '06    ');
-insert into `tb_direction` values ('060101', '(N) G2 VZ NTF', '0601');
-insert into `tb_direction` values ('060102', '(N) G3 VZ NTF', '0601');
-insert into `tb_direction` values ('060103', '(N) G5 VZ NTF', '0601');
-insert into `tb_direction` values ('060104', '(N) G2 VS NTF', '0601');
-insert into `tb_direction` values ('060105', '(N) G3 VS NTF', '0601');
-insert into `tb_direction` values ('060106', '(N) G5 VS NTF', '0601');
-insert into `tb_direction` values ('0602', '整车滚动噪声', '06');
-insert into `tb_direction` values ('060201', 'KP 80-20 NTF', '0602');
-insert into `tb_direction` values ('060202', 'Kelber 80', '0602');
 
+insert into `tb_direction` values ('0601', '整车内部噪声', '06');
+insert into `tb_direction` values ('060101', '(N)G2 VZ', '0601');
+insert into `tb_direction` values ('060102', '(N)G3 VZ', '0601');
+insert into `tb_direction` values ('060103', '(N)G5 VZ', '0601');
+insert into `tb_direction` values ('060104', '(N)G2 VS', '0601');
+insert into `tb_direction` values ('060105', '(N)G3 VS', '0601');
+insert into `tb_direction` values ('060106', '(N)G5 VS', '0601');
+insert into `tb_direction` values ('060107', '(N)60 km/h', '0601');
+insert into `tb_direction` values ('060108', '(N)80 km/h', '0601');
+insert into `tb_direction` values ('060109', '(N)100 km/h', '0601');
+insert into `tb_direction` values ('060110', '(N)120 km/h', '0601');
+insert into `tb_direction` values ('060111', '(N)20-100km/h VZ', '0601');
+insert into `tb_direction` values ('060112', '(N)20-100km/h VS', '0601');
+insert into `tb_direction` values ('060113', '(N)20-100km/h TZ 30s', '0601');
+
+insert into `tb_direction` values ('0602', '整车滚动噪声', '06');
+insert into `tb_direction` values ('060201', 'KP 80-20', '0602');
+insert into `tb_direction` values ('060202', 'Kerber 60', '0602');
+insert into `tb_direction` values ('060203', 'Kerber 80', '0602');
+insert into `tb_direction` values ('060204', 'Stu 50-30', '0602');
+insert into `tb_direction` values ('060205', 'Schlage 30', '0602');
+
+insert into `tb_direction` values ('0603', '整车怠速启停', '06');
+insert into `tb_direction` values ('060301', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0603');
+insert into `tb_direction` values ('060302', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0603');
+insert into `tb_direction` values ('060303', '(Square&Lab)Leerlauf N Gang mit AC', '0603');
+insert into `tb_direction` values ('060304', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0603');
+insert into `tb_direction` values ('060305', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0603');
+insert into `tb_direction` values ('060306', '(Square&Lab)Leerlauf P Gang mit AC', '0603');
+insert into `tb_direction` values ('060307', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0603');
+insert into `tb_direction` values ('060308', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0603');
+insert into `tb_direction` values ('060309', '(Square&Lab)Leerlauf D Gang mit AC', '0603');
+insert into `tb_direction` values ('060310', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0603');
+insert into `tb_direction` values ('060311', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0603');
+insert into `tb_direction` values ('060312', '(Square&Lab)Leerlauf R Gang mit AC', '0603');
+insert into `tb_direction` values ('060313', '(Square&Lab)St-Sp', '0603');
+
+insert into `tb_direction` values ('0604', '转向柱固有频率', '06');
+insert into `tb_direction` values ('060401', 'Lenkred Frequencoy', '0604');
 
 insert into `tb_direction` values ('07', '底盘及动力总成支撑声学', Null);
 insert into `tb_direction` values ('0701', '轮胎(室内转鼓)', '07');
@@ -516,3 +691,43 @@ insert into `tb_direction` values ('071303', '(N) F5 VZ', '0713');
 insert into `tb_direction` values ('071304', '(N) F2 VS', '0713');
 insert into `tb_direction` values ('071305', '(N) F3 VS', '0713');
 insert into `tb_direction` values ('071306', '(N) F5 VS', '0713');
+
+insert into `tb_direction` values ('0714', '整车内部噪声', '07');
+insert into `tb_direction` values ('071401', '(N)G2 VZ', '0714');
+insert into `tb_direction` values ('071402', '(N)G3 VZ', '0714');
+insert into `tb_direction` values ('071403', '(N)G5 VZ', '0714');
+insert into `tb_direction` values ('071404', '(N)G2 VS', '0714');
+insert into `tb_direction` values ('071405', '(N)G3 VS', '0714');
+insert into `tb_direction` values ('071406', '(N)G5 VS', '0714');
+insert into `tb_direction` values ('071407', '(N)60 km/h', '0714');
+insert into `tb_direction` values ('071408', '(N)80 km/h', '0714');
+insert into `tb_direction` values ('071409', '(N)100 km/h', '0714');
+insert into `tb_direction` values ('071410', '(N)120 km/h', '0714');
+insert into `tb_direction` values ('071411', '(N)20-100km/h VZ', '0714');
+insert into `tb_direction` values ('071412', '(N)20-100km/h VS', '0714');
+insert into `tb_direction` values ('071413', '(N)20-100km/h TZ 30s', '0714');
+
+insert into `tb_direction` values ('0715', '整车滚动噪声', '07');
+insert into `tb_direction` values ('071501', 'KP 80-20', '0715');
+insert into `tb_direction` values ('071502', 'Kerber 60', '0715');
+insert into `tb_direction` values ('071503', 'Kerber 80', '0715');
+insert into `tb_direction` values ('071504', 'Stu 50-30', '0715');
+insert into `tb_direction` values ('071505', 'Schlage 30', '0715');
+
+insert into `tb_direction` values ('0716', '整车怠速启停', '07');
+insert into `tb_direction` values ('071601', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0716');
+insert into `tb_direction` values ('071602', '(Square&Lab)Leerlauf N Gang mit Verbrauche', '0716');
+insert into `tb_direction` values ('071603', '(Square&Lab)Leerlauf N Gang mit AC', '0716');
+insert into `tb_direction` values ('071604', '(Square&Lab)Leerlauf P Gang ohne Verbrauche', '0716');
+insert into `tb_direction` values ('071605', '(Square&Lab)Leerlauf P Gang mit Verbrauche', '0716');
+insert into `tb_direction` values ('071606', '(Square&Lab)Leerlauf P Gang mit AC', '0716');
+insert into `tb_direction` values ('071607', '(Square&Lab)Leerlauf D Gang ohne Verbrauche', '0716');
+insert into `tb_direction` values ('071608', '(Square&Lab)Leerlauf D Gang mit Verbrauche', '0716');
+insert into `tb_direction` values ('071609', '(Square&Lab)Leerlauf D Gang mit AC', '0716');
+insert into `tb_direction` values ('071610', '(Square&Lab)Leerlauf R Gang ohne Verbrauche', '0716');
+insert into `tb_direction` values ('071611', '(Square&Lab)Leerlauf R Gang mit Verbrauche', '0716');
+insert into `tb_direction` values ('071612', '(Square&Lab)Leerlauf R Gang mit AC', '0716');
+insert into `tb_direction` values ('071613', '(Square&Lab)St-Sp', '0716');
+
+insert into `tb_direction` values ('0718', '转向柱固有频率', '07');
+insert into `tb_direction` values ('071801', 'Lenkred Frequencoy', '0718');

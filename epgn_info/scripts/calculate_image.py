@@ -1,3 +1,7 @@
+import os
+import re
+
+
 # 编写算法对应图片位置的接口
 class CalculateImage(object):
     """
@@ -12,9 +16,9 @@ class CalculateImage(object):
     def __init__(self):
         """
         初始化的算法信息
-        1. F3/G3 VZ 是什么信息，我可以通过它获取到什么数据，它有什么用途？
-        2. 当前的顺序是不是PPT的顺序？LL D/P/R/N mit AC
-        3. LL D/P/R/N mit AC 是什么意思，用图片生成图片怎么处理？
+        1. F3/G3 VZ 是什么信息，我可以通过它获取到什么数据，它有什么用途？ 可以用来知道是哪个算法（整车）
+        2. 当前的顺序是不是PPT的顺序？ 是的
+        3. LL D/P/R/N mit AC 是什么意思，用图片生成图片怎么处理？ 由工况对应算法，
         """
         ppt_sort = [
             {"F3/G3 VZ": "Level VS RPM"},
@@ -43,3 +47,22 @@ class CalculateImage(object):
         :return: 图片位置存放状态
         """
         pass
+
+
+file_path = '/home/zheng/Documents/TestData/All'
+file_list = os.listdir(file_path)
+for file in file_list:
+    rule_list = [
+        {"2 jie": re.findall('(.*F5.*V.*\.hdf)|(.*V.*F5.*\.hdf)', file)},
+        {"Level Vs RPM": re.findall('(.*F3.*V.*\.hdf)|(.*V.*F3.*\.hdf)', file)},
+    ]
+    for result in rule_list:
+        print(result, len(result.values()))
+        print(result)
+        break
+        # print(file, result)
+        # if len(result.keys())>0:
+        #     print("当前执行的是{}算法".format(result.keys()))
+        # else:
+        #     print("当前选择的文件格式不正确～")
+    break

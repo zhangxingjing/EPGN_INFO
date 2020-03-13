@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 # from epgn_info.scripts.read_hdf import read_hdf   # Nginx
 # from epgn_info.epgn_info.settings.prod import BASE_DIR    # Nginx
-from scripts.read_hdf import read_hdf   # manage
-from epgn_info.settings.prod import BASE_DIR    # manage
+from scripts.read_hdf import read_hdf  # manage
+from epgn_info.settings.prod import BASE_DIR  # manage
 
 
 class Calculate_Object(object):
@@ -33,6 +33,10 @@ class Calculate_Object(object):
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
         self.raw_rpm = channel_data[raw_rpm_num]
+        # print("raw_data", self.raw_data)
+        # print("raw_time", self.raw_time)
+        # print("raw_rpm", self.raw_rpm)
+
         # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
         # self.raw_time = self.item[:, raw_time_num]
         # self.raw_data = self.item[:, raw_data_num]
@@ -363,6 +367,7 @@ class LevelVsTime(LevelTime):
 # LEVEL对转速
 class LevelVsRpm(LevelTime):
     def run(self):
+        self.rpmtype = 'rising'
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
         return rpml, lpr

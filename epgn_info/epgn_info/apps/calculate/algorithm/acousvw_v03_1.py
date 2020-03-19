@@ -9,7 +9,12 @@ from scipy.signal.windows import hann
 
 
 def detectFs(raw_time):  # seems to be completed
-    fs_type = [4096, 8192, 16384, 32768, 65536, 22050, 44100, 48000]
+    """
+    确定采样频率
+    :param raw_time:
+    :return:
+    """
+    fs_type = [4096, 8192, 16384, 32768, 65536, 22050, 44100, 48000]  # 用户数据采集时定义的采样频率
     fs_type = np.array(fs_type)
     fsd = len(raw_time) / raw_time[-1]
     fs = fs_type[abs(fs_type - fsd) < 1]
@@ -20,6 +25,11 @@ def detectFs(raw_time):  # seems to be completed
 
 
 def detectRpm(raw_rpm):
+    """
+    判定是一个rpm增序列还是降序列
+    :param raw_rpm:
+    :return:
+    """
     if np.mean(raw_rpm[:2000]) - 2000 > np.mean(raw_rpm[-2000:]):
         rpmtype = 'rising'
     elif np.mean(raw_rpm[:2000]) + 2000 < np.mean(raw_rpm[-2000:]):
@@ -58,17 +68,22 @@ def rpmSelect2(raw_time, raw_rpm):
     rpmtype = detectRpm(raw_rpm)
     if rpmtype == 'falling':
         raw_rpm = raw_rpm[::-1]
+
     fs = detectFs(raw_time)
     r_min = np.min(raw_rpm)
     r_max = np.max(raw_rpm)
+
+    rpm_step = 10
     r_minp = np.argmin(raw_rpm)
     r_maxp = np.argmax(raw_rpm)
     s_time = raw_time[r_minp:r_maxp + 1]
     s_rpm = raw_rpm[r_minp:r_maxp + 1]
     rpm_ini = np.ceil(s_rpm[0] / rpm_step) * rpm_step
     rpm_end = np.floor(s_rpm[-1] / rpm_step) * rpm_step
+
     #    rpml = np.arange(rpm_ini,rfp = open("test.txt",w)    pm_end+rpm_step,rpm_step)
     rpml = np.arange(rpm_ini, rpm_end + rpm_step, rpm_step)
+    # 截止到现在，转速取整，并且能保证取到最后一个数
     rpmf = np.zeros(len(rpml))
     for i in range(len(rpml)):
         deltaR = 0.05
@@ -102,6 +117,8 @@ def level_time(raw_time, raw_data):
     fs = detectFs(raw_time)
     if A == 1:
         raw_data = dataA(raw_time, raw_data)
+    else:
+        print("A!=1")
     timep1 = raw_time[:-1] - raw_time[-1]
     timep2 = raw_time[1:] + raw_time[-1]
     timep = np.hstack((timep1, raw_time, timep2))
@@ -123,14 +140,16 @@ def level_time(raw_time, raw_data):
 # level VS RPM
 def level_rpm(raw_time, raw_data, raw_rpm):
     rpm_step = 5
-    timeWeighting = 0.125
+    timeWeighting = 0.125  # fast&Slow的选择
     A = 1
     # plt.plot(raw_time,raw_rpm)
     # plt.show()
     rpmtype = detectRpm(raw_rpm)
     if rpmtype == 'falling':
-        raw_rpm = raw_rpm[::-1]
-    lpa = level_time(raw_time, raw_data)
+        raw_rpm = raw_rpm[::-1]  # 倒序
+
+    lpa = level_time(raw_time, raw_data)  # 调用level time算法
+
     (rpmf, rpml) = rpmSelect2(raw_time, raw_rpm)
     lpr = np.zeros(len(rpmf))
     for i in range(len(rpmf)):

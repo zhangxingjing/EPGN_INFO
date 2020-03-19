@@ -68,15 +68,19 @@ class Calculate_Object(object):
             faf = 10 ** (fa / 20)  # *2e-5
             faf2 = faf[::-1]
             fafc = np.hstack((faf, faf2[1:]))
-        temp3 = temp1 * fafc
+        temp3 = temp1 * fafc[int(abs(len(temp1) - len(fafc))):]
         temp4 = np.fft.ifft(temp3)
         dataA = temp4.real
         return dataA
 
     def rpmSelect2(self):
         raw_rpm = self.raw_rpm
-        if self.rpmtype == 'falling':
-            raw_rpm = self.raw_rpm[::-1]
+
+        # TODO: 这里数据做判断的时候，注意加减速
+        print(self.rpmtype, self.timeWeighting)
+        # if self.rpmtype == 'falling':
+        #     raw_rpm = self.raw_rpm[::-1]
+        # raw_rpm = self.raw_rpm[::-1]
         r_minp = np.argmin(raw_rpm)
         r_maxp = np.argmax(raw_rpm)
         s_rpm = raw_rpm[r_minp:r_maxp + 1]
@@ -123,9 +127,10 @@ class Calculate_Object(object):
 
 class LevelTime(Calculate_Object):
     def level_time(self):
-        raw_data = self.raw_data
-        if self.A == 1:
-            raw_data = self.dataA()
+        # raw_data = self.raw_data
+        # if self.A == 1:
+        #     raw_data = self.dataA()
+        raw_data = self.dataA()
 
         timep1 = self.raw_time[:-1] - self.raw_time[-1]
         timep2 = self.raw_time[1:] + self.raw_time[-1]
@@ -135,7 +140,7 @@ class LevelTime(Calculate_Object):
         timepe = timep - timep[0]
 
         raw_e = np.exp(-timepe / self.timeWeighting)
-        ff = np.fft.fft(datap ** 2) * np.fft.fft(raw_e)  # * fa
+        ff = np.fft.fft(datap ** 2) * np.fft.fft(raw_e[int(abs(len(datap) - len(raw_e))):])  # * fa
         ff2 = np.fft.ifft(ff)
         ff2r = ff2.real
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
@@ -144,17 +149,18 @@ class LevelTime(Calculate_Object):
         return raw_data, lpa
 
     def level_rpm(self):
-        lpa = self.level_time()
-        (rpmf, rpml) = self.rpmSelect2()
+        raw_data, lpa = self.level_time()
+        rpmf, rpml = self.rpmSelect2()  # rpmSelect2应该是没有问题的
         lpr = np.zeros(len(rpmf))
         for i in range(len(rpmf)):
-            lpr[i] = lpa[int(rpmf[i])]
+            lpr[i] = lpa[int(rpmf[i]) - 1]  # 最后一项是n-1
         return rpml, lpr
+        # return rpml, lpr.astype(np.int32)
 
 
 class OederVfft(Calculate_Object):
     def order_vfft(self):
-        (rpmf, rpml) = self.rpmSelect2()
+        rpmf, rpml = self.rpmSelect2()
         dbo = np.zeros(np.size(rpml))
         for i in range(np.size(rpml)):
             fsResolution = rpml[i] / 60 * self.orderResolution
@@ -370,4 +376,16 @@ class LevelVsRpm(LevelTime):
         self.rpmtype = 'rising'
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
+        # plt.figure()
+        # plt.plot(rpml, lpr)
+        # plt.xscale('log')
+        # plt.xlim(10, 20000)
+        # plt.xlabel('fs/Hz')
+        # plt.ylabel('dB(A)')
+        # plt.grid(b=bool, which='both')
+        # plt.title('fft average', )
+        # plt.tight_layout()
+        # plt.show()
+        # image_path = self.save_img()
+        # print(image_path)
         return rpml, lpr

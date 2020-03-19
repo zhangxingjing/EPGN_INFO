@@ -38,8 +38,9 @@ insert into `tb_power` values ('1000', '3.0T', NULL);
 insert into `tb_power` values ('1001', '220 KW', '1000');
 
 insert into `tb_power` values ('1100', 'APP310 Base+', NULL);
-insert into `tb_power` values ('1101', '125 KW', '1100');
-insert into `tb_power` values ('1102', '150 KW', '1100');
+insert into `tb_power` values ('1101', '80 KW', '1100');
+insert into `tb_power` values ('1102', '125 KW', '1100');
+insert into `tb_power` values ('1103', '150 KW', '1100');
 
 insert into `tb_power` values ('1200', 'AKA150 Base-', NULL);
 insert into `tb_power` values ('1201', '75 KW', '1200');

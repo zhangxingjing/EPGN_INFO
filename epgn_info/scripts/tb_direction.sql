@@ -21,6 +21,11 @@ insert into `tb_direction` values ('010202', 'Kerber 60', '0102');
 insert into `tb_direction` values ('010203', 'Kerber 80', '0102');
 insert into `tb_direction` values ('010204', 'Stu 50-30', '0102');
 insert into `tb_direction` values ('010205', 'Schlage 30', '0102');
+insert into `tb_direction` values ('010206', 'Schlafend 30', '0102');
+insert into `tb_direction` values ('010207', 'Rauhasphalt 30', '0102');
+insert into `tb_direction` values ('010208', 'Rauhasphalt 40', '0102');
+insert into `tb_direction` values ('010209', 'Rauhasphalt 50', '0102');
+insert into `tb_direction` values ('010210', 'Rauhasphalt 60', '0102');
 
 insert into `tb_direction` values ('0103', '整车怠速启停', '01');
 insert into `tb_direction` values ('010301', '(Square&Lab)Leerlauf N Gang ohne Verbrauche', '0103');

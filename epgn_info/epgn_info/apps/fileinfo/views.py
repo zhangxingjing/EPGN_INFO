@@ -9,7 +9,7 @@ from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 # from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
-from epgn_info.settings.devp import FileSavePath    # manage
+from epgn_info.settings.devp import FILE_SAVE_PATH    # manage
 from .serializers import *
 from django.db.models import Q
 from django.db import transaction

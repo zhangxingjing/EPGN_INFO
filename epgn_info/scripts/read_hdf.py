@@ -1,8 +1,10 @@
 import re
 import h5py
-from time import time
-# from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
-from epgn_info.settings.devp import FileSavePath    # manage
+# from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Nginx
+from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
+
+
+# FILE_SAVE_PATH = "/home/zheng/Desktop/demo/R_HDF/"
 
 
 def read_hdf(file_name):
@@ -11,7 +13,7 @@ def read_hdf(file_name):
     :param file_name: 读取的文件名
     :return: 当前文件中的所有数据
     """
-    file_path = FileSavePath + file_name
+    file_path = FILE_SAVE_PATH + file_name
     read_info = h5py.File(file_path, 'r')
     items = []
     channel_dict = {}
@@ -29,6 +31,9 @@ def read_hdf(file_name):
 
 """代码执行顺序"""
 # start_time = time()
-# channel_dict, items = read_hdf('2016-11-10_Ori AGA F3 Vollzug run11.hdf')
-# print(channel_dict, items)  # 打印HDF数据
+# channel_dict, items = read_hdf('HDF可读数据.hdf')
+# pprint(channel_dict)  # 打印HDF数据
+# print("raw_time:", items[5])
+# print("raw_data:", items[1])
+# print("raw_rpm:", items[0])
 # print(time() - start_time)  # 读取时间

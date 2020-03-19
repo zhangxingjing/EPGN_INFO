@@ -12,7 +12,7 @@ from django.shortcuts import render
 from fileinfo.models import Fileinfo
 from read_hdf import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
-from settings.devp import CalculateRule
+from settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL
 from scripts.process_gecent import ParseTask  # manage
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
@@ -88,7 +88,14 @@ class ChannelList(View):
 class CalculateParse(View):
 
     def get(self, request):
-        pass
+        """
+        1. 获取前端用户选择的文件名
+        2. 通过算法，用通道匹配算法（图片位置）
+        3. 将算法处理的结果数据返回到前端
+        :param request: request请求对象
+        :return: 当前calculate处理结果
+        """
+        return render(request, 'calculate.html')
 
     # 通过算法返回数组数据
     def post(self, request):
@@ -174,20 +181,72 @@ class PPTParse(View):
 
     # 算法对应图片位置 ==> 自动生成报告
     def put(self, request):
-        body = request.body
-        body_str = body.decode()
-        file_list = json.loads(body_str)["fileList"]
+        """
+        从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
+        :param request: Request请求对象
+        :return: 前端数据列表产生的XY轴坐标信息
+        """
+        items = []
+        body = request.body.decode()
+        file_list = json.loads(body)["fileList"]
 
         for file in file_list:
             status = Fileinfo.objects.get(file_name=file).status
             if status:
-                # 使用对应的算法
-                calculate_name = CalculateRule[status]
-                print(calculate_name)
+                calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
+                channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
+                channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
+
+                """文件中的哪些数据通道需要放到算法中进行计算"""
+                # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
+                channel_calculate_list = [i for i in channel_calculate_list if i not in REFERENCE_CHANNEL]
+
+                # 构建children中的字典数据
+                i = 1
+                children_list = []
+                for channel in channel_calculate_list:
+                    children_list.append({"id": i, "title": channel})
+                    i += 1
+
+                data = {
+                    "calculate": calculate_name,
+                    "file_info": {
+                        "checked": "True",
+                        "children": [
+                            {
+                                "children": children_list,
+                                "id": 1,
+                                "title": file
+                            },
+                        ],
+                        "field": "name1",
+                        "id": 1,
+                        "spread": "True",
+                        "title": "文件夹名"
+                    }
+                }
+                items = ParseTask(data).run()
+                if len(items) == 0:
+                    return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
+                for item in items:
+                    x_list = list(item["data"]["X"])
+                    y_list = list(item["data"]["Y"])
+                    line_loc = []
+                    for x, y in zip(x_list, y_list):
+                        point_loc = []
+                        try:
+                            point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                        except:
+                            continue
+                        point_loc.append(y)
+                        line_loc.append(point_loc)
+                    item["data"] = line_loc
+                # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
             else:
                 print(file)
-                return JsonResponse({"status": 200, "msg": "Error!"})
-        return JsonResponse({"status": 500, "msg": "OK！"})
+                return JsonResponse({"status": 200, "msg": "当前数据工况错误，请重新选择数据！"})
+        # return JsonResponse({"status": 500, "msg": "OK！", "data": "items"})
+        return HttpResponse(items)
 
 
 # return_file_list: url(r'file_list/', views.return_file_list),

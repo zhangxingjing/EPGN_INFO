@@ -1,5 +1,3 @@
-import os
-import re
 
 
 # 编写算法对应图片位置的接口
@@ -49,20 +47,4 @@ class CalculateImage(object):
         pass
 
 
-file_path = '/home/zheng/Documents/TestData/All'
-file_list = os.listdir(file_path)
-for file in file_list:
-    rule_list = [
-        {"2 jie": re.findall('(.*F5.*V.*\.hdf)|(.*V.*F5.*\.hdf)', file)},
-        {"Level Vs RPM": re.findall('(.*F3.*V.*\.hdf)|(.*V.*F3.*\.hdf)', file)},
-    ]
-    for result in rule_list:
-        print(result, len(result.values()))
-        print(result)
-        break
-        # print(file, result)
-        # if len(result.keys())>0:
-        #     print("当前执行的是{}算法".format(result.keys()))
-        # else:
-        #     print("当前选择的文件格式不正确～")
-    break
+

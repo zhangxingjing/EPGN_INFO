@@ -18,4 +18,7 @@ urlpatterns = [
     # 处理PPT
     url('^parse_ppt/$', PPTParse.as_view()),
 
+    # 跳转扉页
+    url('^test_page/$', test_page)
+
 ]

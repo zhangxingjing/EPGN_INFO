@@ -283,7 +283,7 @@
                             </button>
                             <button type="submit" class="layui-btn" id="testListAction">开始上传</button>
                             <button type="button" class="layui-btn  layui-btn-disabled"
-                                    style="margin-left: 0px">分析计算
+                                    style="margin-left: 0px" id="analysisCalculate">分析计算
                             </button>
                             <!-- <script>
                                                 $("#math").click(function () {
@@ -329,13 +329,12 @@
         {#        var obj1 = document.getElementById('special_need');#}
         {#        obj1.style.marginTop = "0px"#}
         {#    }#}
-        {
-        #}#}
     </script>
 
     <!-- 使用layui框架 -->
     <script>
         var filenameArray = [], username = sessionStorage.username;
+        var filenameArr = [];
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -346,6 +345,27 @@
 
             form.render();
             // 这里绑定分析计算的点击事件
+            $("#analysisCalculate").click(function () {
+                for (let i = 0; i < filenameArray.length; i++) {
+                    filenameArr.push(filenameArray[i].newname)
+                }
+                console.log(filenameArr);
+                sessionStorage.setItem("uploadnewname", filenameArr);
+                window.open ('/calculate/')
+
+                $.ajax({
+                    url: /parsefilelist/,
+                    dataType: "json",
+                    data: JSON.stringify({"fileList":filenameArr}),
+                    type: "post",
+                    success: function (result) {
+                        $('#jumpbox').html(result);
+                        $('#jumpbox').modal('show');
+                    }
+                });
+
+
+            });
             $("#math").click(function () {
                 // layer.msg('后期这里会做成数据计算的超链接');
                 layer.confirm('后期这里会做成数据计算的超链', {
@@ -515,6 +535,7 @@
                             // tds.eq(3).html(
                             //     '<button id="cancel" class="layui-btn layui-btn-mini layui-btn-normal demo-reload" onclick="cancel()">撤销</button>'
                             // );
+
                             return delete this.files[index]; //删除文件队列已经上传成功的文件
                             //     $("#cancel").click(function(){
                             //     alert("判断点击事件")

@@ -8,6 +8,7 @@ from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict 
 # from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
 # from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
 from epgn_info.settings.devp import CHANNEL_LIST
+# from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
 
 
 class ParseTask(object):
@@ -57,7 +58,7 @@ class ParseTask(object):
                 #     raise Exception
                 # channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channelname)]
 
-                print(channel["title"], channel_file_list)
+                # print(channel["title"], channel_file_list)
                 # channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
@@ -95,11 +96,11 @@ class ParseTask(object):
         """
         # 返回item
         try:
-            print(file_name, os.getpid(), channel_name, raw_data_num)
-            print(calculate_class_name, channel_name, raw_time_num, raw_data_num, raw_rpm_num)
+            # print(file_name, os.getpid(), channel_name, raw_data_num)
+            # print(calculate_class_name, channel_name, raw_time_num, raw_data_num, raw_rpm_num)
             X, Y = eval(calculate_class_name)(file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             # 这里确定返回到前端的数据
-            queue.put({"filename": file_name, "data": {"X": X, "Y": Y}})
+            queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel":channel_name})
         except:
             print("当前数据计算出错！")
 

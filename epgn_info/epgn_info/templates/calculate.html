@@ -18,7 +18,8 @@
             overflow: scroll;
             overflow-y: hidden
         }
-        .layui-table-celle{
+
+        .layui-table-celle {
             font-size: 18px !important;
         }
 
@@ -43,6 +44,19 @@
 
         .pic img {
             width: 100%
+        }
+
+        #addsec {
+            display: flex;
+            width: 1200px;
+            height: auto;
+            flex-wrap: wrap;
+        }
+
+        .imgstyle {
+            width: 500px;
+            height: 400px;
+
         }
     </style>
 {% endblock %}
@@ -93,7 +107,7 @@
             <form class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
                     <label class="layui-form-label" style="font-size: 18px;font-weight: bold">复选框</label>
-                    <div class="layui-input-block" lay-demo="changeTree"  lay-submit="" lay-filter="formCheckbox" >
+                    <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox">
                         <input type="checkbox" name="EngineRPM" title="EngineRPM" value="EngineRPM">
                         <input type="checkbox" new_l="VL" title="VL" value="VL">
                         <input type="checkbox" name="HR" title="HR" value="HR">
@@ -120,6 +134,7 @@
             <div class="layui-tab-content" style="height: auto;">
                 <div class="layui-tab-item layui-show">
                     <div class="pic-container">
+                        <div id="addsec"></div>
                         <div class="pic1">
 
                         </div>
@@ -127,8 +142,8 @@
                 </div>
             </div>
 
-            <button class="layui-btn" lay-submit="" lay-filter="demo1"
-                    style="margin: 0px 10px 10px 0px; float: right">立即导出
+            <button class="layui-btn"
+                    style="margin: 0px 10px 10px 0px; float: right" onclick="sendbase64()">立即导出
             </button>
         </div>
     </div>
@@ -136,6 +151,7 @@
 
 {% block javascript %}
     <script src="{% static 'layui/layui.js' %}"></script>
+    <script src="{% static 'js/echart.js' %}"></script>
     <script>
         layui.config({base: '{% static 'home/' %}'}).use('index', function () {
             var $ = layui.jquery,
@@ -151,7 +167,128 @@
         var channelselect = [];
         var checkedData1;
         var judge_pic = 0;
-        var old_tree =[11];
+        var old_tree = [11];
+        var echartArr = [];
+        var echartdata;
+        var letdata;
+        var arr = [];
+        var series = [];
+
+        var uploadfilenewname = sessionStorage.getItem("uploadnewname");
+        uploadfilenewname = uploadfilenewname.split(',');
+
+
+        $.ajax({
+            url: /parse_ppt/,
+            dataType: "json",
+            data: JSON.stringify({"fileList": uploadfilenewname}),
+            type: "put",
+            success: function (result) {
+                echartdata = result.data;
+                getpic();
+
+            }
+        });
+
+
+        function getpic() {
+            for (let i = 0; i < echartdata.length; i++) {
+                letdata = echartdata[i].data;
+                let chartnum = "main" + i;
+                var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
+
+                $("#addsec").append(imgsection);
+
+                var myChart = echarts.init(document.getElementById(chartnum));
+                var option = {
+                    xAxis: {
+                        type: 'value',
+                        name: '横坐标',
+                        fontSize: '25'
+                    },
+
+                    yAxis: {
+                        type: 'value',
+                        name: '纵坐标',
+                        fontSize: '25'
+                    },
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            xAxisIndex: 0,
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'slider',
+                            yAxisIndex: 0,
+                            start: 0,
+                            end: 100
+                        },
+
+                    ],
+                    series: [
+                        {
+                            type: 'line',
+                            itemStyle: {
+                                opacity: 1,
+                                normal: {
+                                    color: '	black',
+                                    lineStyle: {
+                                        width: 1
+                                    }
+                                }
+                            },
+                            symbolSize: 0.1,
+                            showAllSymbol: false,
+                            data: letdata
+                        }
+                    ],
+                    animation: false
+                };
+                myChart.setOption(option);
+                var picBase64Info = myChart.getDataURL({
+                    pixelRatio: 1,　　//导出的图片分辨率比率,默认是1
+                    backgroundColor: 'white',　　//图表背景色
+                    excludeComponents: [　　//保存图表时忽略的工具组件,默认忽略工具栏
+                        'toolbox'
+                    ],
+                    type: 'png'　　//图片类型支持png和jpeg
+                });
+                {#console.log(picBase64Info);#}
+                {#arr.push(picBase64Info);#}
+                {#console.log(arr);#}
+                series.push({
+                    filename: echartdata[i].filename,
+                    status: echartdata[i].status,
+                    channel: echartdata[i].channel,
+                    base64: picBase64Info,
+
+                })
+            }
+        }
+
+        function sendbase64() {
+            series = JSON.stringify(series);
+            sessionStorage.setItem("filebase64list", series);
+            console.log(sessionStorage.getItem("filebase64list"));
+
+            window.open('/test_page/')
+
+            {#$.ajax({#}
+            {#   url: /parse_ppt/,#}
+            {#   dataType: "json",#}
+            {#   data: JSON.stringify({"items":series}),#}
+            {#   type: "post",#}
+            {#   success: function (result) {#}
+            {#       console.log(result);#}
+            {#   },#}
+            {#   error: function (result) {#}
+            {#       console.log(result)#}
+            {#   }#}
+            {#   });#}
+        }
+
 
         function getTree() {
             var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
@@ -189,7 +326,7 @@
                                 console.log(checkedData);
                             }
                             ,
-                            changeTree: function(){
+                            changeTree: function () {
                                 changeTreeView();
                             },
                             pic_data: function () {
@@ -222,39 +359,39 @@
             layui.use('form', function () {
                 var tree = layui.tree;
                 var form = layui.form;
-                var channellist =[];
-                  form.on('submit(formCheckbox)', function (data) {
+                var channellist = [];
+                form.on('submit(formCheckbox)', function (data) {
 
-                      for (var key in data.field) {
-                          channellist.push(data.field[key]);
-                      }
-                      ;
-                      console.log(channelselect);
-                      for (let i = 0; i < old_tree[0].children.length; i++) {
-                          for (let t = old_tree[0].children[i].children.length - 1; t >= 0; t--) {
-                              if (channellist.includes(old_tree[0].children[i].children[t].title)) {
-                                  old_tree[0].children[i].children[t]['checked'] = true;
-                              } else {
-                                  old_tree[0].children[i].children[t]['checked'] = false;
-                              }
+                    for (var key in data.field) {
+                        channellist.push(data.field[key]);
+                    }
+                    ;
+                    console.log(channelselect);
+                    for (let i = 0; i < old_tree[0].children.length; i++) {
+                        for (let t = old_tree[0].children[i].children.length - 1; t >= 0; t--) {
+                            if (channellist.includes(old_tree[0].children[i].children[t].title)) {
+                                old_tree[0].children[i].children[t]['checked'] = true;
+                            } else {
+                                old_tree[0].children[i].children[t]['checked'] = false;
+                            }
 
-                          }
-                      }
-                      console.log(old_tree[0]);
+                        }
+                    }
+                    console.log(old_tree[0]);
 
-                      tree.render({
-                          elem: '#file_tree'
-                          , data: old_tree
-                          , showCheckbox: true  //是否显示复选框
-                          , id: 'demoId12'
-                          , isJump: true //是否允许点击节点时弹出新窗口跳转
-                          , click: function (obj) {
-                              var data = obj.data;  //获取当前点击的节点数据
-                              layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-                          }
-                      });
-                      return false
-                  });
+                    tree.render({
+                        elem: '#file_tree'
+                        , data: old_tree
+                        , showCheckbox: true  //是否显示复选框
+                        , id: 'demoId12'
+                        , isJump: true //是否允许点击节点时弹出新窗口跳转
+                        , click: function (obj) {
+                            var data = obj.data;  //获取当前点击的节点数据
+                            layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                        }
+                    });
+                    return false
+                });
             });
         };
 

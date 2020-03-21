@@ -16,7 +16,7 @@ from epgn_info.settings.prod import BASE_DIR  # manage
 
 
 class Calculate_Object(object):
-    def __init__(self, file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
+    def __init__(self, file_name, rpm_type, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
         self.overlap = 75
@@ -24,7 +24,7 @@ class Calculate_Object(object):
         self.rpm_step = 10
         self.smoothFrac = 0.1
         self.orderWidth = 0.5
-        self.rpmtype = 'falling'
+        self.rpmtype = rpm_type
         self.timeWeighting = 0.125
         self.orderResolution = 0.5
         self.spectrum_size = 16384
@@ -373,7 +373,6 @@ class LevelVsTime(LevelTime):
 # LEVEL对转速
 class LevelVsRpm(LevelTime):
     def run(self):
-        self.rpmtype = 'rising'
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
         # plt.figure()

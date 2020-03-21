@@ -12,7 +12,7 @@ from django.shortcuts import render
 from fileinfo.models import Fileinfo
 from read_hdf import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
-from settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL
+from settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
 from scripts.process_gecent import ParseTask  # manage
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
@@ -193,11 +193,14 @@ class PPTParse(View):
         :param request: Request请求对象
         :return: 前端数据列表产生的XY轴坐标信息
         """
-        items = []
+        return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
         for file in list(set(file_list)):
+            rpm_type = 'rising'
             status = Fileinfo.objects.get(file_name=file).status
+            if status in FALLING_LIST:
+                rpm_type = 'falling'
             if status:
                 calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
                 channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
@@ -231,7 +234,7 @@ class PPTParse(View):
                         "title": "文件夹名"
                     }
                 }
-                items = ParseTask(data).run()
+                items = ParseTask(data, rpm_type).run()  # TODO: 这里两次接收items
                 if len(items) == 0:
                     return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
                 for item in items:
@@ -248,11 +251,12 @@ class PPTParse(View):
                         line_loc.append(point_loc)
                     item["data"] = line_loc
                     item["status"] = status
+                    return_items.append(item)
                 # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
             else:
                 print(file)
                 return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
-        return JsonResponse({"status": 200, "msg": "OK！", "data": items})
+        return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 
 
 # return_file_list: url(r'file_list/', views.return_file_list),
@@ -278,7 +282,6 @@ def get_algorithm_results(request):
         body = request.body
         body_str = body.decode()
         body_json = json.loads(body_str)
-        # print(body_json)
         channel = body_json["channel"]
         algorithm_name = body_json["algorithm_name"]
         filename = body_json["filename"]

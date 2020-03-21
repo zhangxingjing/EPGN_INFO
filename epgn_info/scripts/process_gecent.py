@@ -8,6 +8,8 @@ from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict 
 # from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
 # from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
 from epgn_info.settings.devp import CHANNEL_LIST
+
+
 # from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
 
 
@@ -18,8 +20,9 @@ class ParseTask(object):
         2. CPU密集：算法计算（多进程）
     """
 
-    def __init__(self, item):
+    def __init__(self, item, rpm_type):
         self.item = item
+        self.rpm_type = rpm_type
         self.queue = Manager().Queue()
 
     def parse_json(self):
@@ -60,7 +63,8 @@ class ParseTask(object):
 
                 # print(channel["title"], channel_file_list)
                 # channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
-                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
+                channel_data_key = list(channel_file_list.keys())[
+                    list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
                 try:
                     # rpm_key
@@ -78,6 +82,7 @@ class ParseTask(object):
                         calculate_class_name,
                         filename,
                         channel_data,
+                        self.rpm_type,
                         channel["title"],
                         int(channel_time_num) - 1,  # time
                         int(channel_data_num) - 1,  # data
@@ -87,8 +92,7 @@ class ParseTask(object):
         pool.close()
         pool.join()
 
-    def calculate_process(self, queue, calculate_class_name, file_name, channel_data, channel_name, raw_time_num,
-                          raw_data_num, raw_rpm_num):
+    def calculate_process(self, queue, calculate_class_name, file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         """
         返回图片
         # img_path = eval(calculate_class_name)(file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
@@ -98,9 +102,9 @@ class ParseTask(object):
         try:
             # print(file_name, os.getpid(), channel_name, raw_data_num)
             # print(calculate_class_name, channel_name, raw_time_num, raw_data_num, raw_rpm_num)
-            X, Y = eval(calculate_class_name)(file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
+            X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             # 这里确定返回到前端的数据
-            queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel":channel_name})
+            queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})
         except:
             print("当前数据计算出错！")
 

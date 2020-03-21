@@ -295,3 +295,4 @@ CALCULATE_RULE = {
     "Start-Stop": "滤波器，目前还没有!"
 }
 REFERENCE_CHANNEL = ["time", "EngineRPM", "EngineCoolantTemp", "VehicleSpeed"]
+FALLING_LIST = ['(N)G3 VS', '(N)G5 VS', ]

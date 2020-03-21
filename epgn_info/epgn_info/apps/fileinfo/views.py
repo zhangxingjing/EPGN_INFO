@@ -501,7 +501,8 @@ def upload(request):
         try:
             with transaction.atomic():  # 数据库回滚
                 # 写入本地
-                new_file_hdf = open(save_path + filename[-3:] + "/" + new_name, 'wb+')
+                # new_file_hdf = open(save_path + filename[-3:] + "/" + new_name, 'wb+')
+                new_file_hdf = open(FILE_SAVE_PATH + new_name, 'wb+')
                 for chunk in files.chunks():
                     new_file_hdf.write(chunk)
                 new_file_hdf.close()

@@ -8,7 +8,14 @@ from pptx.util import Inches, Pt
 # from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
 from epgn_info.settings.devp import BASE_DIR  # manage
 
-model_path = BASE_DIR + '/apps/calculate/PPTModel/'
+PPT_MODEL_PATH = BASE_DIR + '/apps/calculate/PPTModel/'
+IMAGE_LOCATION = [
+    ['F3 VZ', '(N)G3 VZ'],
+    ['F3 VS', '(N)G3 VS'],
+    ['F5 VZ', '(N)G5 VZ'],
+    ['KP 80-20']
+
+]
 
 
 class ParsePPT():
@@ -17,8 +24,8 @@ class ParsePPT():
         处理前端的数据
         :param item:前端传来的图片的位置信息
         """
-        self.filename = time.strftime('%Y_%m_%d_%H_%M_%S',time.localtime(time.time()))
-        self.prs = Presentation(model_path + "4zuo.pptx")
+        self.filename = time.strftime('%Y_%m_%d_%H_%M_%S', time.localtime(time.time()))
+        self.prs = Presentation(PPT_MODEL_PATH + "4zuo.pptx")
         # self.save_path = save_path
         self.data = item
         self.img_list = []
@@ -73,7 +80,7 @@ class ParsePPT():
                 str_bas64 = re.match(r'(data:image/png;base64,(.*))', value).group(2)
                 img = base64.b64decode(str_bas64)
                 pic_path = self.save_path + 'image/{}.jpg'.format(pic_info + " " + key)
-                fh = open(model_path + pic_path, 'wb')
+                fh = open(PPT_MODEL_PATH + pic_path, 'wb')
                 fh.write(img)
                 fh.close()
                 if key == "VL":
@@ -94,7 +101,7 @@ class ParsePPT():
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', value).group(2)
             img = base64.b64decode(str_bas64)
             pic_path = self.save_path + 'image/{}.jpg'.format(pic_gun_info + " " + key)
-            fh = open(model_path + pic_path, 'wb')
+            fh = open(PPT_MODEL_PATH + pic_path, 'wb')
             fh.write(img)
             fh.close()
             if key == "VL":
@@ -112,7 +119,7 @@ class ParsePPT():
             pic_info = item["status"] + "_" + item["channel"]
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', item["base64"]).group(2)
             img = base64.b64decode(str_bas64)
-            pic_path = model_path + 'image/{}.jpg'.format(pic_info)
+            pic_path = PPT_MODEL_PATH + 'image/{}.jpg'.format(pic_info)
             fh = open(pic_path, 'wb')
             fh.write(img)
             # fh.close()
@@ -133,36 +140,35 @@ class ParsePPT():
         """
 
         # TODO: 后面多个工况在一起的情况怎么处理的？
-        key_list = ['F3 VZ', 'G3 VZ', 'F3 VS', 'G3 VS', 'F5 VZ', 'G5 VZ', 'KP 80-20']
 
         """
         if self.ml:  # 要么是4坐， 要么就是6坐 ==> 复制幻灯片
-            self.prs = Presentation(model_path + "PPTModel/6zuo.pptx")
+            self.prs = Presentation(PPT_MODEL_PATH + "PPTModel/6zuo.pptx")
             for key in key_list:
                 num = key_list.index(key)
                 # 左前
                 left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(model_path + self.vl[key]), left, top,
+                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vl[key]), left, top,
                                                                 width, height)
                 # 右前
                 left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(model_path + self.vr[key]), left, top,
+                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vr[key]), left, top,
                                                                 width, height)
                 # 左中
                 left, top, width, height = Inches(0.5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(model_path + self.hl[key]), left, top,
+                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.hl[key]), left, top,
                                                                 width, height)
                 # 右中
                 left, top, width, height = Inches(5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(model_path + self.hr[key]), left, top,
+                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.hr[key]), left, top,
                                                                 width, height)
                 # 左后
                 left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(model_path + self.vl[key]), left, top,
+                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vl[key]), left, top,
                                                                 width, height)
                 # 右后
                 left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(model_path + self.vr[key]), left, top,
+                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vr[key]), left, top,
                                                                 width, height)
         else:
             for key in key_list:
@@ -181,8 +187,14 @@ class ParsePPT():
                 self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict[key]), left, top, width, height)
     """
 
-        num = key_list.index(img_dict["status"]) - 1  # 根据当前工况在PPT中幻灯片的位置，放置当前IMG
-        print(num, img_dict["channel"])
+        print(img_dict["channel"], img_dict["status"])
+
+        # 获取当前图片在幻灯片中的位置，将其放置在对应位置上
+        num = 0
+        for key in IMAGE_LOCATION:  # 使用全局变量
+            if img_dict["status"] in key:
+                num = IMAGE_LOCATION.index(key) + 2
+
         if img_dict["channel"] == "VL" or img_dict["channel"] == "vorn links":
             # 左前
             left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
@@ -205,8 +217,8 @@ class ParsePPT():
         保存最终的PPT文件
         :return:PPT存储位置
         """
-        self.prs.save(model_path + 'ppt_result/{}.pptx'.format(self.filename))
-        return model_path + 'ppt_result/{}.pptx'.format(self.filename)
+        self.prs.save(PPT_MODEL_PATH + 'ppt_result/{}.pptx'.format(self.filename))
+        return PPT_MODEL_PATH + 'ppt_result/{}.pptx'.format(self.filename)
 
     def run(self):
         """

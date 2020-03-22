@@ -196,19 +196,22 @@ class PPTParse(View):
         return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
+        print(set(file_list))
         for file in list(set(file_list)):
+            print(file)
             rpm_type = 'rising'
             status = Fileinfo.objects.get(file_name=file).status
             if status in FALLING_LIST:
                 rpm_type = 'falling'
+
+            print(status)
             if status:
                 calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
                 channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
-                # """文件中的哪些数据通道需要放到算法中进行计算"""
-                # # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
+                """文件中的哪些数据通道需要放到算法中进行计算"""
+                # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
                 # channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
                 # channel_calculate_list = [i for i in channel_calculate_list if i not in REFERENCE_CHANNEL]
-
                 channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]
                 # 构建children中的字典数据
                 i = 1
@@ -234,6 +237,9 @@ class PPTParse(View):
                         "title": "文件夹名"
                     }
                 }
+
+                pprint(data)
+
                 items = ParseTask(data, rpm_type).run()  # TODO: 这里两次接收items
                 if len(items) == 0:
                     return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})

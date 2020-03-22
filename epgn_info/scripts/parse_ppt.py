@@ -13,7 +13,8 @@ IMAGE_LOCATION = [
     ['F3 VZ', '(N)G3 VZ'],
     ['F3 VS', '(N)G3 VS'],
     ['F5 VZ', '(N)G5 VZ'],
-    ['KP 80-20']
+    ['KP 80-20'],
+    ['(Square&Lab)Leerlauf D Gang mit AC'],
 
 ]
 
@@ -29,13 +30,6 @@ class ParsePPT():
         # self.save_path = save_path
         self.data = item
         self.img_list = []
-        self.vl = {}
-        self.vr = {}
-        self.ml = {}
-        self.mr = {}
-        self.hl = {}
-        self.hr = {}
-        self.rool = {}
 
     def parse_title(self):
         """
@@ -116,7 +110,7 @@ class ParsePPT():
 
         # 在这里处理当前PPT，生成之后返回当前的PPT路径
         for item in self.data["items"]:
-            pic_info = item["status"] + "_" + item["channel"]
+            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["channel"] # 正则到合适的imgName
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', item["base64"]).group(2)
             img = base64.b64decode(str_bas64)
             pic_path = PPT_MODEL_PATH + 'image/{}.jpg'.format(pic_info)
@@ -199,18 +193,24 @@ class ParsePPT():
             # 左前
             left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
             self.prs.slides[num].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
-        elif img_dict["channel"] == "VR" or img_dict["channel"] == "vorn rechits":
+        elif img_dict["channel"] == "VR" or img_dict["channel"] == "vorn rechits" or img_dict["channel"] == "LR_X":
             # 右前
             left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
             self.prs.slides[num].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
-        elif img_dict["channel"] == "HL" or img_dict["channel"] == "hinten links":
+        elif img_dict["channel"] == "HL" or img_dict["channel"] == "hinten links" or img_dict["channel"] == "LR_Y":
             # 左后
             left, top, width, height = Inches(0.5), Inches(4), Inches(4.5), Inches(2.4)
             self.prs.slides[num].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
-        elif img_dict["channel"] == "HR" or img_dict["channel"] == "hinten rechits":
+        elif img_dict["channel"] == "HR" or img_dict["channel"] == "hinten rechits" or img_dict["channel"] == "LR_Z":
             # 右后
             left, top, width, height = Inches(5), Inches(4), Inches(4.5), Inches(2.4)
             self.prs.slides[num].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
+        elif img_dict["channel"] == "FS_IN_X":
+            left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
+            self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
+        elif img_dict["channel"] == "FS_IN_Z":
+            left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
+            self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict["pic_path"]), left, top, width, height)
 
     def save_ppt(self):
         """
@@ -225,11 +225,13 @@ class ParsePPT():
         面向对象的接口
         :return: 当前PPT存储的位置
         """
-        try:
+        # try:
             # self.parse_title()
-            for img_dict in self.parse_pic():
-                self.insert_pic(img_dict)
-            ppt_path = self.save_ppt()
-            return ppt_path
-        except Exception as e:
-            raise Exception
+        for img_dict in self.parse_pic():
+            pprint(img_dict)
+            self.insert_pic(img_dict)
+        ppt_path = self.save_ppt()
+        return ppt_path
+        # except Exception as e:
+        #     print(e)
+        #     raise Exception

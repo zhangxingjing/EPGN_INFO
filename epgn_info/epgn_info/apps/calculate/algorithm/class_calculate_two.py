@@ -16,7 +16,7 @@ from epgn_info.settings.prod import BASE_DIR  # manage
 
 
 class Calculate_Object(object):
-    def __init__(self, file_name, rpm_type, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
+    def __init__(self, file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
         self.order = 2
         self.overlap = 75

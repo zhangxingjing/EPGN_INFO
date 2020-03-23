@@ -10,6 +10,8 @@ from django.shortcuts import render
 # from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 # from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 from fileinfo.models import Fileinfo
+from numpyencoder import NumpyEncoder
+
 from read_hdf import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
 from settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
@@ -250,7 +252,11 @@ class PPTParse(View):
                     for x, y in zip(x_list, y_list):
                         point_loc = []
                         try:
-                            point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                            if calculate_name == "FFT":
+
+                                point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                            else:
+                                point_loc.append(x)  # abs-取绝对值， log-取对数
                         except:
                             continue
                         point_loc.append(y)
@@ -258,7 +264,7 @@ class PPTParse(View):
                     item["data"] = line_loc
                     item["status"] = status
                     return_items.append(item)
-                # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
+                    # return_items.append(json.dumps(items, cls=NumpyEncoder)) # TODO: 将Array放入字典
             else:
                 print(file)
                 return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
@@ -314,3 +320,17 @@ def auto_calculate(request):
 
 def test_page(request):
     return render(request, 'testpage.html')
+
+
+"""
+1. 升降速度参数调整
+2. 整个流程修复
+    数据源头，图片正确位置：1. 幻灯片-上下左右
+    
+    
+1）右侧解释
+2）删除第二页
+3）第一页：标题-defult
+4）版本号，日期，XXXXXX
+5）KP 80-20 Log
+"""

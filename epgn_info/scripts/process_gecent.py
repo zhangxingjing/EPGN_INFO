@@ -100,8 +100,7 @@ class ParseTask(object):
         """
         # 返回item
         try:
-            print(file_name, os.getpid(), channel_name, raw_data_num)
-            print(calculate_class_name, channel_name, raw_time_num, raw_data_num, raw_rpm_num)
+            print(file_name, os.getpid(), channel_name, raw_time_num, raw_data_num, raw_rpm_num)
             X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             # 这里确定返回到前端的数据
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})

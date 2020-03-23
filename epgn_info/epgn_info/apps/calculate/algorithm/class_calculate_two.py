@@ -78,8 +78,8 @@ class Calculate_Object(object):
 
         # TODO: 这里数据做判断的时候，注意加减速
         print(self.rpmtype, self.timeWeighting)
-        # if self.rpmtype == 'falling':
-        #     raw_rpm = self.raw_rpm[::-1]
+        if self.rpmtype == 'falling':
+            raw_rpm = self.raw_rpm[::-1]
         # raw_rpm = self.raw_rpm[::-1]
         r_minp = np.argmin(raw_rpm)
         r_maxp = np.argmax(raw_rpm)

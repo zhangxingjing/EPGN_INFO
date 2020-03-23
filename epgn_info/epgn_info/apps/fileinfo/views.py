@@ -628,15 +628,11 @@ def word(request):
 def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
-    # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name   # guan文件位置
-    # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name  # guan文件位置
-    # file_path = "/home/zheng/Music/asc/" + file_name  # guan文件位置
-    file_path = "/home/zheng/Desktop/demo/hdf/" + file_name  # guan文件位置
+    file_path = "/home/zheng/Desktop/demo/R_HDF/" + file_name  # guan文件位置
+
     # if os.path.isfile(file_path):  # 老数据
     #     # 判断下载文件是否存在
     #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
-    #     file_path = "/home/zheng/Music/asc/" + file_name
-    #
     # else:  # 网盘
     #     file_path = "/media/sf_Y_DRIVE/2019_Daten/hdf/" + file_name
 

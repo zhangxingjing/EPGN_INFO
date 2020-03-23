@@ -274,8 +274,10 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 FILE_SAVE_PATH = "/home/zheng/Desktop/demo/R_HDF/"
 CALCULATE_RULE = {
-    "(N)G3 VZ": "Level VS RPM",
-    "(N)G3 VS": "Level VS RPM",
+    # "(N)G3 VZ": "Level VS RPM",
+    "(N)G3 VZ": "2nd Order VS RPM",
+    # "(N)G3 VS": "Level VS RPM",
+    "(N)G3 VS": "2nd Order VS RPM",
     "(N)G5 VZ": "2nd Order VS RPM",
     "KP 80-20": "FFT",
     "(Square&Lab)Leerlauf D Gang mit AC": "Level VS Time",

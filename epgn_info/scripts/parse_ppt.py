@@ -15,7 +15,9 @@ IMAGE_LOCATION = [
     ['F5 VZ', '(N)G5 VZ'],
     ['KP 80-20'],
     ['(Square&Lab)Leerlauf D Gang mit AC'],
-
+    ['(Square&Lab)Leerlauf D Gang ohne Verbrauche'],
+    ['(Square&Lab)Leerlauf D Gang mit Verbrauche'],
+    ['(Square&Lab)Leerlauf R Gang mit AC'],
 ]
 
 
@@ -187,7 +189,7 @@ class ParsePPT():
         num = 0
         for key in IMAGE_LOCATION:  # 使用全局变量
             if img_dict["status"] in key:
-                num = IMAGE_LOCATION.index(key) + 2
+                num = IMAGE_LOCATION.index(key) + 2 -1
 
         if img_dict["channel"] == "VL" or img_dict["channel"] == "vorn links":
             # 左前

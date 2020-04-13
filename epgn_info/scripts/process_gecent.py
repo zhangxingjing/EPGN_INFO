@@ -1,7 +1,7 @@
 import os
 import re
 from multiprocessing import cpu_count, Pool, Manager
-from scripts.read_hdf import read_hdf  # manage
+from scripts.readHDF import read_hdf  # manage
 from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
 from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict  # manage
 # from epgn_info.scripts.read_hdf import read_hdf   # Nginx
@@ -100,7 +100,7 @@ class ParseTask(object):
         """
         # 返回item
         try:
-            print(file_name, os.getpid(), channel_name, raw_time_num, raw_data_num, raw_rpm_num)
+            # print(file_name, os.getpid(), channel_name, raw_time_num, raw_data_num, raw_rpm_num)
             X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             # 这里确定返回到前端的数据
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})

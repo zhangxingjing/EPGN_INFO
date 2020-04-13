@@ -7,6 +7,7 @@ from epgn_info.settings.devp import FILE_SAVE_PATH    # manage
 # from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
 from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage
 
+# 前端选择的文件名，对应算法名
 CalculateNameDict = {
     # the front end page： Corresponding class name
     "FFT": "FftCalculate",
@@ -18,6 +19,7 @@ CalculateNameDict = {
     "LEVEL对转速": "LevelVsRpm",
 }
 
+# 发送给前端的算法名称
 CalculateNameList = ['write_result', 'fft_average', 'octave_fft', ]
 
 class FileArrayInfo():

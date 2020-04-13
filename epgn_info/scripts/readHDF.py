@@ -1,10 +1,9 @@
-import re
 import h5py
+
 # from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Nginx
-from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
+# from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
 
-
-# FILE_SAVE_PATH = "/home/zheng/Desktop/demo/R_HDF/"
+FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF/"
 
 
 def read_hdf(file_name):
@@ -20,18 +19,23 @@ def read_hdf(file_name):
     i = 1
     for key in read_info.keys():
         items.append(read_info[key].value)
-        if read_info[key].name == "/time":
-            channel_dict["Channel " + str(i)] = "time"
-        else:
-            channel_dict["Channel " + str(i)] = re.match(r'/data_(.*)', read_info[key].name).group(1)
+        channel_dict["Channel " + str(i)] = key
+
+        # print(key, read_info[key].value)
+
+        # if read_info[key].name == "/time":
+        #     channel_dict["Channel " + str(i)] = "time"
+        # else:
+        #     channel_dict["Channel " + str(i)] = re.match(r'/data_(.*)', read_info[key].name).group(1)
         # print(i, read_info[key].name, read_info[key].shape, read_info[key].value)
+
         i += 1
     return channel_dict, items
 
 
 """代码执行顺序"""
 # start_time = time()
-# channel_dict, items = read_hdf('HDF可读数据.hdf')
+# channel_dict, items = read_hdf('kp 80-20 run02.hdf')
 # pprint(channel_dict)  # 打印HDF数据
 # print("raw_time:", items[5])
 # print("raw_data:", items[1])

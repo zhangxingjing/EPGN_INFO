@@ -18,6 +18,7 @@ urlpatterns = [
     # 用户访问需要登录
     url(r'^authorizations/$', obtain_jwt_token),
 
+    # TODO: 这里对于不同模块的请求, 我们应该使用不同的API前缀
     # 用户
     url(r'', include('users.urls')),
 

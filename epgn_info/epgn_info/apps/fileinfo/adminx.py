@@ -1,6 +1,6 @@
 import xadmin
 from django.contrib import admin
-from .models import Fileinfo, PropulsionPower, Platform, Direction
+from .models import Fileinfo, PropulsionPower, Platform, Direction, Channel
 
 
 # Vehicle data information
@@ -31,3 +31,10 @@ class PlatformAdmin():
 class DirectionAdmin():
     list_display = ['id', 'parent', 'name']
     list_display_links = ['parent']
+
+# Channel Name
+@xadmin.sites.register(Channel)
+class ChannelAdmin():
+    list_display = ['id', 'name', 'parent']
+    list_display_links = ['name']
+    search_fields = ['name', 'parent', ]  # fields that can be searched

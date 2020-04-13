@@ -8,9 +8,9 @@ from django.contrib import admin
 # 用户的站点管理
 # @xadmin.site.register(User)
 class UserAdmin():
-    list_display = ['id', 'username', "job_number", 'last_login', 'is_staff', 'is_superuser', 'update_files_data', 'download_files_data', 'task_data']  # 这里显示的是修改数据之后后台可以看到的页面中的数据
-    fields = ("username", "job_number", 'password', 'is_superuser',  'task_data')  # 这是用户添加数据的时候可以看到的页面
-    list_display_links = ['username', 'job_number', 'task_data']  # 用来配置哪些字段可以作为链接, 点击他们可以进入编辑页面
+    list_display = ['id', 'username', "job_number", 'last_login', 'is_staff', 'is_superuser', 'update_files_data', 'download_files_data', 'task']  # 这里显示的是修改数据之后后台可以看到的页面中的数据
+    fields = ("username", "job_number", 'password', 'is_superuser', 'task')  # 这是用户添加数据的时候可以看到的页面
+    list_display_links = ['username', 'job_number', ]  # 用来配置哪些字段可以作为链接, 点击他们可以进入编辑页面
     search_fields = ['username', 'job_number']
 
     # save_on_top = True  # 保存, 编辑, 编辑并新建的 按钮 是否在顶部展示
@@ -30,10 +30,10 @@ class UserAdmin():
 
 
 class UserTaskAdmin():
-    list_display = ['username', 'task_info']
-    fields = ('username', 'task_info')
-    list_display_links = ['username']
-    search_fields = ['username', ]
+    list_display = ['id', 'user', 'task', ]
+    fields = ('user', 'task', )
+    list_display_links = ['task']
+    search_fields = ['user', ]
 
     class Meta:
         widgets = {
@@ -50,8 +50,14 @@ class UserTaskAdmin():
 
     post_count.short_description = "任务信息"
 
+# class UserTaskInline(admin.StackedInline):
+#     model = UserTask
+#
+#
+# class UserAdmin(admin.ModelAdmin):
+#     inlines = [UserTaskInline, ]
+
 xadmin.site.unregister(User)
 xadmin.site.register(User, UserAdmin)
-
 
 xadmin.site.register(UserTask, UserTaskAdmin)

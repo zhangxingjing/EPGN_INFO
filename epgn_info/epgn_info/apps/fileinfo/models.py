@@ -74,3 +74,16 @@ class GearBox(models.Model):
     class Meta:
         db_table = 'tb_gearbox'  # corresponding data table name
         verbose_name_plural = verbose_name = '变速箱信息'
+
+
+# channel
+class Channel(models.Model):
+    name = models.CharField(max_length=50, verbose_name='其他写法')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='通道')
+
+    class Meta:
+        db_table = 'tb_channel'
+        verbose_name = verbose_name_plural = '通道-其他写法'
+
+    def __str__(self):
+        return self.name

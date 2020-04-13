@@ -1,8 +1,9 @@
 import json
-
 from django.views import View
 from fileinfo.serializers import UserFileSerializer
 from fileinfo.models import Fileinfo
+from rest_framework.viewsets import ViewSet
+
 from .models import User
 from . import serializers
 from django.core import serializers as dc_serializers
@@ -48,6 +49,7 @@ class UserDetailView(RetrieveAPIView):
         return self.request.user
 
 
+# 获取用户数据： router.register(r'^user_name', UserInfoViewSet)
 class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserFileSerializer
@@ -80,10 +82,10 @@ class UserInfoViewSet(viewsets.ModelViewSet):
 
     # 查： "GET" /user_name/3/
     def list(self, request, *args, **kwargs):
+        # 如果返回的是当前用户名，就可以直接根据用户名获取数据
         job_number = request.GET.get("job_number")
-        username = User.objects.get(job_number=job_number)
-
-        file_info = Fileinfo.objects.filter(author=username)  # 获取当前用户名的数据
+        user = User.objects.get(job_number=job_number)
+        file_info = Fileinfo.objects.filter(author=user.username)  # 获取当前用户名的数据
         items = json.loads(dc_serializers.serialize("json", file_info))  # 序列化
         return JsonResponse({"items": items})
 

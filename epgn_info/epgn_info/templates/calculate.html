@@ -405,7 +405,7 @@
                     console.log(checkedData1[0]);
                     var calculatename = $("#calculate option:selected").val();
                     $.ajax({
-                        url: "/calculate/",
+                        url: "/channelList/",
                         dataType: "json",
                         type: "post",
                         data: JSON.stringify({"calculate": calculatename, "file_info": checkedData1[0]}),

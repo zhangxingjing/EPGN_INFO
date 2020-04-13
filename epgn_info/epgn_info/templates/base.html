@@ -8,24 +8,24 @@
     <title>EPGN {% block title %}{% endblock %}</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <style>
         .layui-nav * {
             font-size: 19px !important;
             font-weight: bold;
         }
     </style>
-    {#    <script src="../../../epgn_front_end/js/vue_2.6.10.js"></script>#}
     <script src="{% static 'js/vue_2.6.10.js' %}"></script>
     <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
     <script src="{% static 'js/axios-0.18.0.min.js' %}"></script>
-    <!--<script>
+    <script>
         var user_id = sessionStorage.user_id || localStorage.user_id;
         var token = sessionStorage.token || localStorage.token;
         if (!(user_id && token)) {
-            location.href = '../../../epgn_front_end/login_2.html';
+            location.href = '{% static "login_2.html" %}';
         }
-    </script>-->
+    </script>
     {% block link %}{% endblock %}
     {% block style %}{% endblock %}
 </head>
@@ -73,11 +73,9 @@
             <!-- 右侧 -->
             <ul class="layui-nav layui-layout-right" id="user_info" lay-filter="layadmin-layout-right">
                 <ul class="layui-nav-item">
-                    <!--<li class="layui-nav-item"><a href="/userinfo/">官明超，你好！</a></li>
-                    {#                    <li class="layui-nav-item"><a href="/userinfo/">{{ username }}，你好！</a></li>#}
-                    <li class="layui-nav-item"><a @click="logout">退出登录</a></li>-->
-                    <li class="layui-nav-item"><a href="">请登录</a></li>
-                    <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>
+                    <li class="layui-nav-item"><a href="/user_name/{{ user_id }}">{{ username }}，你好！</a></li>
+                    <!--<li class="layui-nav-item"><a href="/logout/">退出登录</a></li>-->
+                    <li class="layui-nav-item"><a @click="logout">退出登录</a></li>
                 </ul>
             </ul>
         </div>
@@ -193,12 +191,12 @@
     })
 </script>
 
-<!-- 判断用户登录状态 -->
-<!--<script>
+<!-- 判断用户登录状态
+<script>
     var vm = new Vue({
-        el: "#user_info",
-        // el: "#LAY_app",
+        // el: "#layui-fluid",
         delimiters: ['[[', ']]'],
+        el: "#LAY_app",
         data: {
             user_id: sessionStorage.user_id || localStorage.user_id,
             token: sessionStorage.token || localStorage.token,
@@ -221,31 +219,30 @@
                         this.user_id = response.data.id;
                         this.job_number = response.data.job_number;
                         this.username = response.data.username;
-                        console.log(this.user_id, this.job_number, this.username);  // 这里是有值的
                     })
                     .catch(error => {
                         if (error.response.status == 401 || error.response.status == 403) {
-                            location.href = '../../../epgn_front_end/login.html';
+                            location.href = '../../../epgn_front_end/login_2.html';
                         }
                     });
             } else {
-                location.href = '../../../epgn_front_end/login.html';
+                location.href = '/';
             }
         },
         methods: {
             // 登录
             login: function () {
-                location.href = '../../../epgn_front_end/login_2.html';
+                location.href = '/';
             },
             // 退出
             logout: function () {
                 sessionStorage.clear();
                 localStorage.clear();
-                location.href = '../../../epgn_front_end/login_2.html';
+                location.href = '/';
             },
         }
     })
-</script>-->
+</script> -->
 
 {% block javascript %}{% endblock %}
 

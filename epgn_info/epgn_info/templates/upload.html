@@ -20,6 +20,17 @@
         .layui-table td, .layui-table th {
             font-weight: bold;
         }
+        .list-data {
+           font-size:18px;
+           padding:3px;
+           height: 35px;
+           line-height:35px
+        }
+       .list-data  img{
+        height: 50%;
+        padding-top:2px;
+        width:auto
+        }
     </style>
     <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
@@ -54,10 +65,7 @@
                                     <select name="car_model" lay-verify="required" id="car_model" 　lay-search=""
                                             style="border: 1px solid #e6e6e6;height: 38px;line-height:38px;width:190px;padding-left: 10px">
                                         <option value="">请选择</option>
-                                        <option v-for="car_model in car_models" 　v-bind:value=car_model.id
-                                                class="option_general">[[
-                                            car_model.name ]]
-                                        </option>
+                                        <option v-for="car_model in car_models" 　v-bind:value=car_model.id class="option_general">[[ car_model.name ]]</option>
                                     </select>
                                 </div>
                             </div>
@@ -233,7 +241,7 @@
                                 </label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="author" id="author" lay-verify="username"
-                                           placeholder="请输入试验员..." autocomplete="off" class="layui-input">
+                                           placeholder="如：Zhang san" autocomplete="off" class="layui-input" onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
                                 </div>
                             </div>
 
@@ -299,6 +307,19 @@
             </div>
         </div>
     </div>
+
+
+
+
+    </div>
+
+
+      <div id="shadowlayer" style="width:100%;
+    height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none"></div>
+    <div id="shadowtext" style="width: 420px;height: 400px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-175px;top:50%;margin-top:-200px;border-radius:5px;display: none">
+        <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid"> <div style="width:30px;height: 30px;margin-left:90%;padding-top:7px"><img id="closewindow11"  style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}"/></div></div>
+        <div style="height: 290px;margin-bottom:10px;padding:6px;overflow: auto" id="namelist"></div>
+        <div class="Popup-bottom" style="height: 60px;display: flex;justify-content:center"> <button style="border:0px;width:150px;height: 40px;background-color:#1E9FFF;color:white;text-align:center;line-height:40px;font-size:16px" id="confirmcalculate">确认计算</button></div>
     </div>
 {% endblock %}
 
@@ -335,6 +356,7 @@
     <script>
         var filenameArray = [], username = sessionStorage.username;
         var filenameArr = [];
+        var nameArray=[];
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -349,23 +371,74 @@
                 for (let i = 0; i < filenameArray.length; i++) {
                     filenameArr.push(filenameArray[i].newname)
                 }
-                console.log(filenameArr);
                 sessionStorage.setItem("uploadnewname", filenameArr);
-                window.open ('/calculate/')
 
+
+                nameArray = filenameArr;
+
+                for (var i = 0; i < nameArray.length; i++) {
+                    $("#namelist").append(
+                        `<div class='list-data'><img class='list-data-close' src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
+                    )
+                }
+              $("#shadowlayer").show();
+              $("#shadowtext").show();
+               $("#namelist").off('click');
+                $("#namelist").on('click', '.list-data', function () {
+                    var compare_dataIndex = $(".list-data").index(this);
+                    console.log(compare_dataIndex);
+                    $(this).remove();
+                    nameArray.splice(compare_dataIndex, 1);
+                    console.log(nameArray);
+
+
+
+                    if (nameArray.length == 0) {
+                      $("#shadowlayer").hide();
+                      $("#shadowtext").hide();
+                      sessionStorage.removeItem("uploadnewname");
+                      filenameArr=[];
+
+
+                    }
+                    nameSession = JSON.stringify(nameArray);
+                    sessionStorage.setItem("uploadnewname", nameSession);
+
+                });
+
+            });
+
+            $("#closewindow11").click(function (){
+                  $("#shadowlayer").hide();
+                  $("#shadowtext").hide();
+                  sessionStorage.removeItem("uploadnewname");
+                  filenameArr= [];
+                  $('#namelist').html("");
+
+            });
+
+             $("#confirmcalculate").click(function (){
+                $("#shadowlayer").hide();
+                $("#shadowtext").hide();
+                $('#namelist').html("");
+                filenameArr= [];
+                window.open ('/calculate/')
                 $.ajax({
                     url: /parsefilelist/,
                     dataType: "json",
                     data: JSON.stringify({"fileList":filenameArr}),
                     type: "post",
                     success: function (result) {
+
                         $('#jumpbox').html(result);
                         $('#jumpbox').modal('show');
+
                     }
                 });
 
 
-            });
+             })
+
             $("#math").click(function () {
                 // layer.msg('后期这里会做成数据计算的超链接');
                 layer.confirm('后期这里会做成数据计算的超链', {

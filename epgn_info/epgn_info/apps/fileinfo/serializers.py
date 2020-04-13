@@ -1,7 +1,7 @@
 # from .search_indexes import FileIndex
 from rest_framework import serializers
 # from drf_haystack.serializers import HaystackSerializer
-from .models import PropulsionPower, Platform, Direction, Fileinfo, GearBox
+from .models import PropulsionPower, Platform, Direction, Fileinfo, GearBox, Channel
 
 
 # 动力总成的序列化器
@@ -83,6 +83,21 @@ class UserFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fileinfo
         fields = ['id', 'car_num', 'produce', 'status', 'file_name', 'other_need']
+
+# 通道的序列化器
+class ChannelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Channel
+        fields = ["id", "name"]
+
+
+# 通道名其他写法的序列化器
+class OtherChannelSerializer(serializers.ModelSerializer):
+    subs = ChannelSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Channel
+        fields = ["id", "name", "subs"]
 
 # 处理搜索引擎返回数据的序列化器
 # class FileIndexSerializer(HaystackSerializer):

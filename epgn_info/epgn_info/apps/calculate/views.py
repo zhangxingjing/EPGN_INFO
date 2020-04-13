@@ -2,6 +2,8 @@ import json
 import math
 from time import time
 from pprint import pprint
+
+import pandas as pd
 from django.views import View
 from django.shortcuts import render
 # from epgn_info.scripts.parse_ppt import *  # Nginx
@@ -12,9 +14,9 @@ from django.shortcuts import render
 from fileinfo.models import Fileinfo
 from numpyencoder import NumpyEncoder
 
-from read_hdf import read_hdf  # manage
+from scripts.readHDF import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
-from settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+from epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
 from scripts.process_gecent import ParseTask  # manage
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
@@ -22,7 +24,7 @@ from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
 from epgn_info.settings.devp import BASE_DIR  # manage
 
 
-# Channel
+# 从文件中读取channel
 class ChannelList(View):
 
     # 文件通道信息
@@ -156,7 +158,7 @@ class PPTParse(View):
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
 
-    # 下载PPT：
+    # 接受需要下载的文件地址，返回文件信息
     def get(self, request):
         ppt_path = request.GET.get("path")
         file_name = re.search(r'.*/(.*\.pptx)', ppt_path).group(1)
@@ -195,26 +197,40 @@ class PPTParse(View):
         :param request: Request请求对象
         :return: 前端数据列表产生的XY轴坐标信息
         """
+        start_time = time.time()
+        ave_items = []
         return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
         print(set(file_list))
-        for file in list(set(file_list)):
-            print(file)
+        for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
+            # print(file)
             rpm_type = 'rising'
             status = Fileinfo.objects.get(file_name=file).status
+
+            # 判断当前文件加减速：获取当前工况，通过迭代判断当前是加速还是减速
             if status in FALLING_LIST:
                 rpm_type = 'falling'
 
-            print(status)
+            # print(status)
+            # 如果当前文件的工况信息存在，说明这个文件是正确的
             if status:
                 calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
                 channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
-                """文件中的哪些数据通道需要放到算法中进行计算"""
+
+                # 文件中的哪些数据通道需要放到算法中进行计算
                 # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
                 # channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
                 # channel_calculate_list = [i for i in channel_calculate_list if i not in REFERENCE_CHANNEL]
                 channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]
+
+                # 计算启停算法的时候，只计算一个通道的数据
+                if status == "(Square&Lab)St-Sp":
+                    for ss_channel in channel_calculate_list:
+                        if "X" in ss_channel:
+                            # print(ss_channel)
+                            channel_calculate_list = [ss_channel]
+
                 # 构建children中的字典数据
                 i = 1
                 children_list = []
@@ -222,6 +238,7 @@ class PPTParse(View):
                     children_list.append({"id": i, "title": channel})
                     i += 1
 
+                # 构建传入算法的字典数据
                 data = {
                     "calculate": calculate_name,
                     "file_info": {
@@ -240,34 +257,85 @@ class PPTParse(View):
                     }
                 }
 
-                pprint(data)
-
+                # 将data传入算法，进行计算，获取算法返回值
                 items = ParseTask(data, rpm_type).run()  # TODO: 这里两次接收items
+
+                # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
                     return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
-                for item in items:
-                    x_list = list(item["data"]["X"])
-                    y_list = list(item["data"]["Y"])
-                    line_loc = []
-                    for x, y in zip(x_list, y_list):
-                        point_loc = []
-                        try:
-                            if calculate_name == "FFT":
 
-                                point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                            else:
-                                point_loc.append(x)  # abs-取绝对值， log-取对数
-                        except:
-                            continue
-                        point_loc.append(y)
-                        line_loc.append(point_loc)
-                    item["data"] = line_loc
-                    item["status"] = status
-                    return_items.append(item)
-                    # return_items.append(json.dumps(items, cls=NumpyEncoder)) # TODO: 将Array放入字典
+                # items里面存放的一个文件中所有通道的算法结果
+                # 我们需要将 所有文件 中的 所有数据 ，按照键值对的形式存放到一个列表中，返回
+                # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
+                # TODO: 添加 KP 80-20 的求均值
+
+                # if status == "KP 80-20":  # 说明这里测试的就是一组数据文件
+                #     ave_items.append(items)  # 这里取出了KP80-20的数据，对每个通道求均值
+                # else:
+                for item in items:
+                    if status == "KP 80-20":
+                        ave_items.append(item)
+                    else:
+                        x_list = list(item["data"]["X"])
+                        y_list = list(item["data"]["Y"])
+                        line_loc = []
+                        for x, y in zip(x_list, y_list):
+                            point_loc = []
+
+                            # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                            try:
+                                if calculate_name == "FFT":
+                                    point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                                else:
+                                    point_loc.append(x)
+                            except:
+                                continue
+                            point_loc.append(y)
+                            line_loc.append(point_loc)
+                        item["data"] = line_loc
+                        item["status"] = status
+                        return_items.append(item)
+                # return_items.append(json.dumps(items, cls=NumpyEncoder)) # 将Array放入字典
             else:
                 print(file)
                 return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
+
+        # 对KP80-20工况下的数据进行求均值
+        if len(ave_items) > 0:
+            df = pd.DataFrame(ave_items)
+            # TODO: 使用 pandas 对列表中的字典进行分类
+            result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
+
+            pprint(result)
+
+            for channels in result:
+                # TODO: 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
+                y1 = channels["info"][0]["Y"]
+                y2 = channels["info"][1]["Y"]
+                y3 = channels["info"][2]["Y"]
+
+                y_list = []
+                for i in range(len(y1)):
+                    y = (y1[i] + y2[i] + y3[i]) / int(len(channels))
+                    y_list.append(y)
+
+                x_list = channels["info"][2]["X"]
+                line_loc = []
+                for x, y in zip(x_list, y_list):
+                    point_loc = []
+                    try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                        point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                    except:
+                        continue
+                    point_loc.append(y)
+                    line_loc.append(point_loc)
+
+                return_items.append({
+                    "status": "KP 80-20",
+                    "filename": channels["filename"],
+                    "data": line_loc
+                })
+
         return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 
 
@@ -320,17 +388,3 @@ def auto_calculate(request):
 
 def test_page(request):
     return render(request, 'testpage.html')
-
-
-"""
-1. 升降速度参数调整
-2. 整个流程修复
-    数据源头，图片正确位置：1. 幻灯片-上下左右
-    
-    
-1）右侧解释
-2）删除第二页
-3）第一页：标题-defult
-4）版本号，日期，XXXXXX
-5）KP 80-20 Log
-"""

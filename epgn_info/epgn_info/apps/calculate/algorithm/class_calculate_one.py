@@ -10,7 +10,7 @@ from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from epgn_info.settings.prod import BASE_DIR
-from scripts.read_hdf import read_hdf
+from scripts.readHDF import read_hdf
 
 
 class Calculate_Object(object):

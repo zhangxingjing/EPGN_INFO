@@ -4,6 +4,7 @@
 CalculateNameDict = {
     # the front end page： Corresponding class name
     "FFT": "FftCalculate",
+    "Start Stop": "StartStop",  # 启停算法
     "Level VS RPM": "LevelVsRpm",
     "Level VS Time": "LevelVsTime",
     "2nd Order VS RPM": "OrderVsVfft",

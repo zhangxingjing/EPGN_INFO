@@ -10,7 +10,7 @@ from django.shortcuts import render
 # from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 # from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 from fileinfo.models import Fileinfo
-from read_hdf import read_hdf  # manage
+from readHDF import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
 from settings.devp import CalculateRule
 from scripts.process_gecent import ParseTask  # manage

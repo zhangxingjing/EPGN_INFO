@@ -9,9 +9,10 @@ import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
+from scipy.signal import butter, lfilter
 # from epgn_info.scripts.read_hdf import read_hdf   # Nginx
 # from epgn_info.epgn_info.settings.prod import BASE_DIR    # Nginx
-from scripts.read_hdf import read_hdf  # manage
+from scripts.readHDF import read_hdf  # manage
 from epgn_info.settings.prod import BASE_DIR  # manage
 
 
@@ -127,10 +128,10 @@ class Calculate_Object(object):
 
 class LevelTime(Calculate_Object):
     def level_time(self):
-        # raw_data = self.raw_data
-        # if self.A == 1:
-        #     raw_data = self.dataA()
-        raw_data = self.dataA()
+        raw_data = self.raw_data
+        if self.A == 1:
+            raw_data = self.dataA()
+        # raw_data = self.dataA()
 
         timep1 = self.raw_time[:-1] - self.raw_time[-1]
         timep2 = self.raw_time[1:] + self.raw_time[-1]
@@ -140,7 +141,10 @@ class LevelTime(Calculate_Object):
         timepe = timep - timep[0]
 
         raw_e = np.exp(-timepe / self.timeWeighting)
-        ff = np.fft.fft(datap ** 2) * np.fft.fft(raw_e[int(abs(len(datap) - len(raw_e))):])  # * fa
+
+        # 当
+        # ff = np.fft.fft(datap ** 2) * np.fft.fft(raw_e[int(abs(len(datap) - len(raw_e))):])  # * fa
+        ff = np.fft.fft(datap ** 2) * np.fft.fft(raw_e)  # * fa
         ff2 = np.fft.ifft(ff)
         ff2r = ff2.real
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
@@ -388,3 +392,38 @@ class LevelVsRpm(LevelTime):
         # image_path = self.save_img()
         # print(image_path)
         return rpml, lpr
+
+
+# 启停算法
+class StartStop(Calculate_Object):
+    """
+    从前端传到后台的数据处理之后，接入算法的时候，算法应该返回当前数据的X、Y坐标数据
+    """
+    # TODO: 返回值为 X Y
+    def butter_lowpass(self, cutoff, fs, order=5):
+        '''
+        构建滤波器
+        '''
+        nyq = 0.5 * fs
+        normal_cutoff = cutoff / nyq
+        b, a = butter(order, normal_cutoff, btype='low', analog=False)
+        return b, a
+
+    def butter_lowpass_filter(self, data, fs, cutoff, order=5):
+        '''
+        信号滤波
+        '''
+        b, a = self.butter_lowpass(cutoff, fs, order=order)
+        y = lfilter(b, a, data)
+        return y
+
+    def run(self, cutoff=30, order=4):
+        '''
+        :param raw_time: 时间数据
+        :param raw_data: 一个方向的加速度数据
+        :param cutoff: 截止频率,默认30Hz
+        :param order: 滤波器阶数，默认4阶
+        '''
+        fs = self.detectFs()
+        y = self.butter_lowpass_filter(self.raw_data, fs, cutoff=30, order=4)
+        return self.raw_time, y

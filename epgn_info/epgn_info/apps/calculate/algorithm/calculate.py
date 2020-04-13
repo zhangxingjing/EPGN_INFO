@@ -15,7 +15,7 @@ from numpy.fft.pocketfft import fft
 
 from matplotlib.ticker import MaxNLocator
 
-from read_hdf import read_hdf
+from readHDF import read_hdf
 
 absolute_dir = os.getcwd() + '/'  # 获取文件绝对路径
 

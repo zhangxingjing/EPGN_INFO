@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="epgn" uuid="5ca43824-e5c8-455c-b8fe-4291b9418e7b">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/epgn</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="EPGN_INFO" uuid="7e1c5036-f8fc-4b0d-b05a-cbd7ff8f2679">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO</jdbc-url>
+    </data-source>
+  </component>
+</project>

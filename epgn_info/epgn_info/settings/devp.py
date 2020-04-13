@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 注册DRF子应用
     'rest_framework',
+    'rest_framework.authtoken', # 设置Token
 
     # 注册CORS
     'corsheaders',
@@ -81,8 +82,8 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        # 'NAME': 'epgn',  # 新建数据库
-        'NAME': 'EPGN_INFO',  # 新建数据库==> 使用xadmin
+        'NAME': 'epgn',  # 新建数据库
+        # 'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
             'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',
@@ -216,8 +217,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',  # 使用Nginx
-    # 'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',  # 使用manage.py
+    # 'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',  # 使用Nginx
+    'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',  # 使用manage.py
     # 认证方式
     # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -272,10 +273,11 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-FILE_SAVE_PATH = "/home/zheng/Desktop/demo/R_HDF/"
+FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF/"
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
-    "(N)G3 VZ": "2nd Order VS RPM",
+    # "(N)G3 VZ": "2nd Order VS RPM",
+    "(N)G3 VZ": "Level VS Time",
     # "(N)G3 VS": "Level VS RPM",
     "(N)G3 VS": "2nd Order VS RPM",
     "(N)G5 VZ": "2nd Order VS RPM",
@@ -294,7 +296,7 @@ CALCULATE_RULE = {
     "(Square&Lab)Leerlauf P Gang mit Verbrauche": "Level VS Time",
     "(Square&Lab)Leerlauf R Gang mit Verbrauche": "Level VS Time",
     "(Square&Lab)Leerlauf N Gang mit Verbrauche": "Level VS Time",
-    "Start-Stop": "滤波器，目前还没有!"
+    "(Square&Lab)St-Sp": "Start Stop"
 }
 REFERENCE_CHANNEL = ["time", "EngineRPM", "EngineCoolantTemp", "VehicleSpeed"]
 FALLING_LIST = ['(N)G3 VS', '(N)G5 VS', ]

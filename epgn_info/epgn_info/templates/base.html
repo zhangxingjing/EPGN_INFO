@@ -12,8 +12,8 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <style>
         .layui-nav * {
-            font-size: 19px !important;
-            font-weight: bold;
+            font-size: 20px !important;
+            /*font-weight: bold;*/
         }
     </style>
     <script src="{% static 'js/vue_2.6.10.js' %}"></script>
@@ -73,8 +73,9 @@
             <!-- 右侧 -->
             <ul class="layui-nav layui-layout-right" id="user_info" lay-filter="layadmin-layout-right">
                 <ul class="layui-nav-item">
-                    <li class="layui-nav-item"><a href="/user_name/{{ user_id }}">{{ username }}，你好！</a></li>
+{#                    <li class="layui-nav-item"><a href="/user_name/{{ user_id }}">{{ username }}，你好！</a></li>#}
                     <!--<li class="layui-nav-item"><a href="/logout/">退出登录</a></li>-->
+                                        <li class="layui-nav-item"><a href="">epgn_info，你好！</a></li>
                     <li class="layui-nav-item"><a @click="logout">退出登录</a></li>
                 </ul>
             </ul>
@@ -85,7 +86,7 @@
             <div class="layui-side-scroll">
                 <div class="layui-logo">
                     <a href="/home/">
-                        <span>EPGN  V2.0</span>
+                        <span>EPGN  3.0</span>
                     </a>
                 </div>
 

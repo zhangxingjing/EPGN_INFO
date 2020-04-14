@@ -17,7 +17,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import login_required
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, JsonResponse,FileResponse, StreamingHttpResponse
+from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 # from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
 from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
 
@@ -790,11 +790,17 @@ def word(request):
 
 
 # 文件下载
-def file_down(self, request, pk):
+def file_down(request, pk):
+    """
+    在这里缺少一个request的参数
+    :param request:封装了前端传递过来的请求
+    :param pk:当前用户想要下载的文件id
+    :return:文件下载状态
+    """
+
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
-    file_path = "/home/zheng/Desktop/demo/R_HDF/" + file_name  # guan文件位置
-
+    file_path = "/home/zheng/Desktop/.demo/R_HDF/" + file_name  # guan文件位置
     # if os.path.isfile(file_path):  # 老数据
     #     # 判断下载文件是否存在
     #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
@@ -828,12 +834,17 @@ def file_down(self, request, pk):
         response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
         """在这里修改用户下载数据量"""
         try:
-            # 首先获取用户id
-            # 用户下载数据时，把当前用户信息提交到后台
-            author = "zheng"
-            author = User.objects.get(username=author)
+            # 当前用户下载数据的时候, 后台记录下载的数量,将用户下载量+1
+            # author = "zheng"
+            author = User.objects.get(username="郑兴涛")   # 这个是当前在线的用户
             author.download_files_data += 1
             author.save(update_fields=['download_files_data'])
+
+            # 在作者的数据被下载的时候, 给试验员的浏览量+1
+            uploader_name = Fileinfo.objects.get(id=pk).author  # 通过文件获取当前文件的试验员
+            uploader = User.objects.get(username=uploader_name)
+            uploader.views += 1
+            uploader.save(update_fields=['views'])
         except:
             return HttpResponse("Sorry but Data storage error")
     except:

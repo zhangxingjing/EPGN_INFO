@@ -1,8 +1,6 @@
 import re
-from pprint import pprint
-
-from .models import User, UserTask
 from rest_framework import serializers
+from .models import User, Task, Section, Direction
 from rest_framework_jwt.settings import api_settings
 
 
@@ -71,7 +69,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # 删除用户提交的多余数据创建用户
-        pprint(validated_data)
+        # pprint(validated_data)
         del validated_data['password2']
         del validated_data['allow']
         user = super().create(validated_data)
@@ -113,5 +111,19 @@ class UserFileSerializer(serializers.ModelSerializer):
 # 用户任务的序列化器
 class UserTaskSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserTask
+        model = Task
+        fields = "__all__"
+
+
+# 用户部门的序列化器
+class SectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Section
+        fields = "__all__"
+
+
+# 用户专业方向的序列化器
+class DirectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Direction
         fields = "__all__"

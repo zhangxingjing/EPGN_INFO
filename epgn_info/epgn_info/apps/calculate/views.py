@@ -306,10 +306,10 @@ class PPTParse(View):
             # TODO: 使用 pandas 对列表中的字典进行分类
             result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
 
-            pprint(result)
-
+            # pprint(result)
+            new_line_loc = []
             for channels in result:
-                # TODO: 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
+                # 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
                 y1 = channels["info"][0]["Y"]
                 y2 = channels["info"][1]["Y"]
                 y3 = channels["info"][2]["Y"]
@@ -330,13 +330,34 @@ class PPTParse(View):
                     point_loc.append(y)
                     line_loc.append(point_loc)
 
+                    # 向data里面添加数据的时候,先进行分段取峰值 ==> 调用segment_for()使用递归的方式对列表数据进行分段取值
+                    # 列表里面装的是当前的点(x, y), 通过y来判断取点位置
+                    new_line_loc = self.segment_for(line_loc, 1000, [])
+
                 return_items.append({
                     "status": "KP 80-20",
                     "filename": channels["filename"],
-                    "data": line_loc
+                    "data": new_line_loc
                 })
 
         return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
+
+    def segment_for(self, items, step, new_items):
+        """
+        这里传进来的items, 包装了(x, y), 获取y值之后,取最大值, 再将这个点放进新的列表中
+        :param items: 处理之前的列表
+        :param step: 需要处理的步长
+        :param new_items: 处理之后的列表
+        :return: 分段取峰值之后的结果列表
+        """
+        if len(items) > step:
+            # new_items.append(max(items[:3]))
+            new_items.append(max(items, key=lambda x: x[1]))    # 使用匿名函数, 获取比较y值之后的(x, y)
+            self.segment_for(items[step:], step, new_items)
+        else:
+            # new_items.append(max(items))
+            new_items.append(max(items, key=lambda x: x[1]))
+        return new_items
 
 
 # return_file_list: url(r'file_list/', views.return_file_list),

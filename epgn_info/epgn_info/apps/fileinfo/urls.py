@@ -7,7 +7,7 @@ router.register(r'parse_file', FileInfoViewSet)
 
 urlpatterns = [
     # 检索 ==> 表格重载
-    url(r'^car/$', file),
+    # url(r'^car/$', file),
 
     # 文件上传及通道修改
     # url(r'^upload/$', upload),

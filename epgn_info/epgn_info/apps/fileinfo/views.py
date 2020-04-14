@@ -2,30 +2,24 @@ import os
 import json
 import re
 import time
-from pprint import pprint
-
 import h5py
-from django.contrib.auth.decorators import login_required
+from .serializers import *
 from django.views import View
+from users.models import User
+from scripts.readHDF import read_hdf
+from django.db import transaction
+from django.db.models import Q, Max
+from django.core import serializers
+from django.shortcuts import render
+from rest_framework.response import Response
 from drf_haystack.viewsets import HaystackViewSet
-from rest_framework import mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.decorators import login_required
+from rest_framework.viewsets import ViewSet, ModelViewSet
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import HttpResponse, JsonResponse,FileResponse, StreamingHttpResponse
 # from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
 from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
-from readHDF import read_hdf
-from .serializers import *
-from django.db.models import Q, Max
-from django.db import transaction
-from django.core import serializers
-from django.http import FileResponse
-from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
-from django.shortcuts import render
-from django.http import StreamingHttpResponse
-# from drf_haystack.viewsets import HaystackViewSet
-from django.http import HttpResponse, JsonResponse
-from users.models import User
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 # 前端访问到页面的时候就发送查询`动力总成`的请求, 选择动力总成之后在发送k;`功率`的请求
@@ -112,7 +106,7 @@ class GearBoxView(ViewSet):
 
 
 # 文件信息的增删改查： router.register(r'^parse_file', views.FileInfoViewSet)
-class FileInfoViewSet(viewsets.ModelViewSet):
+class FileInfoViewSet(ModelViewSet):
     """
     使用Django Rest Framework重写文件的增删改查
     """
@@ -291,8 +285,8 @@ class FileInfoViewSet(viewsets.ModelViewSet):
             key_word = None
 
         # 这里是分页查询的page和limit
-        page = request.GET.get('page')
-        limit = int(request.GET.get('limit'))
+        page = request.GET.get('page', "1")
+        limit = int(request.GET.get('limit', "20"))
         print(page, limit)
 
         print(carmodel, propulsion, power, discipline, parts, key_word)
@@ -668,79 +662,79 @@ class FileSearchViewSet(HaystackViewSet):
 
 
 # 查询检索 + 分页查询 ==> 表格重载  ==> 使用模糊搜索
-def file(request):
-    # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
-    carmodel = request.GET.get("carmodel", None)
-    propulsion = request.GET.get("propulsion", None)
-    power = request.GET.get("power", None)
-    discipline = request.GET.get("discipline", None)
-    parts = request.GET.get("parts", None)
-    key_word = request.GET.get("key_word", None)
-
-    if key_word == "":
-        key_word = None
-
-    # 这里是分页查询的page和limit
-    page = request.GET.get('page')
-    limit = int(request.GET.get('limit'))
-
-    print(carmodel, propulsion, power, discipline, parts, key_word)
-    search_dict = {}
-    if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
-        # 如果用户什么都没有搜，显示所有
-        items = Fileinfo.objects.all()
-    else:
-        # 如果用户搜索了，先获取上面几个的查询结 ==> 有没有key_word
-        if carmodel:
-            search_dict["carmodel"] = carmodel
-        if propulsion:
-            search_dict["propulsion"] = propulsion
-        if power:
-            search_dict["power"] = power
-        if discipline:
-            search_dict["direction"] = discipline
-        if parts:
-            search_dict["parts"] = parts
-
-        # 如果没有key_word， items就是这个值
-        items = Fileinfo.objects.filter(**search_dict).order_by('-id')
-
-        # 如果key_word存在，再从上面搜索的QuerySet中搜索
-        if key_word:
-            print(key_word.replace(' ', ''))
-            key_word = key_word.replace(' ', '')
-            items = Fileinfo.objects.filter(**search_dict).filter(Q(produce__icontains=key_word) |
-                                                                  Q(author__icontains=key_word) |
-                                                                  Q(status__icontains=key_word) |
-                                                                  Q(file_name__icontains=key_word) |
-                                                                  Q(other_need__icontains=key_word)).order_by('-id')
-
-    # 这里是使用什么方法分页查询数据的
-    paginator = Paginator(items, limit)
-    try:
-        page_item = paginator.page(page)
-    except PageNotAnInteger:
-        page_item = paginator.page(1)
-    except EmptyPage:
-        page_item = paginator.page(paginator.num_pages)
-
-    items = json.loads(serializers.serialize("json", page_item))
-
-    # 构建数据列表
-    res_list = []
-
-    for item in items:
-        item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
-        res_list.append(item["fields"])
-
-    res = {
-        "code": 0,
-        "msg": "OK",
-        "count": paginator.count,  # 数据的条数
-        "data": res_list  # 返回的数据列表
-    }
-
-    return JsonResponse(res)
+# def file(request):
+#     # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
+#     carmodel = request.GET.get("carmodel", None)
+#     propulsion = request.GET.get("propulsion", None)
+#     power = request.GET.get("power", None)
+#     discipline = request.GET.get("discipline", None)
+#     parts = request.GET.get("parts", None)
+#     key_word = request.GET.get("key_word", None)
+#
+#     if key_word == "":
+#         key_word = None
+#
+#     # 这里是分页查询的page和limit
+#     page = request.GET.get('page')
+#     limit = int(request.GET.get('limit'))
+#
+#     print(carmodel, propulsion, power, discipline, parts, key_word)
+#     search_dict = {}
+#     if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
+#         # 如果用户什么都没有搜，显示所有
+#         items = Fileinfo.objects.all()
+#     else:
+#         # 如果用户搜索了，先获取上面几个的查询结 ==> 有没有key_word
+#         if carmodel:
+#             search_dict["carmodel"] = carmodel
+#         if propulsion:
+#             search_dict["propulsion"] = propulsion
+#         if power:
+#             search_dict["power"] = power
+#         if discipline:
+#             search_dict["direction"] = discipline
+#         if parts:
+#             search_dict["parts"] = parts
+#
+#         # 如果没有key_word， items就是这个值
+#         items = Fileinfo.objects.filter(**search_dict).order_by('-id')
+#
+#         # 如果key_word存在，再从上面搜索的QuerySet中搜索
+#         if key_word:
+#             print(key_word.replace(' ', ''))
+#             key_word = key_word.replace(' ', '')
+#             items = Fileinfo.objects.filter(**search_dict).filter(Q(produce__icontains=key_word) |
+#                                                                   Q(author__icontains=key_word) |
+#                                                                   Q(status__icontains=key_word) |
+#                                                                   Q(file_name__icontains=key_word) |
+#                                                                   Q(other_need__icontains=key_word)).order_by('-id')
+#
+#     # 这里是使用什么方法分页查询数据的
+#     paginator = Paginator(items, limit)
+#     try:
+#         page_item = paginator.page(page)
+#     except PageNotAnInteger:
+#         page_item = paginator.page(1)
+#     except EmptyPage:
+#         page_item = paginator.page(paginator.num_pages)
+#
+#     items = json.loads(serializers.serialize("json", page_item))
+#
+#     # 构建数据列表
+#     res_list = []
+#
+#     for item in items:
+#         item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
+#         res_list.append(item["fields"])
+#
+#     res = {
+#         "code": 0,
+#         "msg": "OK",
+#         "count": paginator.count,  # 数据的条数
+#         "data": res_list  # 返回的数据列表
+#     }
+#
+#     return JsonResponse(res)
 
 
 # 把数据渲染到base.html
@@ -796,7 +790,6 @@ def word(request):
 
 
 # 文件下载
-# @login_required
 def file_down(self, request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名

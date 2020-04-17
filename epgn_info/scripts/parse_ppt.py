@@ -112,7 +112,7 @@ class ParsePPT():
 
         # 在这里处理当前PPT，生成之后返回当前的PPT路径
         for item in self.data["items"]:
-            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["channel"] # 正则到合适的imgName
+            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["filename"] # 正则到合适的imgName
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', item["base64"]).group(2)
             img = base64.b64decode(str_bas64)
             pic_path = PPT_MODEL_PATH + 'image/{}.jpg'.format(pic_info)
@@ -122,7 +122,7 @@ class ParsePPT():
 
             # yield item["status"], item["channel"], pic_path
             img_dict = {
-                "channel": item["channel"],
+                "channel": item["filename"],
                 "status": item["status"],
                 "pic_path": pic_path
             }

@@ -21,8 +21,10 @@
     <script src="{% static 'js/axios-0.18.0.min.js' %}"></script>
     <script>
         var user_id = sessionStorage.user_id || localStorage.user_id;
+        var username = sessionStorage.username || localStorage.username;
         var token = sessionStorage.token || localStorage.token;
-        if (!(user_id && token)) {
+        var job_number = sessionStorage.job_number || localStorage.job_number;
+        if (!(user_id && token && username)) {
             location.href = '{% static "login_2.html" %}';
         }
     </script>
@@ -73,10 +75,9 @@
             <!-- 右侧 -->
             <ul class="layui-nav layui-layout-right" id="user_info" lay-filter="layadmin-layout-right">
                 <ul class="layui-nav-item">
-{#                    <li class="layui-nav-item"><a href="/user_name/{{ user_id }}">{{ username }}，你好！</a></li>#}
-                    <!--<li class="layui-nav-item"><a href="/logout/">退出登录</a></li>-->
-                                        <li class="layui-nav-item"><a href="">epgn_info，你好！</a></li>
-                    <li class="layui-nav-item"><a @click="logout">退出登录</a></li>
+                    <li class="layui-nav-item"><a href="">[[ username ]]，你好！</a></li>
+                    <!--<li class="layui-nav-item"><a :href="'/user/'+ user_id">[[ username ]]，你好！</a></li>-->
+                    <li class="layui-nav-item"><a href="/logout/">退出登录</a></li>
                 </ul>
             </ul>
         </div>
@@ -192,21 +193,20 @@
     })
 </script>
 
-<!-- 判断用户登录状态
+<!-- 判断用户登录状态 -->
 <script>
     var vm = new Vue({
-        // el: "#layui-fluid",
+        el: "#user_info",
         delimiters: ['[[', ']]'],
-        el: "#LAY_app",
         data: {
             user_id: sessionStorage.user_id || localStorage.user_id,
             token: sessionStorage.token || localStorage.token,
-            username: '',
-            job_number: '',
+            username: sessionStorage.username || localStorage.username,
+            job_number: sessionStorage.job_number || localStorage.job_number,
         },
         mounted: function () {
             // 判断用户的登录状态
-            if (this.user_id && this.token) {
+            if (this.user_id && this.token && this.username) {
                 axios.get('/user/', {
                     // 向后端传递JWT token的方法
                     headers: {
@@ -243,7 +243,7 @@
             },
         }
     })
-</script> -->
+</script>
 
 {% block javascript %}{% endblock %}
 

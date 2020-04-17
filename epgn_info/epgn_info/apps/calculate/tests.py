@@ -3,6 +3,7 @@ from pprint import pprint
 import pandas as pd
 from django.test import TestCase
 
+
 # ave_items = [
 #     {'data': {'X': [0.0000e+00, 5.0000e-01, 1.0000e+00, ..., 4.0950e+03, 4.0955e+03,
 #                     4.0960e+03], 'Y': [-9.86942044, 1.65740654, 6.17372882, ..., -18.63486427,
@@ -73,3 +74,25 @@ from django.test import TestCase
 #
 # ML_A_X = []
 # ML_A_y = []
+
+
+def segment_for(items, step, new_items):
+    """
+    分段取峰值
+    :param items: 一个装有元组的列表
+    :param step: 分段的步长
+    :param new_items: 递归时候的参数[]
+    :return: 分段取峰值之后的列表
+    """
+    if len(items) > step:
+        # new_items.append(max(items[:3]))
+        new_items.append(max(items, key=lambda x: x[1]))
+        segment_for(items[step:], step, new_items)
+    else:
+        # new_items.append(max(items))
+        new_items.append(max(items, key=lambda x: x[1]))
+    return new_items
+
+
+a = [['s', 0,], ['s', 706], ['e', 14], ['s', 16], ['e', 7], ['s', 6]]
+print(segment_for(a, 3, []))

@@ -107,12 +107,9 @@
             <form class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
                     <label class="layui-form-label" style="font-size: 18px;font-weight: bold">复选框</label>
-                    <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox">
-                        <input type="checkbox" name="EngineRPM" title="EngineRPM" value="EngineRPM">
-                        <input type="checkbox" new_l="VL" title="VL" value="VL">
-                        <input type="checkbox" name="HR" title="HR" value="HR">
-                        <input type="checkbox" name="VR" title="VR" value="VR">
-                        <input type="checkbox" name="HL" title="HL" value="HL">
+                    <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
+                         id="channelselectList">
+
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -136,15 +133,12 @@
                     <div class="pic-container">
                         <div id="addsec"></div>
                         <div class="pic1">
-
                         </div>
                     </div>
                 </div>
             </div>
 
-            <button class="layui-btn"
-                    style="margin: 0px 10px 10px 0px; float: right" onclick="sendbase64()">立即导出
-            </button>
+            <button class="layui-btn" style="margin: 0px 10px 10px 0px; float: right" onclick="sendbase64()">立即导出</button>
         </div>
     </div>
 {% endblock %}
@@ -173,32 +167,41 @@
         var letdata;
         var arr = [];
         var series = [];
+        var data1 = [];
+        var sessionType = sessionStorage.getItem("sessionType");
+        console.log(sessionType);
+        if (sessionType == 1) {
+            var uploadfilenewname = JSON.parse(sessionStorage.getItem("uploadnewname"));
+            console.log(Array.isArray(uploadfilenewname))
+            $.ajax({
+                url: /parse_ppt/,
+                dataType: "json",
+                data: JSON.stringify({"fileList": uploadfilenewname}),
+                type: "put",
+                success: function (result) {
+                    echartdata = result.data;
+                    getpic();
+                }
+            });
+        } else {
+            getTree();
+        }
 
-        var uploadfilenewname = sessionStorage.getItem("uploadnewname");
-        uploadfilenewname = uploadfilenewname.split(',');
-
-
-        $.ajax({
-            url: /parse_ppt/,
-            dataType: "json",
-            data: JSON.stringify({"fileList": uploadfilenewname}),
-            type: "put",
-            success: function (result) {
-                echartdata = result.data;
-                getpic();
-
-            }
+        layui.config({base: '{% static 'home/' %}'}).use('index', function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                admin = layui.admin,
+                element = layui.element,
+                table = layui.table,
+                form = layui.form;
         });
-
 
         function getpic() {
             for (let i = 0; i < echartdata.length; i++) {
                 letdata = echartdata[i].data;
                 let chartnum = "main" + i;
                 var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
-
                 $("#addsec").append(imgsection);
-
                 var myChart = echarts.init(document.getElementById(chartnum));
                 var option = {
                     xAxis: {
@@ -206,7 +209,6 @@
                         name: '横坐标',
                         fontSize: '25'
                     },
-
                     yAxis: {
                         type: 'value',
                         name: '纵坐标',
@@ -225,7 +227,6 @@
                             start: 0,
                             end: 100
                         },
-
                     ],
                     series: [
                         {
@@ -255,15 +256,11 @@
                     ],
                     type: 'png'　　//图片类型支持png和jpeg
                 });
-                {#console.log(picBase64Info);#}
-                {#arr.push(picBase64Info);#}
-                {#console.log(arr);#}
                 series.push({
                     filename: echartdata[i].filename,
                     status: echartdata[i].status,
                     channel: echartdata[i].channel,
                     base64: picBase64Info,
-
                 })
             }
         }
@@ -272,39 +269,33 @@
             series = JSON.stringify(series);
             sessionStorage.setItem("filebase64list", series);
             console.log(sessionStorage.getItem("filebase64list"));
-
             window.open('/test_page/')
-
-            {#$.ajax({#}
-            {#   url: /parse_ppt/,#}
-            {#   dataType: "json",#}
-            {#   data: JSON.stringify({"items":series}),#}
-            {#   type: "post",#}
-            {#   success: function (result) {#}
-            {#       console.log(result);#}
-            {#   },#}
-            {#   error: function (result) {#}
-            {#       console.log(result)#}
-            {#   }#}
-            {#   });#}
         }
-
 
         function getTree() {
             var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
             console.log(send_message);
             $.ajax({
-                url: "/channel/",
+                url: "/channelList/",
                 dataType: "json",
-                type: "post",
+                type: "put",
                 data: JSON.stringify({"file_info": send_message}),
                 success: function (result) {
                     old_tree = result.file_info;
                     console.log(old_tree);
-                    layui.use(['tree', 'util'], function () {
+                    data1 = old_tree;
+                    var VList = result.channel_list;
+                    console.log(VList.length)
+                    for (let i = 0; i < VList.length; i++) {
+                        console.log(VList[i]);
+                        $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
+                    }
+
+                    layui.use(['tree', 'util', 'form', 'layer'], function () {
                         var tree = layui.tree
                             , layer = layui.layer
-                            , util = layui.util
+                            , form = layui.form
+                        util = layui.util
                         //基本演示
                         tree.render({
                             elem: '#file_tree'
@@ -315,6 +306,27 @@
                             , click: function (obj) {
                                 var data = obj.data;  //获取当前点击的节点数据
                                 layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                            }
+                        });
+
+                        form.render();
+                        form.on('checkbox(selectChannellist)', function (data) {
+                            for (let i = 0; i < data1.length; i++) {
+                                var len = data1[i].children;
+                                for (let j = 0; j < len.length; j++) {
+                                    var lenchild = data1[i].children[j].children;
+                                    for (let k = 0; k < lenchild.length; k++) {
+                                        var obj = data1[i].children[j].children[k]
+                                        if (data.elem.checked == true && obj.title == data.value) {
+                                            obj.checked = true;
+                                            clickchannel();
+                                        } else if (data.elem.checked == false && obj.title == data.value) {
+                                            obj.checked = false;
+                                            clickchannel();
+                                        } else {
+                                        }
+                                    }
+                                }
                             }
                         });
 
@@ -347,13 +359,31 @@
                             }
                         });
                     });
-
-
                 }
             });
         };
 
-        getTree();
+        function clickchannel() {
+            layui.use(['tree', 'util'], function () {
+                var tree = layui.tree,
+                    layer = layui.layer,
+                    util = layui.util,
+                    form = layui.form,
+                    data = data1
+                tree.render({
+                    elem: '#file_tree'
+                    , data: data
+                    , showCheckbox: true  //是否显示复选框
+                    , id: 'demoId1'
+                    , isJump: true //是否允许点击节点时弹出新窗口跳转
+                    ,
+                    edit: ['del'], click: function (obj) {
+                        var data = obj.data;  //获取当前点击的节点数据
+                        layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
+                    }
+                });
+            });
+        }
 
         function changeTreeView() {
             layui.use('form', function () {
@@ -361,7 +391,6 @@
                 var form = layui.form;
                 var channellist = [];
                 form.on('submit(formCheckbox)', function (data) {
-
                     for (var key in data.field) {
                         channellist.push(data.field[key]);
                     }
@@ -374,11 +403,8 @@
                             } else {
                                 old_tree[0].children[i].children[t]['checked'] = false;
                             }
-
                         }
                     }
-                    console.log(old_tree[0]);
-
                     tree.render({
                         elem: '#file_tree'
                         , data: old_tree
@@ -400,9 +426,6 @@
                 var form = layui.form;
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
-
-
-                    console.log(checkedData1[0]);
                     var calculatename = $("#calculate option:selected").val();
                     $.ajax({
                         url: "/channelList/",
@@ -429,17 +452,13 @@
                                 </div>`
                                     );
                                 }
-
                             }
                         }
-
                     })
                     return false
                 });
             });
         }
-
-
     </script>
 
     <script>
@@ -466,7 +485,6 @@
                     }]
                 ],
             });
-
             var $ = layui.$,
                 active = {
                     getCheckData: function () { //获取选中数据
@@ -477,5 +495,4 @@
                 };
         });
     </script>
-
 {% endblock %}

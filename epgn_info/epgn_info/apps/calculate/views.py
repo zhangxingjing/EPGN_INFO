@@ -28,41 +28,41 @@ from epgn_info.settings.devp import BASE_DIR  # manage
 class ChannelList(View):
 
     # 文件通道信息
-    def get(self, request):
-        if request.method == "POST":
-            body = request.body
-            body_str = body.decode()
-            data_list = json.loads(body_str)["file_info"]
+    def put(self, request):
+        body = request.body
+        body_str = body.decode()
+        data_list = json.loads(body_str)["file_info"]
 
-            channel_dict_list = []
-            num_1 = 1
-            for file in data_list:
-                file_channel_info = {}
-                file_name = file["file_name"]
-                channel_dict, items = read_hdf(file_name)
-                channel_key_list = []
+        set_channel_list = []
+        channel_dict_list = []
+        num_1 = 1
+        for file in data_list:
+            file_channel_info = {}
+            file_name = file["file_name"]
+            channel_dict, items = read_hdf(file_name)
+            channel_key_list = []
 
-                for key, value in channel_dict.items():
-                    channel_key_list.append({"title": value, "id": num_1})
-                    num_1 += 1
-
-                file_channel_info["title"] = file_name
-                file_channel_info["id"] = num_1
-                file_channel_info["spread"] = True
-                file_channel_info["children"] = channel_key_list
-                channel_dict_list.append(file_channel_info)
+            for key, value in channel_dict.items():
+                set_channel_list.append(value.replace(' ', ''))
+                channel_key_list.append({"title": value.replace(' ', ''), "id": num_1})
                 num_1 += 1
 
-            main_info = [{
-                "title": "文件夹名",
-                "id": 1,
-                "field": 'name1',
-                "checked": False,
-                "spread": True,
-                "children": channel_dict_list
-            }]
-            return JsonResponse({"file_info": main_info})
-        return HttpResponse("POST请求页面，请检查请求方式！")
+            file_channel_info["title"] = file_name
+            file_channel_info["id"] = num_1
+            file_channel_info["spread"] = True
+            file_channel_info["children"] = channel_key_list
+            channel_dict_list.append(file_channel_info)
+            num_1 += 1
+
+        main_info = [{
+            "title": "文件夹名",
+            "id": 1,
+            "field": 'name1',
+            "checked": False,
+            "spread": True,
+            "children": channel_dict_list
+        }]
+        return JsonResponse({"file_info": main_info, "channel_list":list(set(set_channel_list))})
 
     # 通道去重
     def post(self, request):
@@ -137,7 +137,12 @@ class CalculateParse(View):
 # PPT
 class PPTParse(View):
 
-    # 接受base64，返回图片地址
+    # 接收文件名，返回算法数据
+    def put(self, request):
+        return_items = self.parse_calculate(request)
+        return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
+
+    # 接受base64，返回PPT地址
     def post(self, request):
         # save_path = 'PPTModel/'
         # body = request.body
@@ -154,6 +159,7 @@ class PPTParse(View):
         try:
             ppt_path = ParsePPT(items).run()
             # 这里return的url，是可以直接下载的！
+            print("ppt_path:", ppt_path)
             return JsonResponse({"status": 200, "path": ppt_path})
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
@@ -161,6 +167,7 @@ class PPTParse(View):
     # 接受需要下载的文件地址，返回文件信息
     def get(self, request):
         ppt_path = request.GET.get("path")
+        print("ppt_path:", ppt_path)
         file_name = re.search(r'.*/(.*\.pptx)', ppt_path).group(1)
 
         def file_iterator(file_path, chunk_size=512):
@@ -190,29 +197,41 @@ class PPTParse(View):
             return HttpResponse("Sorry but Not Found the File")
         return response
 
-    # 接收文件名，返回算法数据
-    def put(self, request):
+
+    # 返回分段取峰值
+    def patch(self, request):
+        return_items = self.parse_calculate(request)
+
+        for i in return_items:
+            print(i["channel"])
+
+        # # 向data里面添加数据的时候,先进行分段取峰值 ==> 调用segment_for()使用递归的方式对列表数据进行分段取值
+        # # 列表里面装的是当前的点(x, y), 通过y来判断取点位置
+        new_items = self.segment_for(list(return_items["data"]), 1000, [])
+        print(new_items)
+
+        return JsonResponse({"status": 200, "msg": "前端请求正常, 查看数据处理!"})
+
+    # 算法处理
+    def parse_calculate(self, request):
         """
         从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
         :param request: Request请求对象
         :return: 前端数据列表产生的XY轴坐标信息
         """
-        start_time = time.time()
         ave_items = []
         return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
-        print(set(file_list))
         for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
-            # print(file)
             rpm_type = 'rising'
+            print(file, type(file))
             status = Fileinfo.objects.get(file_name=file).status
 
             # 判断当前文件加减速：获取当前工况，通过迭代判断当前是加速还是减速
             if status in FALLING_LIST:
                 rpm_type = 'falling'
 
-            # print(status)
             # 如果当前文件的工况信息存在，说明这个文件是正确的
             if status:
                 calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
@@ -221,14 +240,12 @@ class PPTParse(View):
                 # 文件中的哪些数据通道需要放到算法中进行计算
                 # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
                 # channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
-                # channel_calculate_list = [i for i in channel_calculate_list if i not in REFERENCE_CHANNEL]
                 channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]
 
                 # 计算启停算法的时候，只计算一个通道的数据
                 if status == "(Square&Lab)St-Sp":
                     for ss_channel in channel_calculate_list:
                         if "X" in ss_channel:
-                            # print(ss_channel)
                             channel_calculate_list = [ss_channel]
 
                 # 构建children中的字典数据
@@ -262,16 +279,13 @@ class PPTParse(View):
 
                 # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
-                    return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
+                    return None
+                    # return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
 
                 # items里面存放的一个文件中所有通道的算法结果
                 # 我们需要将 所有文件 中的 所有数据 ，按照键值对的形式存放到一个列表中，返回
                 # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
                 # TODO: 添加 KP 80-20 的求均值
-
-                # if status == "KP 80-20":  # 说明这里测试的就是一组数据文件
-                #     ave_items.append(items)  # 这里取出了KP80-20的数据，对每个通道求均值
-                # else:
                 for item in items:
                     if status == "KP 80-20":
                         ave_items.append(item)
@@ -295,19 +309,16 @@ class PPTParse(View):
                         item["data"] = line_loc
                         item["status"] = status
                         return_items.append(item)
-                # return_items.append(json.dumps(items, cls=NumpyEncoder)) # 将Array放入字典
             else:
-                print(file)
-                return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
+                return None
+                # return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
 
         # 对KP80-20工况下的数据进行求均值
         if len(ave_items) > 0:
             df = pd.DataFrame(ave_items)
-            # TODO: 使用 pandas 对列表中的字典进行分类
+            # 使用 pandas 对列表中的字典进行分类
             result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
 
-            # pprint(result)
-            new_line_loc = []
             for channels in result:
                 # 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
                 y1 = channels["info"][0]["Y"]
@@ -330,33 +341,31 @@ class PPTParse(View):
                     point_loc.append(y)
                     line_loc.append(point_loc)
 
-                    # 向data里面添加数据的时候,先进行分段取峰值 ==> 调用segment_for()使用递归的方式对列表数据进行分段取值
-                    # 列表里面装的是当前的点(x, y), 通过y来判断取点位置
-                    new_line_loc = self.segment_for(line_loc, 1000, [])
-
                 return_items.append({
                     "status": "KP 80-20",
                     "filename": channels["filename"],
-                    "data": new_line_loc
+                    "data": line_loc
                 })
 
-        return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
+        return return_items
+        # return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 
+    # 取峰值
     def segment_for(self, items, step, new_items):
         """
-        这里传进来的items, 包装了(x, y), 获取y值之后,取最大值, 再将这个点放进新的列表中
-        :param items: 处理之前的列表
-        :param step: 需要处理的步长
-        :param new_items: 处理之后的列表
-        :return: 分段取峰值之后的结果列表
+        分段取峰值(递归): 这里传进来的items, 包装了(x, y), 获取y值之后,取最大值, 再将这个点放进新的列表中
+        :param items: 一个装有元组的列表
+        :param step: 分段的步长
+        :param new_items: 每一段的峰值列表
+        :return: 分段取峰值之后的列表
         """
         if len(items) > step:
             # new_items.append(max(items[:3]))
-            new_items.append(max(items, key=lambda x: x[1]))    # 使用匿名函数, 获取比较y值之后的(x, y)
+            new_items.append(max(items, key=lambda x: x[0]))  # 使用匿名函数, 获取比较y值之后的峰值
             self.segment_for(items[step:], step, new_items)
         else:
             # new_items.append(max(items))
-            new_items.append(max(items, key=lambda x: x[1]))
+            new_items.append(max(items, key=lambda x: x[0]))
         return new_items
 
 

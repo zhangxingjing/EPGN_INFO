@@ -388,7 +388,7 @@ class ParseFile(View):
         # save_path = "/media/sf_E_DRIVE/FileInfo/"  # guan-文件存放地址
         # save_path = "/media/sf_E_DRIVE/EPGNINFO/"  # guan2-文件存放地址
         # save_path = "/home/spider-spider/Documents/qwe/"  # home 文件存放地址
-        save_path = "/home/zheng/Desktop/demo/"  # work
+        save_path = "/home/zheng/Desktop/.demo/"  # work
         # save_path = "/media/sf_Y_DRIVE/2019_Daten/"  # work
 
         # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
@@ -432,17 +432,21 @@ class ParseFile(View):
                     nowHDF = open(FILE_SAVE_PATH + new_name, 'rb')
                     HDF_header = ""
                     for content in nowHDF.readlines():
-                        HDF_header += content.decode()
+                        try:
+                            HDF_header += content.decode()
+                        except:
+                            continue
                         if content == b';#tag:                             \r\n' or content == b';#tag:                             \\r\\n':
                             break
 
                     # 将头文件中的通道信息, 返回给前端
                     key_list = re.findall(r'channel definition:\W+(\d+)', HDF_header, re.S)
                     channel_list = re.findall(r'name str:\W+(\w+)', HDF_header, re.S)
+                    print(channel_list, key_list)
                     file_channel_data = {}
-                    for key, channel_one in zip(key_list, channel_list):
-                        file_channel_data.update({"channel {}".format(key): channel_one})
-
+                    file_channel_list = []
+                    # for key, channel_one in zip(key_list, channel_list):
+                    # file_channel_data.update({"channel {}".format(key): channel_one})
                     # 返回文件上传处理完成
                     res_dict = {
                         "code": 0,
@@ -451,7 +455,7 @@ class ParseFile(View):
                             "file_save_path": save_path + new_name,
                             "file_old_name": filename,
                             "file_new_name": new_name,
-                            "file_channel_data": file_channel_data
+                            "file_channel_list": channel_list
                         }
                     }
 
@@ -509,75 +513,94 @@ class ParseFile(View):
         text = request.body.decode()
         body_json = json.loads(text)
         file_dict = body_json["data"]
-
+        msg = ""
+        print(file_dict)
         # 对比数据库, 没有的添加得到数据库中
         with transaction.atomic():  # 数据库回滚
+            # for key, value in file_dict.items():
+            #     channel_norm = Channel.objects.filter(Q(parent_id=None) & Q(name=key))
+            #     channel_norm_len = len(channel_norm)
+            #
+            #     如果标准通道不存在,我们实时创建一个
+            #     if channel_norm_len == 0:
+            #         new_norm_channel = Channel()
+            #         # parent_id=None 的 最大 ID
+            #         new_norm_sql_id = int(Channel.objects.filter(parent_id=None).aggregate(Max('id'))["id__max"]) + 100
+            #         new_norm_channel.id = new_norm_sql_id
+            #         # print(new_norm_channel.id)
+            #         new_norm_channel.name = key
+            #         new_norm_channel.parent_id = None
+            #
+            #         new_norm_channel.save()
+            #
+            #     通过标准通道, 拿到这个标准通道的其他写法,
+            #     for other_channel_info in value:
+            #         sql_channel = Channel.objects.filter(name=other_channel_info)
+            #         sql_channel_len = len(sql_channel)
+            #
+            #         # 如果其他写法不在数据库中, 实时新建一条其他写法的数据
+            #         if sql_channel_len == 0:
+            #             print(other_channel_info)
+            #             other_channel_data = Channel()
+            #             other_channel_data.name = other_channel_info
+            #             other_channel_data.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
+            #             other_channel_data.save()
+            #         else:
+            #             continue
+
             for key, value in file_dict.items():
-                channel_norm = Channel.objects.filter(Q(parent_id=None) & Q(name=key))
-                channel_norm_len = len(channel_norm)
+                sql_channel = Channel.objects.filter(name=value)
+                sql_channel_len = len(sql_channel)
 
-                # 如果标准通道不存在,我们实时创建一个
-                if channel_norm_len == 0:
-                    new_norm_channel = Channel()
-                    # parent_id=None 的 最大 ID
-                    new_norm_sql_id = int(Channel.objects.filter(parent_id=None).aggregate(Max('id'))["id__max"]) + 100
-                    new_norm_channel.id = new_norm_sql_id
-                    print(new_norm_channel.id)
-                    new_norm_channel.name = key
-                    new_norm_channel.parent_id = None
-                    new_norm_channel.save()
-
-                # 通过标准通道, 拿到这个标准通道的其他写法,
-                for other_channel_info in value:
-                    sql_channel = Channel.objects.filter(name=other_channel_info)
-                    sql_channel_len = len(sql_channel)
-
-                    # 如果其他写法不在数据库中, 实时新建一条其他写法的数据
-                    if sql_channel_len == 0:
-                        print(other_channel_info)
-                        other_channel_data = Channel()
-                        other_channel_data.name = other_channel_info
-                        other_channel_data.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
-                        other_channel_data.save()
-                    else:
-                        continue
+                # 如果其他写法不在数据库中, 实时新建一条其他写法的数据
+                if sql_channel_len == 0:
+                    new_other_channel = Channel()
+                    new_other_channel.name = value
+                    new_other_channel.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
+                    new_other_channel.save()
 
         # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
         file_list = body_json["filelist"]
-        for file in file_list:
+        for file in set(file_list):
             # TODO: 可以使用多任务进行优化
             # 在这里拿到文件中通道名, 进行修改
             read_info = h5py.File(FILE_SAVE_PATH + file, 'r+')
             for channel_key in read_info.keys():
+                # print(channel_key)
                 # 找到当前通道对应的标准通道
-                # print(channel_key, read_info[channel_key].value)
                 try:
                     read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
                 except:
                     read_hdf_channel = channel_key
-                # print(channel_key, read_hdf_channel)
 
-                norm_channel_key = Channel.objects.get(name=read_hdf_channel)
+                norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
 
                 # 判断当前通道名 是不是 标准写法
-                if norm_channel_key.parent_id is not None:
-                    # 不是标准写法
-                    change_channel_to_norm = Channel.objects.get(id=norm_channel_key.parent_id)
-                    norm_channel_key.name = change_channel_to_norm.name
+                if len(norm_channel_key) == 0:
+                    print(norm_channel_key)
+                    if norm_channel_key[0].parent_id is not None:
+                        # 不是标准写法
+                        change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
+                        norm_channel_key.name = change_channel_to_norm.name
 
-                # 跳过已修改的部分
-                if norm_channel_key.name == channel_key:
-                    continue
+                    # 跳过已修改的部分
+                    if norm_channel_key.name == channel_key:
+                        continue
 
-                # 最后修改文件中的通道名
-                print(norm_channel_key.name)
-                read_info[norm_channel_key.name] = read_info[channel_key]
-                del read_info[channel_key]
-                # read_info.update({norm_channel_key:read_info.pop(channel_key)})
-                # read_info[norm_channel_key]=read_info[channel_key].value
-
+                    # 最后修改文件中的通道名
+                    read_info[norm_channel_key.name] = read_info[channel_key]
+                    del read_info[channel_key]
+                    read_info.update({norm_channel_key: read_info.pop(channel_key)})
+                    read_info[norm_channel_key] = read_info[channel_key].value
+                    msg = "OK!"
+                else:
+                    # read_info[norm_channel_key.name] = read_info[channel_key]
+                    # del read_info[channel_key]
+                    # read_info.update({norm_channel_key: read_info.pop(channel_key)})
+                    # read_info[norm_channel_key] = read_info[channel_key].value
+                    msg = "OK"
         # 返回前端通道修改的状态
-        return JsonResponse({"status": 200, "msg": "OK!"})
+        return JsonResponse({"status": 200, "msg": msg})
 
 
 # SQL中Channel的增删改查
@@ -618,6 +641,23 @@ class CheckChannel(View):
 
             return JsonResponse({"status": 200, "data": B_channel_dict})
         return JsonResponse({"status": 400, "msg": "后台未接收到数据！"})
+
+    def patch(self, request):
+        text = request.body.decode()
+        body_json = json.loads(text)
+        channel_list = body_json["channel_list"]
+
+        print(channel_list)
+        channel_none_list = []
+        channel_norm_list = []
+        for channel_name in channel_list:
+            channel = Channel.objects.filter(name=channel_name)
+            if len(channel) < 1:
+                channel_none_list.append(channel_name)
+        channel_norm = Channel.objects.filter(parent_id=None)
+        for channel_ in channel_norm:
+            channel_norm_list.append(channel_.name)
+        return JsonResponse({"status": 200, "data": channel_none_list, "norm_data": channel_norm_list})
 
     def post(self, request):
         text = request.body.decode()
@@ -801,6 +841,7 @@ def file_down(request, pk):
     """前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径"""
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     file_path = "/home/zheng/Desktop/.demo/R_HDF/" + file_name  # guan文件位置
+
     # if os.path.isfile(file_path):  # 老数据
     #     # 判断下载文件是否存在
     #     # file_path = "/media/sf_E_DRIVE/FileInfo/hdf/" + file_name
@@ -836,7 +877,7 @@ def file_down(request, pk):
         try:
             # 当前用户下载数据的时候, 后台记录下载的数量,将用户下载量+1
             # author = "zheng"
-            author = User.objects.get(username="郑兴涛")   # 这个是当前在线的用户
+            author = User.objects.get(username="郑兴涛")  # 这个是当前在线的用户
             author.download_files_data += 1
             author.save(update_fields=['download_files_data'])
 

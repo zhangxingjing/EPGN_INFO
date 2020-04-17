@@ -296,7 +296,7 @@
         <div class="data-list">
         </div>
         <div class="bulletbox-button">
-            <button class="data-submit">
+            <button class="data-submit" onclick="confirmCalculate()" >
                 <a href="/calculate/" style="color: white">
                     确认计算
                 </a>
@@ -325,6 +325,11 @@
 {% block javascript %}
     <!-- 使用layui框架 -->
     <script>
+
+    function confirmCalculate(){
+        sessionStorage.setItem("sessionType", 0);
+    }
+
         var listArray = null;
         var sessionArray = [];
         var judge_sessionValue = sessionStorage.getItem("sessionString");

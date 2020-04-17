@@ -2,7 +2,6 @@ import h5py
 
 # from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Nginx
 # from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
-
 FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF/"
 
 
@@ -35,8 +34,8 @@ def read_hdf(file_name):
 
 """代码执行顺序"""
 # start_time = time()
-# channel_dict, items = read_hdf('kp 80-20 run02.hdf')
-# pprint(channel_dict)  # 打印HDF数据
+# channel_dict, items = read_hdf('2020-04-09_kp 80-20 run03.hdf')
+# print(channel_dict)  # 打印HDF数据
 # print("raw_time:", items[5])
 # print("raw_data:", items[1])
 # print("raw_rpm:", items[0])

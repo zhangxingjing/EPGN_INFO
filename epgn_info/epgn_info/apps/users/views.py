@@ -106,3 +106,35 @@ class LogoutView(View):
 # home页面
 def home(request):
     return render(request, 'home.html')
+
+
+# 用户信息
+def user_info(request, pk):
+    if request.method =="GET":
+        return render(request, 'userinfo.html')
+
+    user = User.objects.get(id=pk)
+    username = request.POST.get("username", None)
+    old_password = request.POST.get("old_password", None)
+    new_password = request.POST.get("new_password", None)
+    re_password = request.POST.get("re_password", None)
+
+    print(username, old_password, new_password, re_password)
+
+    user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
+    if user is None:
+        return JsonResponse({"info": "当前密码输入错误，请重新输入！"})
+    if new_password is None or re_password is None or new_password != re_password:
+        return JsonResponse({"info": "新密码输入错误，请重新输入！"})
+    if user.is_active:  # 判断当前用户是否登录
+        return JsonResponse({"items": "当前用户未登录，请 登录 后修改密码！"})
+    user = User.objects.get(username=username)
+    with transaction.atomic():  # 数据库回滚
+        try:
+            user.set_password(new_password)
+            user.save()
+            data = {"info": "密码修改成功，请重新登录！"}
+        except Exception as error:
+            user = user
+            data = {"info": "密码修改失败，请联系超管！"}
+    return JsonResponse(data)

@@ -20,16 +20,18 @@
         .layui-table td, .layui-table th {
             font-weight: bold;
         }
+
         .list-data {
-           font-size:18px;
-           padding:3px;
-           height: 35px;
-           line-height:35px
+            font-size: 18px;
+            padding: 3px;
+            height: 35px;
+            line-height: 35px
         }
-       .list-data  img{
-        height: 50%;
-        padding-top:2px;
-        width:auto
+
+        .list-data img {
+            height: 50%;
+            padding-top: 2px;
+            width: auto
         }
     </style>
     <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
@@ -65,7 +67,9 @@
                                     <select name="car_model" lay-verify="required" id="car_model" 　lay-search=""
                                             style="border: 1px solid #e6e6e6;height: 38px;line-height:38px;width:190px;padding-left: 10px">
                                         <option value="">请选择</option>
-                                        <option v-for="car_model in car_models" 　v-bind:value=car_model.id class="option_general">[[ car_model.name ]]</option>
+                                        <option v-for="car_model in car_models" 　v-bind:value=car_model.id
+                                                class="option_general">[[ car_model.name ]]
+                                        </option>
                                     </select>
                                 </div>
                             </div>
@@ -217,8 +221,7 @@
                         </div>
 
                         <!-- 第三行表单数据 -->
-                        <div class="layui-form-item" lay-filter="example">
-
+                        <div class="layui-form" lay-filter="three">
 
                             <!-- 日期选择 -->
                             <div class="layui-inline">
@@ -240,8 +243,9 @@
                                     试验员
                                 </label>
                                 <div class="layui-input-inline">
-                                    <input type="text" name="author" id="author" lay-verify="username"
-                                           placeholder="如：Zhang san" autocomplete="off" class="layui-input" onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
+                                    <input type="text" name="author" id="author" lay-verify="author"
+                                           placeholder="如：Zhang san" autocomplete="off" class="layui-input"
+                                           onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
                                 </div>
                             </div>
 
@@ -286,9 +290,13 @@
                             </table>
                         </div>
                         <div style="text-align: center">
-                            <button type="button" name="filename" class="layui-btn layui-btn-normal" id="testList">选择文件 </button>
+                            <button type="button" name="filename" class="layui-btn layui-btn-normal" id="testList">
+                                选择文件
+                            </button>
                             <button type="submit" class="layui-btn" id="testListAction">开始上传</button>
-                            <button type="button" class="layui-btn  layui-btn-warm" style="margin-left: 0px" id="analysisCalculate">分析计算 </button>
+                            <button type="button" class="layui-btn  layui-btn-warm" style="margin-left: 0px"
+                                    id="analysisCalculate">分析计算
+                            </button>
                             <!-- <script>
                                                 $("#math").click(function () {
                                                     layer.msg('玩命提示中');
@@ -306,16 +314,43 @@
 
 
 
-
+    <div id="shadowlayer" style="width:100%;
+    height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
+    <div id="shadowtext"
+         style="width: 420px;height: 400px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-175px;top:50%;margin-top:-200px;border-radius:5px;display: none">
+        <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid">
+            <div style="width:30px;height: 30px;margin-left:90%;padding-top:7px">
+                <img id="closewindow11" style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}"/>
+            </div>
+        </div>
+        <div style="height: 290px;margin-bottom:10px;padding:6px;overflow: auto" id="namelist"></div>
+        <div class="Popup-bottom" style="height: 60px;display: flex;justify-content:center">
+            <button style="border:0px;width:150px;height: 40px;background-color:#1E9FFF;color:white;text-align:center;line-height:40px;font-size:16px"
+                    id="confirmcalculate">确认计算
+            </button>
+        </div>
     </div>
 
+    <div id="shadowlayer2" style="width:100%;
+    height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
+    <div id="shadowtext2"
+         style="width: 490px;height: 440px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-245px;top:50%;margin-top:-220px;border-radius:5px;display: none">
+        <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid">
+            <div onclik="closewindow2()" style="width:30px;height: 30px;margin-left:90%;padding-top:7px"><img
+                    style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}" onclick="closewindow2()"/></div>
+        </div>
+        <div style="display: flex; justify-content: space-around;font-size:16px;line-height:40px">
+            <div style="width:47%;text-align:center"> 当前文件通道名</div>
+            <div style="width:47%;text-align:center"> 对应标准通道名</div>
+        </div>
+        <div style="height: 280px;margin-bottom:10px;padding:6px;overflow:auto;" id="namelist2">
 
-      <div id="shadowlayer" style="width:100%;
-    height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none"></div>
-    <div id="shadowtext" style="width: 420px;height: 400px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-175px;top:50%;margin-top:-200px;border-radius:5px;display: none">
-        <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid"> <div style="width:30px;height: 30px;margin-left:90%;padding-top:7px"><img id="closewindow11"  style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}"/></div></div>
-        <div style="height: 290px;margin-bottom:10px;padding:6px;overflow: auto" id="namelist"></div>
-        <div class="Popup-bottom" style="height: 60px;display: flex;justify-content:center"> <button style="border:0px;width:150px;height: 40px;background-color:#1E9FFF;color:white;text-align:center;line-height:40px;font-size:16px" id="confirmcalculate">确认计算</button></div>
+        </div>
+        <div class="Popup-bottom" style="height: 60px;display: flex;justify-content:center">
+            <button style="border:0px;width:150px;height: 40px;background-color:#1E9FFF;color:white;text-align:center;line-height:40px;font-size:16px"
+                    onclick="submitchannel()">确认修改
+            </button>
+        </div>
     </div>
 {% endblock %}
 
@@ -332,6 +367,29 @@
                 $ = layui.jquery,
                 upload = layui.upload;
         });
+        $("#shadowlayer2").hide();
+        $("#shadowtext2").hide();
+
+        function closewindow2() {
+            $("#shadowlayer2").hide();
+            $("#shadowtext2").hide();
+        }//关闭窗口操作
+
+        function showchannel() {
+            $("#shadowlayer2").show();
+            $("#shadowtext2").show();
+            let channelName = data.data;
+            for (let j = 0; j < channelName.length; j++) {
+                $("#namelist").append("<div class='layui-form layui-form-item layui-input-inline'><div class='layui-input-inline' style='line-height:38px;text-align:center;margin-right:70px'>" + channelName[j] + "</div><div class='layui-input-inline' style='margin-right:8px'><select name='produce' lay-verify='required' class='proce11' lay-search=''><option value=''>直接或搜索选择通道</option></select></div></div>")
+                for (let i = 0; i < testarray.length; i++) {
+                    testarr1.push(testarray[i].name);
+
+                    $(".proce11").append("<option class='clearchannel' >" + testarray[i].name + "</option>")
+                }
+
+            }//得到不确定的通道信息放在页面显示
+        }
+
 
         {#function judge_option() {#}
         {#    var option_text = $('#status option:selected').text();#}
@@ -352,7 +410,12 @@
     <script>
         var filenameArray = [], username = sessionStorage.username;
         var filenameArr = [];
-        var nameArray=[];
+        var nameArray = [];
+        var file_channel_list = [];
+        var file_number = 0;
+        var norm_data = [];
+        var channelName = [];
+        var channelfileArray = [];
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -362,12 +425,23 @@
                 upload = layui.upload;
 
             form.render();
+            //日期
+            laydate.render({
+                elem: '#date_hash',
+                value: new Date(),
+                isInitValue: true
+            });
+
+            // 用户名
+            form.val("three", {
+                "author": username
+            });
             // 这里绑定分析计算的点击事件
             $("#analysisCalculate").click(function () {
                 for (let i = 0; i < filenameArray.length; i++) {
                     filenameArr.push(filenameArray[i].newname)
                 }
-                sessionStorage.setItem("uploadnewname", filenameArr);
+                sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
 
 
                 nameArray = filenameArr;
@@ -377,25 +451,20 @@
                         `<div class='list-data'><img class='list-data-close' src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
                     )
                 }
-              $("#shadowlayer").show();
-              $("#shadowtext").show();
-               $("#namelist").off('click');
+                $("#shadowlayer").show();
+                $("#shadowtext").show();
+                $("#namelist").off('click');
                 $("#namelist").on('click', '.list-data', function () {
                     var compare_dataIndex = $(".list-data").index(this);
-                    console.log(compare_dataIndex);
                     $(this).remove();
                     nameArray.splice(compare_dataIndex, 1);
-                    console.log(nameArray);
-
 
 
                     if (nameArray.length == 0) {
-                      $("#shadowlayer").hide();
-                      $("#shadowtext").hide();
-                      sessionStorage.removeItem("uploadnewname");
-                      filenameArr=[];
-
-
+                        $("#shadowlayer").hide();
+                        $("#shadowtext").hide();
+                        sessionStorage.removeItem("uploadnewname");
+                        filenameArr = [];
                     }
                     nameSession = JSON.stringify(nameArray);
                     sessionStorage.setItem("uploadnewname", nameSession);
@@ -404,25 +473,26 @@
 
             });
 
-            $("#closewindow11").click(function (){
-                  $("#shadowlayer").hide();
-                  $("#shadowtext").hide();
-                  sessionStorage.removeItem("uploadnewname");
-                  filenameArr= [];
-                  $('#namelist').html("");
+            $("#closewindow11").click(function () {
+                $("#shadowlayer").hide();
+                $("#shadowtext").hide();
+                sessionStorage.removeItem("uploadnewname");
+                filenameArr = [];
+                $('#namelist').html("");
 
             });
 
-             $("#confirmcalculate").click(function (){
+            $("#confirmcalculate").click(function () {
                 $("#shadowlayer").hide();
                 $("#shadowtext").hide();
                 $('#namelist').html("");
-                filenameArr= [];
-                window.open ('/calculate/')
+                filenameArr = [];
+                sessionStorage.setItem("sessionType", 1);
+                window.open('/calculate/')
                 $.ajax({
                     url: /parsefilelist/,
                     dataType: "json",
-                    data: JSON.stringify({"fileList":filenameArr}),
+                    data: JSON.stringify({"fileList": filenameArr}),
                     type: "post",
                     success: function (result) {
 
@@ -433,7 +503,7 @@
                 });
 
 
-             })
+            })
 
             $("#math").click(function () {
                 // layer.msg('后期这里会做成数据计算的超链接');
@@ -451,15 +521,6 @@
                 });
             });
 
-            //日期
-            laydate.render({
-                elem: '#date_hash',
-            });
-
-            // 用户名
-            form.val("example", {
-                "author": username
-            });
 
             // 表单中所有信息必须都填写
             form.verify({
@@ -517,16 +578,15 @@
                         status: function () {
                             var option_text = $('#status option:selected').text();
                             if (option_text == "自定义输入") {
-                                console.log($("#self-statusInfo").val());
+
                                 var diyStatus = "DIY-" + $("#self-statusInfo").val();
-                                console.log(diyStatus);
                                 return diyStatus
                             } else {
-                                console.log($("#status").val());
                                 return $("#status").val()
                             }
                         },
                         author: function () {
+                            ++file_number;
                             return $('#author').val()
                         },
                         car_num: function () {
@@ -594,9 +654,62 @@
                         });
                     },
                     done: function (res, index, upload) {
+                         layer.msg('文件上传中...', {
+                            icon: 16,
+                            shade: 0.5,
+                            time: 0
+                        });
                         if (res.code == 0) { //上传成功
                             filenameArray.push({'oldname': res.data.file_old_name, 'newname': res.data.file_new_name});
-                            console.log(filenameArray);
+
+                            file_channel_list = file_channel_list.concat(res.data.file_channel_list);
+
+                            var file_channel = Array.from(new Set(file_channel_list));
+                            --file_number;
+
+                            if (file_number == 0) {
+
+                                send_data = {"channel_list": file_channel}
+
+                                $.ajax({
+                                    url: '/channel_check/',
+                                    type: 'patch',
+                                    dataType: 'json',
+                                    contentType: "application/json",
+                                    async: true,//异步请求
+                                    cache: false,
+                                    data: JSON.stringify(send_data),
+
+                                    //执行成功的回调函数
+                                    success: function (data) {
+                                        layer.close(layer.index);
+                                        if (data.data.length == 0) {
+                                            layer.msg("上传成功")
+                                        } else {
+                                            $("#shadowlayer2").show();
+                                            $("#shadowtext2").show();
+                                            channelName = data.data;
+                                            norm_data = data.norm_data;
+                                            for (let j = 0; j < channelName.length; j++) {
+                                                $("#namelist2").append("<div class='layui-form layui-form-item layui-input-inline'><div class='layui-input-inline' style='line-height:38px;text-align:center;margin-right:70px'>" + channelName[j] + "</div><div class='layui-input-inline' style='margin-right:8px'><select name='produce' lay-verify='required' class='proceoptions' lay-search=''><option value=''>直接或搜索选择通道</option></select></div></div>")
+
+                                            }//得到不确定的通道信息放在页面显示
+                                            for (let i = 0; i < norm_data.length; i++) {
+
+                                                $(".proceoptions").append("<option class='clearchannel'>" + norm_data[i] + "</option>")
+                                            }
+                                            form.render('select');
+                                        }
+
+                                    },
+                                    //执行失败或错误的回调函数
+                                    error: function (data) {
+                                        layer.msg("执行撤销失败, 请联系超管!");
+                                    }
+                                });
+                            } else {
+                            }
+
                             var tr = demoListView.find('tr#upload-' + index),
                                 tds = tr.children();
                             tds.eq(2).html('<span style="color: #5FB878;">上传成功</span>');
@@ -627,6 +740,58 @@
                 });
 
         });
+
+
+        function submitchannel() {
+            let channel_list = {};
+            let val = [];
+            $(".layui-form-select").each(function () {
+                val.push($(this).find(".layui-this").text());
+            });
+            val.splice(0, 1);
+            for (let i = 0; i < channelName.length; i++) {
+                channel_list[val[i]] = channelName[i];
+            }
+            for (let i = 0; i < filenameArray.length; i++) {
+                channelfileArray.push(filenameArray[i].newname)
+            }
+            $.ajax({
+                url: '/upload/',
+                type: 'put',
+                dataType: 'json',
+                contentType: "application/json",
+                async: true,//异步请求
+                cache: false,
+                data: JSON.stringify({"data": channel_list, "filelist": channelfileArray}),
+
+                //执行成功的回调函数
+                success: function (data) {
+                    $("#shadowlayer2").hide();
+                    $("#shadowtext2").hide();
+                    alert("success!")
+                },
+                //执行失败或错误的回调函数
+                error: function (data) {
+                    layer.msg("执行撤销失败, 请联系超管!");
+                }
+            });
+
+
+        } //修改通道重新确认数据
+
+        function showchannel() {
+            $("#shadowlayer2").show();
+            $("#shadowtext2").show();
+            let channelName = data.data;
+            let norm_data = data.norm_data;
+            for (let j = 0; j < channelName.length; j++) {
+                $("#namelist").append("<div class='layui-form layui-form-item layui-input-inline'><div class='layui-input-inline' style='line-height:38px;text-align:center;margin-right:70px'>" + channelName[j] + "</div><div class='layui-input-inline' style='margin-right:8px'><select name='produce' lay-verify='required' class='proce_option' lay-search=''><option value='00'>直接或搜索选择通道</option></select></div></div>")
+                for (let i = 0; i < norm_data.length; i++) {
+                    $(".proce_option").append("<option class='clearchannel' >" + norm_data[i].name + "</option>")
+                }
+
+            }//得到不确定的通道信息放在页面显示
+        }
     </script>
 
     <!-- 这里是选择位置发送的ajax请求 -->
@@ -665,7 +830,6 @@
                 })
                     .then(response => {
                         this.car_gearboxs = response.data;
-                        console.log(this.car_gearboxs)
                     })
                     .catch(error => {
                         // alert(error.response.data);
@@ -717,8 +881,6 @@
                                     .subs;
                             })
                             .catch(error => {
-                                console.log(error.response
-                                    .data);
                                 this.powers = [];
                             });
                     }

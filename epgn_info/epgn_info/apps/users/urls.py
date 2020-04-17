@@ -18,6 +18,7 @@ urlpatterns = [
 
     # 用户修改密码
     # url('^user_info/$', UserInfoViewSet.as_view()),
+    url('user/(?P<pk>\d+)$', user_info),
 
     # 返回home
     url('^home/$', home),

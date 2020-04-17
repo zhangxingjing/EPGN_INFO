@@ -8,6 +8,15 @@
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <script>
+        var user_id = sessionStorage.user_id || localStorage.user_id;
+        var username = sessionStorage.username || localStorage.username;
+        var token = sessionStorage.token || localStorage.token;
+        var job_number = sessionStorage.job_number || localStorage.job_number;
+        if (!(user_id && token && username)) {
+            location.href = '{% static "login_2.html" %}';
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -26,12 +35,12 @@
                         <div class="layui-card-header">设置我的资料</div>
                         <div class="layui-card-body" pad15="">
 
-                            <div class="layui-form" lay-filter="userinfo">
+                            <div class="layui-form" id="change_user_info" lay-filter="change_user_info">
                                 <!-- 工号 -->
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">工号</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="job_number" value="{{ job_number }}" readonly=""
+                                        <input type="text" name="change_job_number" id="change_job_number" lay-verify="change_job_number" readonly=""
                                                class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
@@ -40,13 +49,11 @@
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">用户名</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="username" id="username" value="{{ username }}"
-                                               readonly=""
-                                               class="layui-input">
+                                        <input type="text" name="change_username" id="change_username" lay-verify="change_username" value="{{ username }}"
+                                               readonly="" class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
                                 </div>
-
 
                                 <div class="layui-form" lay-filter="">
                                     <div class="layui-form-item">
@@ -98,14 +105,8 @@
 {% block javascript %}
     <script>
         layui.config({
-            base: '{% static 'home/' %}' //静态资源所在路径
-        }).use('index', function () {
-            var layer = layui.layer,
-                admin = layui.admin,
-                element = layui.element;
-        });
-
-        layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
+            base: './home/' //静态资源所在路径
+        }).use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
                 layedit = layui.layedit,
@@ -113,30 +114,29 @@
                 $ = layui.jquery,
                 upload = layui.upload;
 
-            form.render();
-            form.val("userinfo", {
-                "job_number": sessionStorage.job_number,
-                "username": sessionStorage.username,
+            form.val('change_user_info', {
+                "change_job_number": job_number,
+                "change_username": username,
             });
         });
 
         function submitinfo() {
             //定义变量sendData
             $.ajax({
-                url: '/userinfo/',
+                url: '/user/'+user_id,
                 type: 'post',
                 dataType: 'json',
                 async: true,//异步请求
                 data: {
-                    username: $("#username").val(),
+                    username: $("#change_username").val(),
                     old_password: $("#oldPassword").val(),
                     new_password: $("#password").val(),
                     re_password: $("#repassword").val()
                 },//使用变量sendData
                 //执行成功的回调函数
                 success: function (data) {
-                    if data.msg == 1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
-                        location.href = '../../../epgn_front_end/login_2.html';
+                    // if data.msg == 1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
+                    //     location.href = '../../../epgn_front_end/login_2.html';
                 },
                 //执行失败或错误的回调函数
                 error: function (data) {

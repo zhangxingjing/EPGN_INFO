@@ -2,10 +2,10 @@ import os
 import re
 import h5py
 import pymysql
-# from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Ngincx
-from epgn_info.settings.devp import FILE_SAVE_PATH    # manage
-# from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
-from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage
+from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Ngincx
+# from epgn_info.settings.devp import FILE_SAVE_PATH    # manage
+from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
+# from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage
 
 # 前端选择的文件名，对应算法名
 CalculateNameDict = {

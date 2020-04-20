@@ -6,22 +6,22 @@ from pprint import pprint
 import pandas as pd
 from django.views import View
 from django.shortcuts import render
-# from epgn_info.scripts.parse_ppt import *  # Nginx
-# from epgn_info.scripts.read_hdf import read_hdf  # Nginx
-# from epgn_info.scripts.process_gecent import ParseTask  # Nginx
-# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
+from epgn_info.scripts.parse_ppt import *  # Nginx
+from epgn_info.scripts.readHDF import read_hdf  # Nginx
+from epgn_info.scripts.process_gecent import ParseTask  # Nginx
+from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 # from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 from fileinfo.models import Fileinfo
 from numpyencoder import NumpyEncoder
 
-from scripts.readHDF import read_hdf  # manage
-from scripts.parse_ppt import *  # manage
-from epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
-from scripts.process_gecent import ParseTask  # manage
+# from scripts.readHDF import read_hdf  # manage
+# from scripts.parse_ppt import *  # manage
+from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+# from scripts.process_gecent import ParseTask  # manage
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
-from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
-# from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
-from epgn_info.settings.devp import BASE_DIR  # manage
+# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
+from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
+# from epgn_info.settings.devp import BASE_DIR  # manage
 
 
 # 从文件中读取channel

@@ -1,12 +1,11 @@
 import re
 import numpy as np
 from time import time
-from epgn_info.settings.devp import FileSavePath
-
+from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH
 
 def read_file_header(file_name):
     head_content = ""
-    file_path = FileSavePath + file_name
+    file_path = FILE_SAVE_PATH + file_name
     file = open(file_path, "r", encoding="gbk", errors="ignore")
     while True:
         file_content = file.readline()
@@ -40,7 +39,7 @@ def read_file_num(file_name):
     items = []
     data_content = ""
     split_tag = '\t'  # 编码不同的时候，使用不同的读取方式
-    file_path = FileSavePath + file_name
+    file_path = FILE_SAVE_PATH + file_name
     file = open(file_path, "r", encoding="gbk", errors="ignore")
 
     while True:
@@ -77,7 +76,7 @@ def read_asc(file_name):
     head_content = ""
     data_content = ""
     split_tag = '\t'  # 编码不同的时候，使用不同的读取方式
-    file_path = FileSavePath + file_name
+    file_path = FILE_SAVE_PATH + file_name
     file = open(file_path, "r", encoding="gbk", errors="ignore")
     while True:
         file_content = file.readline()

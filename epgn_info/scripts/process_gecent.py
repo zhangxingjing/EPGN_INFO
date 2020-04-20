@@ -1,13 +1,13 @@
 import os
 import re
 from multiprocessing import cpu_count, Pool, Manager
-from scripts.readHDF import read_hdf  # manage
-from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
-from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict  # manage
-# from epgn_info.scripts.read_hdf import read_hdf   # Nginx
-# from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
-# from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
-from epgn_info.settings.devp import CHANNEL_LIST
+# from scripts.readHDF import read_hdf  # manage
+# from epgn_info.apps.calculate.algorithm.class_calculate_two import *  # manage
+# from epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict  # manage
+from epgn_info.scripts.readHDF import read_hdf   # Nginx
+from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
+from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
+from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
 
 
 # from epgn_info.epgn_info.settings.devp import CHANNEL_LIST

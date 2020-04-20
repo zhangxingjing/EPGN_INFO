@@ -6,7 +6,7 @@ import h5py
 from .serializers import *
 from django.views import View
 from users.models import User
-from scripts.readHDF import read_hdf
+from epgn_info.scripts.readHDF import read_hdf
 from django.db import transaction
 from django.db.models import Q, Max
 from django.core import serializers
@@ -18,8 +18,8 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
-# from epgn_info.epgn_info.settings.devp import FileSavePath    # Nginx
-from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
+from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Nginx
+# from epgn_info.settings.devp import FILE_SAVE_PATH  # manage
 
 
 # 前端访问到页面的时候就发送查询`动力总成`的请求, 选择动力总成之后在发送k;`功率`的请求

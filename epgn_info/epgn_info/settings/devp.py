@@ -52,8 +52,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# ROOT_URLCONF = 'epgn_info.epgn_info.urls'   # 使用Nginx
-ROOT_URLCONF = 'epgn_info.urls'  # 使用manage.py
+ROOT_URLCONF = 'epgn_info.epgn_info.urls'   # 使用Nginx
+# ROOT_URLCONF = 'epgn_info.urls'  # 使用manage.py
 
 # 模板文件
 TEMPLATES = [
@@ -82,11 +82,12 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'epgn',  # 新建数据库
+        'NAME': 'EPGN',  # 新建数据库
         # 'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
-            'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',
+            # 'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER'",
         },
     }
 }
@@ -217,8 +218,8 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    # 'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',  # 使用Nginx
-    'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',  # 使用manage.py
+    'EXCEPTION_HANDLER': 'epgn_info.epgn_info.utils.exceptions.exception_handler',  # 使用Nginx
+    # 'EXCEPTION_HANDLER': 'epgn_info.utils.exceptions.exception_handler',  # 使用manage.py
     # 认证方式
     # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -227,8 +228,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用Nginx
-    'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
+    'DEFAULT_PAGINATION_CLASS': 'epgn_info.epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用Nginx
+    # 'DEFAULT_PAGINATION_CLASS': 'epgn_info.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
 }
 
 # CORS
@@ -245,11 +246,12 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-# DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
-DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'  # manage.py
+DEFAULT_FILE_STORAGE = 'epgn_info.epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
+# DEFAULT_FILE_STORAGE = 'epgn_info.utils.fastdfs.fdfs_storage.FastDFSStorage'  # manage.py
 
 # 静态文件目录
 STATIC_URL = '/epgn_front_end/'
+# STATIC_ROOT = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'epgn_front_end'), ]
 STATICFILES_DIRS = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'epgn_front_end'), ]
 
 # 用户认证 ==> JWT
@@ -273,7 +275,7 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF/"
+FILE_SAVE_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
     # "(N)G3 VZ": "2nd Order VS RPM",

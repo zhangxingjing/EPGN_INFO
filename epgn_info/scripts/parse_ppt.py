@@ -5,8 +5,8 @@ from pprint import pprint
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
-# from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
-from epgn_info.settings.devp import BASE_DIR  # manage
+from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
+# from epgn_info.settings.devp import BASE_DIR  # manage
 
 PPT_MODEL_PATH = BASE_DIR + '/apps/calculate/PPTModel/'
 IMAGE_LOCATION = [

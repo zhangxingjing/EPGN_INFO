@@ -35,5 +35,11 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
+    <data-source source="LOCAL" name="EPGN_TEST_DEVP" uuid="ab029638-60b6-4bf4-a22e-bac8370d9ceb">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_TEST</jdbc-url>
+    </data-source>
   </component>
 </project>

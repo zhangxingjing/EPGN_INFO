@@ -1,10 +1,12 @@
 import json
+from pprint import pprint
+
 from django.views import View
 from fileinfo.serializers import UserFileSerializer
 from fileinfo.models import Fileinfo
 from rest_framework.viewsets import ViewSet
 
-from .models import User
+from .models import User, Task
 from . import serializers
 from django.core import serializers as dc_serializers
 from django.contrib import auth
@@ -105,12 +107,32 @@ class LogoutView(View):
 
 # home页面
 def home(request):
-    return render(request, 'home.html')
+    if request.method == "GET":
+        return render(request, 'home.html')
+    user_id = request.POST.get("user_id")
+    # text = request.body.decode()
+    # body_json = json.loads(text)
+    # user_id = body_json["user_id"]
+    user = User.objects.get(id=user_id)
+    user_views = user.views
+    user_download_files_data = user.download_files_data
+    user_update_files_data = user.update_files_data
+    user_task = user.task.count()
+    user_task_info = user.task.all()  # 用户的待办事项
+    # print(user_task, [task_info.name for task_info in user_task_info])
+    file_info = Fileinfo.objects.filter(author=user.username)  # 获取当前用户名的数据
+    items = json.loads(dc_serializers.serialize("json", file_info))  # 序列化
+    user_data = {"views": user_views, "user_download": user_download_files_data, "user_update": user_update_files_data,
+                 "user_items": items,
+                 "user_task": user_task, "user_task_info": [task_info.name for task_info in user_task_info],
+                 }
+    # pprint(user_data)
+    return JsonResponse(user_data)
 
 
 # 用户信息
 def user_info(request, pk):
-    if request.method =="GET":
+    if request.method == "GET":
         return render(request, 'userinfo.html')
 
     user = User.objects.get(id=pk)

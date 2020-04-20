@@ -82,8 +82,8 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'EPGN',  # 新建数据库
-        # 'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
+        # 'NAME': 'EPGN',  # 新建数据库
+        'NAME': 'EPGN_TEST',  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
             # 'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',
@@ -275,7 +275,8 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-FILE_SAVE_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"
+# FILE_SAVE_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"
+FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF"
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
     # "(N)G3 VZ": "2nd Order VS RPM",

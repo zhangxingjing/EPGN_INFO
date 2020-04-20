@@ -556,50 +556,51 @@ class ParseFile(View):
                 if sql_channel_len == 0:
                     new_other_channel = Channel()
                     new_other_channel.name = value
-                    new_other_channel.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
+                    # new_other_channel.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
+                    new_other_channel.parent_id = Channel.objects.get(name=key).id
                     new_other_channel.save()
 
-        # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
-        file_list = body_json["filelist"]
-        for file in set(file_list):
-            # TODO: 可以使用多任务进行优化
-            # 在这里拿到文件中通道名, 进行修改
-            read_info = h5py.File(FILE_SAVE_PATH + file, 'r+')
-            for channel_key in read_info.keys():
-                # print(channel_key)
-                # 找到当前通道对应的标准通道
-                try:
-                    read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
-                except:
-                    read_hdf_channel = channel_key
+            # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
+            file_list = body_json["filelist"]
+            for file in set(file_list):
+                # TODO: 可以使用多任务进行优化
+                # 在这里拿到文件中通道名, 进行修改
+                read_info = h5py.File(FILE_SAVE_PATH + file, 'r+')
+                for channel_key in read_info.keys():
+                    # print(channel_key)
+                    # 找到当前通道对应的标准通道
+                    try:
+                        read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
+                    except:
+                        read_hdf_channel = channel_key
 
-                norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
+                    norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
 
-                # 判断当前通道名 是不是 标准写法
-                if len(norm_channel_key) == 0:
-                    print(norm_channel_key)
-                    if norm_channel_key[0].parent_id is not None:
-                        # 不是标准写法
-                        change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
-                        norm_channel_key.name = change_channel_to_norm.name
+                    # 判断当前通道名 是不是 标准写法
+                    if len(norm_channel_key) == 0:
+                        print(norm_channel_key)
+                        if norm_channel_key[0].parent_id is not None:
+                            # 不是标准写法
+                            change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
+                            norm_channel_key.name = change_channel_to_norm.name
 
-                    # 跳过已修改的部分
-                    if norm_channel_key.name == channel_key:
-                        continue
+                        # 跳过已修改的部分
+                        if norm_channel_key.name == channel_key:
+                            continue
 
-                    # 最后修改文件中的通道名
-                    read_info[norm_channel_key.name] = read_info[channel_key]
-                    del read_info[channel_key]
-                    read_info.update({norm_channel_key: read_info.pop(channel_key)})
-                    read_info[norm_channel_key] = read_info[channel_key].value
-                    msg = "OK!"
-                else:
-                    # read_info[norm_channel_key.name] = read_info[channel_key]
-                    # del read_info[channel_key]
-                    # read_info.update({norm_channel_key: read_info.pop(channel_key)})
-                    # read_info[norm_channel_key] = read_info[channel_key].value
-                    msg = "OK"
-        # 返回前端通道修改的状态
+                        # 最后修改文件中的通道名
+                        read_info[norm_channel_key.name] = read_info[channel_key]
+                        del read_info[channel_key]
+                        read_info.update({norm_channel_key: read_info.pop(channel_key)})
+                        read_info[norm_channel_key] = read_info[channel_key].value
+                        msg = "OK!"
+                    else:
+                        # read_info[norm_channel_key.name] = read_info[channel_key]
+                        # del read_info[channel_key]
+                        # read_info.update({norm_channel_key: read_info.pop(channel_key)})
+                        # read_info[norm_channel_key] = read_info[channel_key].value
+                        msg = "OK"
+            # 返回前端通道修改的状态
         return JsonResponse({"status": 200, "msg": msg})
 
 

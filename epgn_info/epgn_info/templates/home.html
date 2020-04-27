@@ -314,20 +314,20 @@
                 }
             },
             xAxis: {
-                data: ["KW_38", "KW_39", "KW_40", "KW_41", "KW_42", "KW_43", "KW_44", "KW_45", "KW_46", "KW_47", "KW_49", "KW_49"]
+                data: ["KW_14", "KW_15", "KW_16", "KW_17", "KW_18", "KW_19", "KW_20", "KW_21", "KW_22", "KW_23", "KW_24", "KW_25"]
             },
             yAxis: {},
             series: [{
                 // name: 'Upload data volume',
                 name: '上传量',
                 type: 'line',
-                data: [15, 23, 29, 13, 10, 20, 11, 22, 28, 21, 27, 16]
+                data: []
             },
                 {
                     // name: 'Download data volume',
                     name: '下载量',
                     type: 'line',
-                    data: [25, 10, 21, 17, 7, 24, 31, 26, 22, 17, 23, 21]
+                    data: []
                 }]
         };
 
@@ -360,11 +360,7 @@
                 type: 'pie',
                 avoidLabelOverlap: true,
                 minAngle: 5,
-                data: [
-                    {value: 28, name: 'BMPV'},
-                    {value: 10, name: 'Octavia A8'},
-                    {value: 37, name: 'Lamando NF'},
-                    {value: 25, name: 'BSUV'}],
+                data: [],
                 "label": {
                     "normal": {
                         "show": true,
@@ -501,32 +497,37 @@
                     switch (obj.event) {
                         case 'getCheckData':
                             var add_arrayData1 = checkStatus.data;
-                            for (let i = 0; i < add_arrayData1.length; i++) {
-                                filenameArr.push(add_arrayData1[i].file_name)
-                            }
-                            sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
-                            nameArray = filenameArr;
-                            for (var i = 0; i < nameArray.length; i++) {
-                                $("#namelist").append(
-                                    `<div class='list-data'><img class='list-data-close'src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
-                                )
-                            }
-                            $("#shadowlayer").show();
-                            $("#shadowtext").show();
-                            $("#namelist").off('click');
-                            $("#namelist").on('click', '.list-data', function () {
-                                var compare_dataIndex = $(".list-data").index(this);
-                                $(this).remove();
-                                nameArray.splice(compare_dataIndex, 1);
-                                if (nameArray.length == 0) {
-                                    $("#shadowlayer").hide();
-                                    $("#shadowtext").hide();
-                                    sessionStorage.removeItem("uploadnewname");
-                                    filenameArr = [];
+                            if (add_arrayData1.length == 0) {
+                                layer.msg("请选择需要分析计算的文件！")
+                            } else {
+                                for (let i = 0; i < add_arrayData1.length; i++) {
+                                    filenameArr.push(add_arrayData1[i].file_name)
                                 }
-                                nameSession = JSON.stringify(nameArray);
-                                sessionStorage.setItem("uploadnewname", nameSession);
-                            });
+                                sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
+                                nameArray = filenameArr;
+                                for (var i = 0; i < nameArray.length; i++) {
+                                    $("#namelist").append(
+                                        `<div class='list-data'><img class='list-data-close'src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
+                                    )
+                                }
+                                $("#shadowlayer").show();
+                                $("#shadowtext").show();
+                                $("#namelist").off('click');
+                                $("#namelist").on('click', '.list-data', function () {
+                                    var compare_dataIndex = $(".list-data").index(this);
+                                    $(this).remove();
+                                    nameArray.splice(compare_dataIndex, 1);
+                                    if (nameArray.length == 0) {
+                                        $("#shadowlayer").hide();
+                                        $("#shadowtext").hide();
+                                        sessionStorage.removeItem("uploadnewname");
+                                        filenameArr = [];
+                                    }
+                                    nameSession = JSON.stringify(nameArray);
+                                    sessionStorage.setItem("uploadnewname", nameSession);
+                                });
+                            };
+                            break;
                         case 'deleteFile':
                             var delete_arrayData = checkStatus.data;
                             for (let i = 0; i < delete_arrayData.length; i++) {

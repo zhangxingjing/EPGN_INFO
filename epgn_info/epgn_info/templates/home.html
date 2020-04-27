@@ -526,22 +526,49 @@
                                     nameSession = JSON.stringify(nameArray);
                                     sessionStorage.setItem("uploadnewname", nameSession);
                                 });
-                            };
+                            }
+                            ;
                             break;
                         case 'deleteFile':
                             var delete_arrayData = checkStatus.data;
+                            deleteArr = [];
                             for (let i = 0; i < delete_arrayData.length; i++) {
                                 deleteArr.push(delete_arrayData[i].pk)
                             }
-                            $.ajax({
-                                url: /delete_file/,
-                                dataType: "json",
-                                data: JSON.stringify({"fileList": deleteArr}),
-                                type: "delete",
-                                success: function (result) {
-                                    layer.msg("删除成功")
-                                }
-                            });
+                            if (deleteArr.length >= 10) {
+                                layer.confirm('确定删除当前选择的' + deleteArr.length + '条数据？', {
+                                    btn: ['确定', '取消'] //按钮
+                                }, function () {
+                                    $.ajax({
+                                        url: /delete_file/,
+                                        dataType: "json",
+                                        data: JSON.stringify({"fileList": deleteArr}),
+                                        type: "delete",
+                                        success: function (result) {
+                                            layer.msg("删除成功")
+                                        },
+                                        error: function (result) {
+                                            layer.msg("文件删除失败，请联系官明超(53331)！")
+                                        }
+                                    });
+                                }, function () {
+                                    layer.msg('取消成功');
+                                });
+                            } else {
+                                $.ajax({
+                                    url: /delete_file/,
+                                    dataType: "json",
+                                    data: JSON.stringify({"fileList": deleteArr}),
+                                    type: "delete",
+                                    success: function (result) {
+                                        layer.msg("删除成功")
+                                    },
+                                    error: function (result) {
+                                        layer.msg("文件删除失败，请联系官明超(53331)！")
+                                    }
+                                });
+                            }
+                            break;
                     }
                 }
             );

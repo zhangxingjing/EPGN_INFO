@@ -1,5 +1,4 @@
 import xadmin
-from django.contrib import admin
 from django.conf.urls import url, include
 from django.views.generic.base import TemplateView, RedirectView
 from rest_framework_jwt.views import obtain_jwt_token

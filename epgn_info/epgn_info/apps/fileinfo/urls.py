@@ -25,11 +25,14 @@ urlpatterns = [
     # 访问模板渲染页面
     url(r'^base/(?P<pk>\d+)/$', parse_template),
 
+    # 修改文件状态
+    url('r^file_status/', change_file_status),
+
     # 用户添加对比列表
     # url(r'^contrast/$', SaveContrastView.as_view()),
 
     # 用户撤销文件上传
-    # url(r'^cancel/$', cancel),
+    url(r'^delete_file/$', delete_file),
 
     # 获取"当前用户"上传的数据信息
     # url(r'user_file_info/$', user_file_info),

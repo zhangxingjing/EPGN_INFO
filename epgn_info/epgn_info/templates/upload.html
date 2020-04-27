@@ -244,8 +244,9 @@
                                 </label>
                                 <div class="layui-input-inline">
                                     <input type="text" name="author" id="author" lay-verify="author"
-                                           placeholder="如：Zhang san" autocomplete="off" class="layui-input"
-                                           onkeyup="this.value=this.value.replace(/[^a-zA-Z\s]/g,'')">
+                                           placeholder="如：张三" autocomplete="off" class="layui-input"
+                                           onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')"
+                                           onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\u4E00-\u9FA5]/g,''))">
                                 </div>
                             </div>
 
@@ -311,9 +312,6 @@
             </div>
         </div>
     </div>
-
-
-
     <div id="shadowlayer" style="width:100%;
     height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
     <div id="shadowtext"
@@ -330,14 +328,14 @@
             </button>
         </div>
     </div>
-
     <div id="shadowlayer2" style="width:100%;
     height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
     <div id="shadowtext2"
          style="width: 490px;height: 440px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-245px;top:50%;margin-top:-220px;border-radius:5px;display: none">
         <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid">
             <div onclik="closewindow2()" style="width:30px;height: 30px;margin-left:90%;padding-top:7px"><img
-                    style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}" onclick="closewindow2()"/></div>
+                    style="width:100%;height: 100%;" src="{% static "image/close_window.png" %}"
+                    onclick="closewindow2()"/></div>
         </div>
         <div style="display: flex; justify-content: space-around;font-size:16px;line-height:40px">
             <div style="width:47%;text-align:center"> 当前文件通道名</div>
@@ -383,27 +381,10 @@
                 $("#namelist").append("<div class='layui-form layui-form-item layui-input-inline'><div class='layui-input-inline' style='line-height:38px;text-align:center;margin-right:70px'>" + channelName[j] + "</div><div class='layui-input-inline' style='margin-right:8px'><select name='produce' lay-verify='required' class='proce11' lay-search=''><option value=''>直接或搜索选择通道</option></select></div></div>")
                 for (let i = 0; i < testarray.length; i++) {
                     testarr1.push(testarray[i].name);
-
                     $(".proce11").append("<option class='clearchannel' >" + testarray[i].name + "</option>")
                 }
-
             }//得到不确定的通道信息放在页面显示
         }
-
-
-        {#function judge_option() {#}
-        {#    var option_text = $('#status option:selected').text();#}
-        {#    if (option_text == "自定义输入") {#}
-        {#        var obj = document.getElementById('custom-staus');#}
-        {#        obj.style.display = "inline";#}
-        {#        var obj1 = document.getElementById('special_need');#}
-        {#        obj1.style.marginTop = "0px"#}
-        {#    } else {#}
-        {#        var obj = document.getElementById('custom-staus');#}
-        {#        obj.style.display = "none";#}
-        {#        var obj1 = document.getElementById('special_need');#}
-        {#        obj1.style.marginTop = "0px"#}
-        {#    }#}
     </script>
 
     <!-- 使用layui框架 -->
@@ -442,10 +423,7 @@
                     filenameArr.push(filenameArray[i].newname)
                 }
                 sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
-
-
                 nameArray = filenameArr;
-
                 for (var i = 0; i < nameArray.length; i++) {
                     $("#namelist").append(
                         `<div class='list-data'><img class='list-data-close' src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
@@ -458,8 +436,6 @@
                     var compare_dataIndex = $(".list-data").index(this);
                     $(this).remove();
                     nameArray.splice(compare_dataIndex, 1);
-
-
                     if (nameArray.length == 0) {
                         $("#shadowlayer").hide();
                         $("#shadowtext").hide();
@@ -468,9 +444,7 @@
                     }
                     nameSession = JSON.stringify(nameArray);
                     sessionStorage.setItem("uploadnewname", nameSession);
-
                 });
-
             });
 
             $("#closewindow11").click(function () {
@@ -488,22 +462,18 @@
                 $('#namelist').html("");
                 filenameArr = [];
                 sessionStorage.setItem("sessionType", 1);
-                window.open('/calculate/')
+                window.open('/calculate/');
                 $.ajax({
                     url: /parsefilelist/,
                     dataType: "json",
                     data: JSON.stringify({"fileList": filenameArr}),
                     type: "post",
                     success: function (result) {
-
                         $('#jumpbox').html(result);
                         $('#jumpbox').modal('show');
-
                     }
                 });
-
-
-            })
+            });
 
             $("#math").click(function () {
                 // layer.msg('后期这里会做成数据计算的超链接');
@@ -520,7 +490,6 @@
                     });
                 });
             });
-
 
             // 表单中所有信息必须都填写
             form.verify({
@@ -578,7 +547,6 @@
                         status: function () {
                             var option_text = $('#status option:selected').text();
                             if (option_text == "自定义输入") {
-
                                 var diyStatus = "DIY-" + $("#self-statusInfo").val();
                                 return diyStatus
                             } else {
@@ -649,12 +617,11 @@
                                 uploadListIns.config.elem.next()[0].value =
                                     ''; //清空 input file 值，以免删除后出现同名文件不可选
                             });
-
                             demoListView.append(tr);
                         });
                     },
                     done: function (res, index, upload) {
-                         layer.msg('文件上传中...', {
+                        layer.msg('文件上传中...', {
                             icon: 16,
                             shade: 0.5,
                             time: 0
@@ -668,9 +635,7 @@
                             --file_number;
 
                             if (file_number == 0) {
-
                                 send_data = {"channel_list": file_channel}
-
                                 $.ajax({
                                     url: '/channel_check/',
                                     type: 'patch',
@@ -692,7 +657,6 @@
                                             norm_data = data.norm_data;
                                             for (let j = 0; j < channelName.length; j++) {
                                                 $("#namelist2").append("<div class='layui-form layui-form-item layui-input-inline'><div class='layui-input-inline' style='line-height:38px;text-align:center;margin-right:70px'>" + channelName[j] + "</div><div class='layui-input-inline' style='margin-right:8px'><select name='produce' lay-verify='required' class='proceoptions' lay-search=''><option value=''>直接或搜索选择通道</option></select></div></div>")
-
                                             }//得到不确定的通道信息放在页面显示
                                             for (let i = 0; i < norm_data.length; i++) {
 
@@ -738,9 +702,7 @@
                         });
                     },
                 });
-
         });
-
 
         function submitchannel() {
             let channel_list = {};
@@ -748,34 +710,37 @@
             $(".layui-form-select").each(function () {
                 val.push($(this).find(".layui-this").text());
             });
-            val.splice(0, 1);
-            for (let i = 0; i < channelName.length; i++) {
-                channel_list[val[i]] = channelName[i];
-            }
-            for (let i = 0; i < filenameArray.length; i++) {
-                channelfileArray.push(filenameArray[i].newname)
-            }
-            $.ajax({
-                url: '/upload/',
-                type: 'put',
-                dataType: 'json',
-                contentType: "application/json",
-                async: true,//异步请求
-                cache: false,
-                data: JSON.stringify({"data": channel_list, "filelist": channelfileArray}),
-
-                //执行成功的回调函数
-                success: function (data) {
-                    $("#shadowlayer2").hide();
-                    $("#shadowtext2").hide();
-                    alert("success!")
-                },
-                //执行失败或错误的回调函数
-                error: function (data) {
-                    layer.msg("执行撤销失败, 请联系超管!");
+            if (val.indexOf("") != -1) {
+                layer.msg("请选择标准通道！若无，请联系官明超（53331）")
+            } else {
+                val.splice(0, 1);
+                for (let i = 0; i < channelName.length; i++) {
+                    channel_list[val[i]] = channelName[i];
                 }
-            });
+                for (let i = 0; i < filenameArray.length; i++) {
+                    channelfileArray.push(filenameArray[i].newname)
+                }
+                $.ajax({
+                    url: '/upload/',
+                    type: 'put',
+                    dataType: 'json',
+                    contentType: "application/json",
+                    async: true,//异步请求
+                    cache: false,
+                    data: JSON.stringify({"data": channel_list, "filelist": channelfileArray}),
 
+                    //执行成功的回调函数
+                    success: function (data) {
+                        $("#shadowlayer2").hide();
+                        $("#shadowtext2").hide();
+                        alert("success!")
+                    },
+                    //执行失败或错误的回调函数
+                    error: function (data) {
+                        layer.msg("执行撤销失败, 请联系超管!");
+                    }
+                });
+            }
 
         } //修改通道重新确认数据
 
@@ -789,7 +754,6 @@
                 for (let i = 0; i < norm_data.length; i++) {
                     $(".proce_option").append("<option class='clearchannel' >" + norm_data[i].name + "</option>")
                 }
-
             }//得到不确定的通道信息放在页面显示
         }
     </script>
@@ -886,23 +850,6 @@
                     }
                 },
             },
-            // updated: function () {
-            //     layui.use(['form'], function () {
-            //         layui.form.render('select');
-            //     })
-            // }
-            // updated: function () {
-            //     this.$nextTick(function () {
-            //         layui.use(['form'], function () {
-            //             if (self.customer.countyInfo != null) {
-            //                 $("#power").val(this.form_power.power_id);
-            //             } else {
-            //                 $("#power").val("");
-            //             }
-            //             layui.form.render('select')
-            //         });
-            //     });
-            // }
         })
     </script>
 

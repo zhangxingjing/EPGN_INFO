@@ -13,7 +13,6 @@
             margin-bottom: 10px;
             margin-left: 1%;
             margin-right: 5%
-
         }
 
         .tips-block {
@@ -29,7 +28,6 @@
             background: white;
             border-radius: 2px;
             margin-left: 1.2%;
-
         }
 
         .tips-block-title {
@@ -61,7 +59,6 @@
             content: "\e66c";
         }
 
-
         .time-frequency {
             border-radius: 2px;
             padding: 0px 6px;
@@ -71,7 +68,6 @@
             line-height: 21px;
             font-size: 13px;
             color: white;
-
         }
 
         .day {
@@ -132,6 +128,42 @@
             height: 40px;
             font-size: 16px
         }
+
+        .bulletbox-button {
+            position: relative;
+            top: 15px
+        }
+
+        .bulletbox-button button {
+            background-color: #1E9FFF;
+            color: white;
+            width: 80px;
+            text-align: center;
+            font-size: 12px;
+            line-height: 25px;
+            border: 0px;
+            font-weight: bold;
+            height: 25px;
+        }
+
+        .list-data-close {
+            padding-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .list-data-close:hover {
+            width: 20px;
+            height: 20px;
+        }
+
+        .list-data {
+            white-space: nowrap;
+            font-size: 20px;
+            margin-bottom: 5px;
+            /* padding-right: 20px; */
+            /* background: rgb(57, 170, 226) url("../image/close.gif") right 9px no-repeat */
+        }
     </style>
 {% endblock %}
 
@@ -144,7 +176,7 @@
                     <div class="time-frequency day">日</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">116</div>
+                    <div class="now-data" id="totalpageview"></div>
                     <div class="tips-block-all-data">
                         <div>总访问量</div>
                         <div>28,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
@@ -157,7 +189,7 @@
                     <div class="time-frequency week">周</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">16</div>
+                    <div class="now-data" id="totalupload"></div>
                     <div class="tips-block-all-data">
                         <div>文件上传总量</div>
                         <div>5,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
@@ -171,155 +203,100 @@
                     <div class="time-frequency month">月</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">317</div>
+                    <div class="now-data" id="totaldownload"></div>
                     <div class="tips-block-all-data">
                         <div>文件下载总量</div>
                         <div>1,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
             </div>
-
             <div class="tips-block">
                 <div class="tips-block-title">
                     <div>待完成任务数量</div>
                     <div class="time-frequency" style="background-color: #009688">周</div>
                 </div>
                 <div class="tips-block-datadisplay">
-                    <div class="now-data">16</div>
+                    <div class="now-data" id="tasknumber"></div>
                     <div class="tips-block-all-data">
                         <div>已完成任务总量</div>
                         <div>1,292&nbsp &nbsp &nbsp<i class="layui-inline layui-icon layui-icon-flag"></i></div>
                     </div>
                 </div>
             </div>
-
-
         </div>
         <div class="index-body">
             <div class="data-chart">
                 <div class="chart-title" style="font-weight:bold;font-size: 18px;color: black">数据概览</div>
                 <div style="display: flex;justify-content: flex-start;;">
                     <div id="main" style="width: 96%;height:400px;margin-left: 2%"></div>
-
                 </div>
             </div>
             <div style="width: 22.8%;margin-left: 1.2%;background: white;">
                 <div id="main2" style="width: 82%;height:400px;padding-left: 9%;margin-top: 20px;"></div>
             </div>
-
             <div class="schedule">
                 <div class="tips-block-title" style="font-size: 19px;font-weight: bold">
                     <div>待办事项</div>
                     <div class="time-frequency week">周</div>
                 </div>
-                <div class="task-list">
-                    <div>1.提交BMPV发动机噪声测试数据。</div>
-                    <div>2.提交辅助总成噪声测试试验报告。</div>
-                    <div>3.提交Octavia A8测试数据。</div>
-                    <div>4.完成Octavia A8进排气噪声测试。</div>
+                <div class="task-list" id="task_list">
+
                 </div>
             </div>
         </div>
-
         <div class="layui-form">
-            <table class="layui-table" style="background: white;width: 94.2%;margin-left: 1%">
-                <colgroup>
-                    <col width="150">
-                    <col width="150">
-                    <col width="200">
-                    <col>
-                </colgroup>
-                <thead>
-                <tr>
-                    <th>车辆编号</th>
-                    <th>生产阶段</th>
-                    <th>试验工况</th>
-                    <th>文件名</th>
-                    <th>其他</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>A8N-206</td>
-                    <td>PT</td>
-                    <td>(N)100 km/h</td>
-                    <td>2019-06-05_A8N-206 OCTAVIA a8 hinten boden without daempfung NEW N 100 run13.hdf</td>
-                    <td>CKD</td>
-                </tr>
-                <tr>
-                    <td>A8N-206</td>
-                    <td>PT</td>
-                    <td>(N)100 km/h</td>
-                    <td>2019-06-05_A8N-206 OCTAVIA a8 hinten boden without daempfung NEW N 100 run11.hdf</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>H07-316</td>
-                    <td>VFF</td>
-                    <td>(N) Stuckern 40-80</td>
-                    <td>2019-03-22_Polo 316 CKD GL stuckern run08.hdf</td>
-                    <td>CKD</td>
-                </tr>
-                <tr>
-                    <td>H07-316</td>
-                    <td>VFF</td>
-                    <td>(N) Stuckern 40-80</td>
-                    <td>2019-03-22_Polo 316 Jianxin LC GL stuckern run06.hdf</td>
-                    <td>JIANXIN LC GL</td>
-                </tr>
-                <tr>
-                    <td>H07-316</td>
-                    <td>VFF</td>
-                    <td>(Squar) SS</td>
-                    <td>2019-03-22_Polo 316 Jianxin LC GL SS run04.hdf</td>
-                    <td>JIANXIN LC GL</td>
-                </tr>
-                <tr>
-                    <td>H07-316</td>
-                    <td>VFF</td>
-                    <td>(N) Stuckern 40-80</td>
-                    <td>2019-03-22_Polo 316 CKD GL stuckern run08.hdf</td>
-                    <td>CKD</td>
-                </tr>
-                <tr>
-                    <td>H07-316</td>
-                    <td>VFF</td>
-                    <td>(N) Stuckern 40-80</td>
-                    <td>2019-03-22_Polo 316 Jianxin LC GL stuckern run06.hdf</td>
-                    <td>JIANXIN LC GL</td>
-                </tr>
-                </tbody>
+            <table class="layui-table" style="background: white;width: 94.2%;margin-left: 1%" id="file_info"
+                   lay-filter="test">
+
             </table>
         </div>
+
+
     </div>
+    <div id="shadowlayer" style="width:100%;
+    height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
+    <div id="shadowtext"
+         style="width: 420px;height: 400px;background-color:white;position:absolute;z-index: 1001;left: 50%;margin-left:-275px;top:50%;margin-top:-240px;border-radius:5px;display: none">
+        <div class="Popup-head" style="height: 40px;border-bottom:1px #DCDCDC solid">
+            <div style="width:30px;height: 30px;margin-left:90%;padding-top:7px">
+                <img id="closewindow11" style="width:100%;height: 100%;"
+                     src="{% static "image/close_window.png" %}"/>
+            </div>
+        </div>
+        <div style="height: 290px;margin-bottom:10px;padding:6px;overflow: auto" id="namelist"></div>
+        <div class="Popup-bottom" style="height: 60px;display: flex;justify-content:center">
+            <button style="border:0px;width:150px;height: 40px;background-color:#1E9FFF;color:white;text-align:center;line-height:40px;font-size:16px"
+                    id="confirmcalculate">确认计算
+            </button>
+        </div>
+    </div>
+
+
 {% endblock %}
 
 {% block javascript %}
     <script src="{% static 'layui/layui.js' %}"></script>
     <script src="{% static 'js/echart.js' %}"></script>
+
     <script>
-        layui.use('table', function () {
-            var table = layui.table;
-
-            table.render({
-                elem: '#test'
-                , url: '/demo/table/user/'
-                , cols: [[
-                    {type: 'checkbox'}
-                    , {field: 'id', width: 80, title: 'ID', sort: true}
-                    , {field: 'username', width: 80, title: '用户名'}
-                    , {field: 'sex', width: 80, title: '性别', sort: true}
-                    , {field: 'city', width: 80, title: '城市'}
-                    , {field: 'sign', title: '签名', minWidth: 100}
-                    , {field: 'experience', width: 80, title: '积分', sort: true}
-                    , {field: 'score', width: 80, title: '评分', sort: true}
-                    , {field: 'classify', width: 80, title: '职业'}
-                    , {field: 'wealth', width: 135, title: '财富', sort: true}
-                ]]
-                , page: true
-            });
+        var user_id = sessionStorage.user_id;
+        $.ajax({
+            url: /home/,
+            dataType: "json",
+            data: {"user_id": user_id},
+            type: "post",
+            success: function (result) {
+                $("#totalpageview").text(result.views);
+                $("#totalupload").text(result.user_update);
+                $("#totaldownload").text(result.user_download);
+                $("#tasknumber").text(result.user_task);
+                var vtask = result.user_task_info;
+                for (let j = 0; j < vtask.length; j++) {
+                    let k = j + 1;
+                    $("#task_list").append("<div> " + k + ". " + vtask[j] + " </div>");
+                }
+            }
         });
-
 
         var myChart = echarts.init(document.getElementById('main'));
 
@@ -337,7 +314,7 @@
                 }
             },
             xAxis: {
-                data: ["KW_38", "KW_39", "KW_40", "KW_41", "KW_42", "KW_43", "KW_44", "KW_45", "KW_46", "KW_47","KW_49","KW_49"]
+                data: ["KW_38", "KW_39", "KW_40", "KW_41", "KW_42", "KW_43", "KW_44", "KW_45", "KW_46", "KW_47", "KW_49", "KW_49"]
             },
             yAxis: {},
             series: [{
@@ -356,8 +333,6 @@
 
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
-
-
         var myChart2 = echarts.init(document.getElementById('main2'));
 
         // 指定图表的配置项和数据
@@ -379,7 +354,6 @@
                     "fontSize": 17
                 }
             },
-
             series: [{
                 // name: 'Vehicle Data Ratio',
                 name: '车型数据占比',
@@ -402,7 +376,6 @@
                         "show": true
                     }
                 },
-
             }]
         };
 
@@ -415,5 +388,239 @@
                 admin = layui.admin,
                 element = layui.element;
         });
+
+
+        layui.use('table', function () {
+            var $ = layui.$,
+                table = layui.table;
+
+            //方法级渲染
+            tableIns = table.render({
+                elem: '#file_info', // 找到制定的容器
+                url: "/user_file/" + user_id, // 表格请求的URL
+                page: true, // 是否分页
+                limit: 20, // 一页显示多少条数据
+                height: 'full-130', // 表格的高度
+                {#defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏#}
+                toolbar: '#toolbarDemo',
+                cols: [
+                    [{
+                        type: 'checkbox',
+                        LAY_CHECKED: false,
+                    },
+                        {
+                            field: 'platform',
+                            title: '车型',
+                            width: '8%',
+                            sort: true,     // 开启排序
+                            align: 'center'   // 居中显示
+                        }, {
+                        field: 'car_num',
+                        title: '车辆编号',
+                        width: '8%',
+                        sort: true,     // 开启排序
+                        align: 'center'   // 居中显示
+                    }, {
+                        field: 'power',
+                        title: '功率',
+                        width: '8%',
+                        sort: true,
+                        align: 'center'
+                    }, {
+                        field: 'status',
+                        title: '试验工况',
+                        width: '20%'
+                    }, {
+                        field: 'file_name',
+                        title: '文件名',
+                        width: '35%',
+                        sort: true,
+
+                    }, {
+                        field: 'other_need',
+                        title: '其他',
+                        width: '10%',
+                    }, {
+                        field: 'file_status',
+                        title: '是否可计算',
+                        width: '8.32%'
+                    }]
+                ],
+
+            });
+
+            // 表格重载动作
+            active_table = {
+                reload: function () {
+                    //执行重载
+                    table.reload('info', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        },
+                        where: {
+                            "carmodel": $('#carmodel').children('a').html(),
+                            "propulsion": $('#propulsion').children('a').html(),
+                            "power": $('#power').children('a').html(),
+                            "discipline": $("#discipline").children('a').html(),
+                            "parts": $('#parts').children('a').html(),
+                            "key_word": $("#demoReload").val(),
+                            "time": (new Date()).valueOf(),
+                        },
+                        done: function (res, curr, count) {
+                            this.where = {
+                                "carmodel": $('#carmodel').children('a').html(),
+                                "propulsion": $('#propulsion').children('a').html(),
+                                "power": $('#power').children('a').html(),
+                                "discipline": $("#discipline").children('a').html(),
+                                "parts": $('#parts').children('a').html(),
+                                "key_word": $("#demoReload").val(),
+                                "time": (new Date()).valueOf(),
+                            };
+                        }
+                    });
+                }
+            };
+
+            //监听复选框点击
+
+        });
+
+        var filenameArr = [];
+        var nameArray = [];
+        var deleteArr = [];
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element', 'table',], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                $ = layui.jquery,
+                upload = layui.upload;
+            table = layui.table;
+            table.on('toolbar(test)', function (obj) {
+                    var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+                    switch (obj.event) {
+                        case 'getCheckData':
+                            var add_arrayData1 = checkStatus.data;
+                            for (let i = 0; i < add_arrayData1.length; i++) {
+                                filenameArr.push(add_arrayData1[i].file_name)
+                            }
+                            sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
+                            nameArray = filenameArr;
+                            for (var i = 0; i < nameArray.length; i++) {
+                                $("#namelist").append(
+                                    `<div class='list-data'><img class='list-data-close'src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
+                                )
+                            }
+                            $("#shadowlayer").show();
+                            $("#shadowtext").show();
+                            $("#namelist").off('click');
+                            $("#namelist").on('click', '.list-data', function () {
+                                var compare_dataIndex = $(".list-data").index(this);
+                                $(this).remove();
+                                nameArray.splice(compare_dataIndex, 1);
+                                if (nameArray.length == 0) {
+                                    $("#shadowlayer").hide();
+                                    $("#shadowtext").hide();
+                                    sessionStorage.removeItem("uploadnewname");
+                                    filenameArr = [];
+                                }
+                                nameSession = JSON.stringify(nameArray);
+                                sessionStorage.setItem("uploadnewname", nameSession);
+                            });
+                        case 'deleteFile':
+                            var delete_arrayData = checkStatus.data;
+                            for (let i = 0; i < delete_arrayData.length; i++) {
+                                deleteArr.push(delete_arrayData[i].pk)
+                            }
+                            $.ajax({
+                                url: /delete_file/,
+                                dataType: "json",
+                                data: JSON.stringify({"fileList": deleteArr}),
+                                type: "delete",
+                                success: function (result) {
+                                    layer.msg("删除成功")
+                                }
+                            });
+                    }
+                }
+            );
+
+            form.render();
+            //日期
+            laydate.render({
+                elem: '#date_hash',
+                value: new Date(),
+                isInitValue: true
+            });
+
+            // 用户名
+            form.val("three", {
+                "author": username
+            });
+            // 这里绑定分析计算的点击事件
+            $("#analysisCalculate").click(function () {
+                for (let i = 0; i < filenameArray.length; i++) {
+                    filenameArr.push(filenameArray[i].newname)
+                }
+                sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
+                nameArray = filenameArr;
+                for (var i = 0; i < nameArray.length; i++) {
+                    $("#namelist").append(
+                        `<div class='list-data'><img class='list-data-close' src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
+                    )
+                }
+                $("#shadowlayer").show();
+                $("#shadowtext").show();
+                $("#namelist").off('click');
+                $("#namelist").on('click', '.list-data', function () {
+                    var compare_dataIndex = $(".list-data").index(this);
+                    $(this).remove();
+                    nameArray.splice(compare_dataIndex, 1);
+                    if (nameArray.length == 0) {
+                        $("#shadowlayer").hide();
+                        $("#shadowtext").hide();
+                        sessionStorage.removeItem("uploadnewname");
+                        filenameArr = [];
+                    }
+                    nameSession = JSON.stringify(nameArray);
+                    sessionStorage.setItem("uploadnewname", nameSession);
+                });
+            });
+
+            $("#closewindow11").click(function () {
+                $("#shadowlayer").hide();
+                $("#shadowtext").hide();
+                sessionStorage.removeItem("uploadnewname");
+                filenameArr = [];
+                $('#namelist').html("");
+            });
+
+            $("#confirmcalculate").click(function () {
+                $("#shadowlayer").hide();
+                $("#shadowtext").hide();
+                $('#namelist').html("");
+                filenameArr = [];
+                sessionStorage.setItem("sessionType", 1);
+                window.open('/calculate/')
+                $.ajax({
+                    url: /parsefilelist/,
+                    dataType: "json",
+                    data: JSON.stringify({"fileList": filenameArr}),
+                    type: "post",
+                    success: function (result) {
+                        $('#jumpbox').html(result);
+                        $('#jumpbox').modal('show');
+                    }
+                });
+            })
+        });
+
+
+    </script>
+    <script type="text/html" id="toolbarDemo">
+        <div class="demoTable">
+            <button class="layui-btn layui-btn-sm layui-btn-normal data-download" lay-event="deleteFile">删除文件</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal data-download" lay-event="getCheckData">分析计算</button>
+        </div>
     </script>
 {% endblock %}

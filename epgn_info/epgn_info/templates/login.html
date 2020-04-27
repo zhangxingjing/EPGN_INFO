@@ -76,6 +76,12 @@
             border-radius: 5px;
 
         }
+        .shadow-content div{
+            margin-bottom: 10px;
+        }
+        .shadow-content div{
+            letter-spacing: 1px;
+        }
 
         .rember-sercret {
             display: flex;
@@ -89,9 +95,33 @@
 </head>
 
 <body>
+<div style="position: absolute;left: 85%; color: white;font-size: 20px;top: 5%;width: 130px;line-height: 35px;text-align: center;background: rgba(0,0,0,.5);border-radius: 5px; "
+     onclick="showtips()">
+    更新说明
+</div>
+<div id="shadows"
+     style="width: 25%;margin-left: 40%;height: 500px;background: white;position: absolute;top: 20%;color: black;padding-left: 50px;padding-right: 50px;font-size: 18px;display: none">
+    <h2 style="text-align: center">更新说明</h2>
+
+    <div class="shadow-content">
+        <div>1.登录模块默认用户名为中文姓名，默认密码为工号，登录系统后可以进行密码修改等操作。</div>
+        <div>2.文件上传模块新增通道匹配功能，在完成文件上传操作后，可能会出现通道匹配弹框（目的在于将文件中非标准通道名修改为标准通道名进行保存，
+            由于标准通道名较多，可以通过在选择框搜索的方式完成通道名查找，若不存在对应通道名，请联系管理员添加)。
+        </div>
+        <div>3.用户可以在个人主页查看文件数据上传量、下载量等，查看个人已上传文件列表、进行文件误上传后的删除操作。</div>
+        <div>4.新增自动报告等功能。</div>
+    </div>
+    <div style="position: relative;bottom: -50px">
+
+        <button style="border: 1px solid black; background: white;text-align: center;width: 22%; margin-left: 39%;line-height: 35px;font-size: 18px;"
+                onclick="closetips()">关闭
+        </button>
+    </div>
+</div>
 <div class="back-pic">
     <div style="position: absolute;top: 12%;left: 10%;color: #666666;font-size: 35px;font-weight: bold">
         <div style="width: 120%;text-align: center;margin-bottom: 18px;letter-spacing: 6px;">声学数据管理系统</div>
+
         <div style="width: 120%;text-align: center;font-size: 31px;">Acoustic data management system</div>
     </div>
     <div class="login-block">
@@ -112,14 +142,14 @@
                 <div style="font-size: 14px;margin-left: 8px;color: #696969">记住密码</div>
             </div>
             <div class="button-login">
-{#                <p href="/authorizations/">#}
-{#                    <button id="login">#}
-{#                        登录#}
-{#                    </button>#}
-{#                </p>#}
+                {#                <p href="/authorizations/">#}
+                {#                    <button id="login">#}
+                {#                        登录#}
+                {#                    </button>#}
+                {#                </p>#}
                 <button id="login">
-                        登录
-                    </button>
+                    登录
+                </button>
             </div>
 
         </div>
@@ -154,6 +184,16 @@
             }
         });
     });
+
+    function closetips() {
+        var tipswindow = document.getElementById("shadows");
+        tipswindow.style.display = "none"
+    }
+
+    function showtips() {
+        var tipswindow = document.getElementById("shadows");
+        tipswindow.style.display = "block"
+    }
 </script>
 
 </body>

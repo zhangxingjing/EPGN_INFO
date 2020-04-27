@@ -18,7 +18,7 @@ class Fileinfo(models.Model):
     file_type = models.CharField(max_length=40, verbose_name="文件类型")
     other_need = models.CharField(max_length=40, verbose_name="其他需求")
     gearbox = models.CharField(max_length=40, verbose_name="变速箱信息")
-
+    file_status = models.CharField(max_length=50, default="否", verbose_name="文件状态")
     # what properties can be added to determine if the current file is experimental or reporting
 
     class Meta:

@@ -10,7 +10,7 @@ from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import Calculat
 from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
 
 
-# from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
+from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
 
 
 class ParseTask(object):

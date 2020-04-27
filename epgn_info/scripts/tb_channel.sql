@@ -762,3 +762,21 @@ insert into `tb_channel` values ('25400', 'BfsFenster', NULL);
 
 insert into `tb_channel` values ('25500', 'Fensterheber_acc HL y', NULL);
 
+
+insert into `tb_channel` values ('25600', 'RPM', NULL);
+
+
+insert into `tb_channel` values ('25700', 'Time', NULL);
+
+insert into `tb_channel` values ('25800', 'EngineCoolantTemp', NULL);
+
+insert into `tb_channel` values ('25900', 'VehicleSpeed', NULL);
+
+insert into `tb_channel` values ('26000', 'EM_Istmodus', NULL);
+
+insert into `tb_channel` values ('26100', 'EM_IsDrehzahl', NULL);
+
+insert into `tb_channel` values ('26200', 'ESP_v_Signal', NULL);
+
+insert into `tb_channel` values ('26300', 'MO_Mom_Ist_Summe', NULL);
+

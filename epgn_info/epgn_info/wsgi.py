@@ -1,18 +1,6 @@
-"""
-WSGI config for epgn_info project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.11/howto/deployment/wsgi/
-"""
-
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.devp")    # 使用Nginx
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.prod")  # 线上Nginx
-# os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.settings.devp")    # 使用manage
-
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.devp")  # 使用Nginx
 application = get_wsgi_application()

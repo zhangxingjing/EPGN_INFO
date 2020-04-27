@@ -20,6 +20,8 @@ urlpatterns = [
     # url('^user_info/$', UserInfoViewSet.as_view()),
     url('user/(?P<pk>\d+)$', user_info),
 
+    # 返回用户个人数据
+    url('^user_file/(?P<pk>\d+)$', user_file),
     # 返回home
     url('^home/$', home),
 ]

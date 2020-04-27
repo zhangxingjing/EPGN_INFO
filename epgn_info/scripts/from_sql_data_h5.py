@@ -2,8 +2,8 @@ import os
 import re
 import h5py
 import pymysql
-from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH    # Ngincx
-# from epgn_info.settings.devp import FILE_SAVE_PATH    # manage
+from epgn_info.epgn_info.settings.devp import FILE_HEAD_PATH, FILE_READ_PATH    # Ngincx
+# from epgn_info.settings.devp import FILE_READ_PATH    # manage
 from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
 # from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage
 
@@ -57,7 +57,7 @@ class FileArrayInfo():
         :return: Channel information in the current file（dict）
         """
         head_content = ""
-        file_path = FileSavePath + file_name + '.asc'
+        file_path = FILE_READ_PATH + file_name + '.asc'
         file = open(file_path, "r", encoding="gbk", errors="ignore")
         while True:
             file_content = file.readline()
@@ -95,7 +95,7 @@ class FileArrayInfo():
         items = []
         data_content = ""
         split_tag = ' '  # 编码不同的时候，使用不同的读取方式
-        file_path = FileSavePath + file_name + '.asc'
+        file_path = FILE_READ_PATH + file_name + '.asc'
         file = open(file_path, "r", encoding="gbk", errors="ignore")
 
         while True:

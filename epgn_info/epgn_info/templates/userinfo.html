@@ -40,7 +40,8 @@
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">工号</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="change_job_number" id="change_job_number" lay-verify="change_job_number" readonly=""
+                                        <input type="text" name="change_job_number" id="change_job_number"
+                                               lay-verify="change_job_number" readonly=""
                                                class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
@@ -49,7 +50,8 @@
                                 <div class="layui-form-item">
                                     <label class="layui-form-label">用户名</label>
                                     <div class="layui-input-inline">
-                                        <input type="text" name="change_username" id="change_username" lay-verify="change_username" value="{{ username }}"
+                                        <input type="text" name="change_username" id="change_username"
+                                               lay-verify="change_username" value="{{ username }}"
                                                readonly="" class="layui-input">
                                     </div>
                                     <div class="layui-form-mid layui-word-aux">不可修改</div>
@@ -123,7 +125,7 @@
         function submitinfo() {
             //定义变量sendData
             $.ajax({
-                url: '/user/'+user_id,
+                url: '/user/' + user_id,
                 type: 'post',
                 dataType: 'json',
                 async: true,//异步请求
@@ -135,12 +137,13 @@
                 },//使用变量sendData
                 //执行成功的回调函数
                 success: function (data) {
-                    // if data.msg == 1({}) // 判断msg的值 ==> 决定是否跳转和密码修改情况
-                    //     location.href = '../../../epgn_front_end/login_2.html';
+                    if (data.code == 1) { // 判断msg的值 ==> 决定是否跳转和密码修改情况
+                        window.location.href = '/';
+                    }
                 },
                 //执行失败或错误的回调函数
                 error: function (data) {
-                    alert(data.msg);
+                    layer.msg(data.msg);
                 }
             });
         }

@@ -483,6 +483,9 @@ class ParseFile(View):
         text = request.body.decode()
         body_json = json.loads(text)
         file_dict = body_json["data"]
+
+        print(file_dict)
+
         msg = ""
         # 对比数据库, 没有的添加得到数据库中
         try:
@@ -495,6 +498,9 @@ class ParseFile(View):
                     if sql_channel_len == 0:
                         new_other_channel = Channel()
                         new_other_channel.name = value
+
+                        print(value, key)
+
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
                         sum_other_channel = Channel.objects.filter(
                             id=Channel.objects.get(name=key).id).count()  # 当前标准通道其他写法的数量
@@ -843,6 +849,7 @@ def file_down(request, pk):
 
 # 增加文件状态
 def change_file_status(request):
+    print("="*80, "Windows文件转换完成！")
     file_name = request.get("file")
     file = Fileinfo.objects.get(file_name=file_name)
     file.file_status = "是"

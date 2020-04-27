@@ -710,6 +710,7 @@
             $(".layui-form-select").each(function () {
                 val.push($(this).find(".layui-this").text());
             });
+            console.log(val);
             if (val.indexOf("") != -1) {
                 layer.msg("请选择标准通道！若无，请联系官明超（53331）")
             } else {

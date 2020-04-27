@@ -1,25 +1,23 @@
 import json
 import math
-from time import time
-from pprint import pprint
-
 import pandas as pd
+from time import time
 from django.views import View
 from django.shortcuts import render
 from epgn_info.scripts.parse_ppt import *  # Nginx
 from epgn_info.scripts.readHDF import read_hdf  # Nginx
 from epgn_info.scripts.process_gecent import ParseTask  # Nginx
-from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
-# from fileinfo.models import Fileinfo
-# from scripts.readHDF import read_hdf  # manage
-# from scripts.parse_ppt import *  # manage
-# from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
-from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
-# from scripts.process_gecent import ParseTask  # manage
+from fileinfo.models import Fileinfo
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
-# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
-# from epgn_info.epgn_info.settings.devp import BASE_DIR    # Nginx
+from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
+from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+# from fileinfo.models import Fileinfo
+# from scripts.parse_ppt import *  # manage
+# from scripts.readHDF import read_hdf  # manage
+# from scripts.process_gecent import ParseTask  # manage
 # from epgn_info.settings.devp import BASE_DIR  # manage
+# from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
 
 
 # 从文件中读取channel

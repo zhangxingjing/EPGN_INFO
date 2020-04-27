@@ -668,7 +668,7 @@
                                     },
                                     //执行失败或错误的回调函数
                                     error: function (data) {
-                                        layer.msg("执行撤销失败, 请联系超管!");
+                                        layer.msg(data.msg);
                                     }
                                 });
                             } else {

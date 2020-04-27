@@ -564,6 +564,63 @@
                                     type: "delete",
                                     success: function (result) {
                                         layer.msg("删除成功")
+                                        var $ = layui.$,
+                                            table = layui.table;
+
+                                        //方法级渲染
+                                        tableIns = table.render({
+                                            elem: '#file_info', // 找到制定的容器
+                                            url: "/user_file/" + user_id, // 表格请求的URL
+                                            page: true, // 是否分页
+                                            limit: 20, // 一页显示多少条数据
+                                            height: 'full-130', // 表格的高度
+                                            {#defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏#}
+                                            toolbar: '#toolbarDemo',
+                                            cols: [
+                                                [{
+                                                    type: 'checkbox',
+                                                    LAY_CHECKED: false,
+                                                },
+                                                    {
+                                                        field: 'platform',
+                                                        title: '车型',
+                                                        width: '8%',
+                                                        sort: true,     // 开启排序
+                                                        align: 'center'   // 居中显示
+                                                    }, {
+                                                    field: 'car_num',
+                                                    title: '车辆编号',
+                                                    width: '8%',
+                                                    sort: true,     // 开启排序
+                                                    align: 'center'   // 居中显示
+                                                }, {
+                                                    field: 'power',
+                                                    title: '功率',
+                                                    width: '8%',
+                                                    sort: true,
+                                                    align: 'center'
+                                                }, {
+                                                    field: 'status',
+                                                    title: '试验工况',
+                                                    width: '20%'
+                                                }, {
+                                                    field: 'file_name',
+                                                    title: '文件名',
+                                                    width: '35%',
+                                                    sort: true,
+
+                                                }, {
+                                                    field: 'other_need',
+                                                    title: '其他',
+                                                    width: '10%',
+                                                }, {
+                                                    field: 'file_status',
+                                                    title: '是否可计算',
+                                                    width: '8.32%'
+                                                }]
+                                            ],
+
+                                        });
                                     },
                                     error: function (result) {
                                         layer.msg("文件删除失败，请联系官明超(53331)！")

@@ -18,7 +18,6 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
-
 # 重写 ==> admin创建的用户密码加密登录校验
 class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
     serializer_class = AuthUserSerializer

@@ -849,11 +849,11 @@ def file_down(request, pk):
 
 # 增加文件状态
 def change_file_status(request):
-    print("="*80, "Windows文件转换完成！")
-    file_name = request.get("file")
+    file_name = request.GET.get("file")
     file = Fileinfo.objects.get(file_name=file_name)
     file.file_status = "是"
     file.save()
+    return JsonResponse({"msg":"OK!"})
 
 
 # 删除文件

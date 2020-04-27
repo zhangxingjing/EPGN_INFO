@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^base/(?P<pk>\d+)/$', parse_template),
 
     # 修改文件状态
-    url('r^file_status/', change_file_status),
+    url(r'^file_status/$', change_file_status),
 
     # 用户添加对比列表
     # url(r'^contrast/$', SaveContrastView.as_view()),

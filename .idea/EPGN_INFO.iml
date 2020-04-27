@@ -6,7 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/epgn_info/scripts" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/epgn_info/epgn_info" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.6 (Working)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5 (Work)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

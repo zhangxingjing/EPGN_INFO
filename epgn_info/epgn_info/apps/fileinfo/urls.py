@@ -14,7 +14,7 @@ urlpatterns = [
     url(r'^upload/$', ParseFile.as_view()),
 
     # 文件下载
-    url(r'^download/(?P<pk>\d+)$', file_down),
+    url(r'^download/(?P<pk>\d+)/$', file_down),
 
     # 用户查看使用文档
     url(r'^word/$', word),

@@ -7,7 +7,7 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
-    <link rel="stylesheet" href="{% static 'css/header.css'%}">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
     <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
     <script src="{% static 'js/vue_2.6.10.js' %}"></script>
     <script src="{% static 'js/header.js' %}"></script>
@@ -296,7 +296,7 @@
         <div class="data-list">
         </div>
         <div class="bulletbox-button">
-            <button class="data-submit" onclick="confirmCalculate()" >
+            <button class="data-submit" onclick="confirmCalculate()">
                 <a href="/calculate/" style="color: white">
                     确认计算
                 </a>
@@ -326,9 +326,9 @@
     <!-- 使用layui框架 -->
     <script>
 
-    function confirmCalculate(){
-        sessionStorage.setItem("sessionType", 0);
-    }
+        function confirmCalculate() {
+            sessionStorage.setItem("sessionType", 0);
+        }
 
         var listArray = null;
         var sessionArray = [];
@@ -396,7 +396,7 @@
         function data_download() {
             console.log(sessionArray);
             for (let i = 0; i < sessionArray.length; i++) {
-                download('第' + i + '个文件', "/download/" + sessionArray[i].pk);
+                download('第' + i + '个文件', "/download/" + sessionArray[i].pk + "/?user_id=" + user_id);
             }
         }
 
@@ -620,6 +620,7 @@
                                 }
                             } else {
                                 var result = [];
+
                                 function get_sameArray() {
                                     for (let i = 0; i < add_arrayData.length; i++) {
                                         new_itemName = add_arrayData[i].file_name;
@@ -633,6 +634,7 @@
                                         }
                                     }
                                 }
+
                                 get_sameArray();
                                 add_arrayData = add_arrayData.filter(item => {
                                     let idList = result.map(v => v.file_name)
@@ -647,7 +649,8 @@
                                 $(".data-list").append(
                                     `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${add_arrayData[i].file_name}</div>`
                                 );
-                            };
+                            }
+                            ;
                             $(".data-list").off('click');
                             $(".data-list").on('click', '.list-data', function () {
                                 var compare_dataIndex = $(".list-data").index(this);
@@ -676,6 +679,7 @@
                                 }
                             } else {
                                 var result = [];
+
                                 function get_sameArray() {
                                     for (let i = 0; i < add_arrayData.length; i++) {
                                         new_itemName = add_arrayData[i].file_name;
@@ -704,7 +708,8 @@
                                 $(".data-list").append(
                                     `<div class='list-data'><img class='list-data-close' src='../../../epgn_front_end/image/close.png'/>${add_arrayData[i].file_name}</div>`
                                 );
-                            };
+                            }
+                            ;
                             $(".data-list").off('click');
                             $(".data-list").on('click', '.list-data', function () {
                                 var compare_dataIndex = $(".list-data").index(this);
@@ -727,7 +732,8 @@
                                 path: '/'
                             }); // 删除指定路径下的cookie
                             layer.msg("缓存已清空")
-                    };
+                    }
+                    ;
                 }
             );
 

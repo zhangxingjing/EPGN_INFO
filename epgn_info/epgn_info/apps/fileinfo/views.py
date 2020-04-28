@@ -795,7 +795,6 @@ def file_down(request, pk):
     user_id = request.GET.get("user_id")
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     file_path = FILE_HEAD_PATH + file_name
-    print(file_path)
 
     def file_iterator(file_path, chunk_size=512):
         """
@@ -825,7 +824,6 @@ def file_down(request, pk):
         # 在这里修改用户下载数据量
         try:
             # 当前用户下载数据的时候, 后台记录下载的数量,将用户下载量+1
-            # author = "zheng"
             author = User.objects.get(id=user_id)  # 这个是当前在线的用户
             author.download_files_data += 1
             author.save(update_fields=['download_files_data'])

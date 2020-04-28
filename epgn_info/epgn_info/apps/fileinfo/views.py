@@ -484,9 +484,6 @@ class ParseFile(View):
         body_json = json.loads(text)
         file_dict = body_json["data"]
 
-        print(file_dict)
-
-        msg = ""
         # 对比数据库, 没有的添加得到数据库中
         try:
             with transaction.atomic():  # 数据库回滚
@@ -498,67 +495,63 @@ class ParseFile(View):
                     if sql_channel_len == 0:
                         new_other_channel = Channel()
                         new_other_channel.name = value
-
-                        print(value, key)
-
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
-                        sum_other_channel = Channel.objects.filter(
-                            id=Channel.objects.get(name=key).id).count()  # 当前标准通道其他写法的数量
+                        sum_other_channel = Channel.objects.filter(id=Channel.objects.get(name=key).id).count()  # 当前标准通道其他写法的数量
+
                         if sum_other_channel == 0:
                             new_other_channel.id = new_other_channel.parent_id + 1
                         else:
-                            new_other_channel.id = new_other_channel.parent_id + Channel.objects.filter(
-                                id=Channel.objects.get(name=key).id).count()
+                            new_other_channel.id = new_other_channel.parent_id + Channel.objects.filter(id=Channel.objects.get(name=key).id).count()
                         # new_other_channel.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
+
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
                         new_other_channel.save()
-
+                res_dict = {"code":0, "msg":"通道别名添加完成！"}
                 # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
-                file_list = body_json["filelist"]
-                for file in set(file_list):
-                    # 在这里拿到文件中通道名, 进行修改 ==> 可以使用多任务进行优化
-                    read_info = h5py.File(FILE_READ_PATH + file, 'r+')
-                    for channel_key in read_info.keys():
-                        # 找到当前通道对应的标准通道
-                        try:
-                            read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
-                        except:
-                            read_hdf_channel = channel_key
-
-                        # print("read_hdf_channel:", read_hdf_channel)
-                        norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
-
-                        # 判断当前通道名 是不是 标准写法
-                        if len(norm_channel_key) == 0:
-                            # print("norm_channel_key:", norm_channel_key)
-                            if norm_channel_key[0].parent_id is not None:
-                                # 不是标准写法
-                                change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
-                                norm_channel_key.name = change_channel_to_norm.name
-
-                            # 跳过已修改的部分
-                            if norm_channel_key.name == channel_key:
-                                continue
-
-                            # 最后修改文件中的通道名
-                            read_info[norm_channel_key.name] = read_info[channel_key]
-                            del read_info[channel_key]
-                            read_info.update({norm_channel_key: read_info.pop(channel_key)})
-                            read_info[norm_channel_key] = read_info[channel_key].value
-                            res_dict = {
-                                "code": 0,
-                                "msg": "File Channel Change to Success"
-                            }
-                        else:
-                            os.remove(FILE_READ_PATH + file)
-                            os.remove(FILE_HEAD_PATH + file)
-                            res_dict = {
-                                "code": 1,
-                                "msg": DatabaseError
-                            }
+                # file_list = body_json["filelist"]
+                # for file in set(file_list):
+                #     # 在这里拿到文件中通道名, 进行修改 ==> 可以使用多任务进行优化
+                #     read_info = h5py.File(FILE_READ_PATH + file, 'r+')
+                #     for channel_key in read_info.keys():
+                #         # 找到当前通道对应的标准通道
+                #         try:
+                #             read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
+                #         except:
+                #             read_hdf_channel = channel_key
+                #
+                #         # print("read_hdf_channel:", read_hdf_channel)
+                #         norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
+                #
+                #         # 判断当前通道名 是不是 标准写法
+                #         if len(norm_channel_key) == 0:
+                #             # print("norm_channel_key:", norm_channel_key)
+                #             if norm_channel_key[0].parent_id is not None:
+                #                 # 不是标准写法
+                #                 change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
+                #                 norm_channel_key.name = change_channel_to_norm.name
+                #
+                #             # 跳过已修改的部分
+                #             if norm_channel_key.name == channel_key:
+                #                 continue
+                #
+                #             # 最后修改文件中的通道名
+                #             read_info[norm_channel_key.name] = read_info[channel_key]
+                #             del read_info[channel_key]
+                #             read_info.update({norm_channel_key: read_info.pop(channel_key)})
+                #             read_info[norm_channel_key] = read_info[channel_key].value
+                #             res_dict = {
+                #                 "code": 0,
+                #                 "msg": "File Channel Change to Success"
+                #             }
+                #         else:
+                #             os.remove(FILE_READ_PATH + file)
+                #             os.remove(FILE_HEAD_PATH + file)
+                #             res_dict = {
+                #                 "code": 1,
+                #                 "msg": DatabaseError
+                #             }
         except FileExistsError:
             return JsonResponse({"code": 1, "msg": DatabaseError})
-            # 返回前端通道修改的状态
         return JsonResponse(res_dict)
 
 

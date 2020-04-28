@@ -82,7 +82,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
+        'NAME': 'EPGN_TEST',  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
             # 'init_command': 'SET sql_mode=STRICT_TRANS_TABLES',

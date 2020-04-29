@@ -1,6 +1,15 @@
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
+# @Time    : 2020/4/29 下午12:57
+# @Author  : Zheng Xingtao
+# @File    : devp.py
+
+
 from .devp import *
 
-# 从开发环境中导入变量, 在线上环境中进行修改
-DEBUG = False
+DEBUG = True
 
-FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF"
+MySQL_NAME = "EPGN_TEST"
+
+FILE_HEAD_PATH = "/home/zheng/Desktop/demo/H_HDF"
+FILE_READ_PATH = "/home/zheng/Desktop/demo/R_HDF"

@@ -4,13 +4,15 @@ import pandas as pd
 from time import time
 from django.views import View
 from django.shortcuts import render
+from fileinfo.models import Fileinfo
 from epgn_info.scripts.parse_ppt import *  # Nginx
 from epgn_info.scripts.readHDF import read_hdf  # Nginx
 from epgn_info.scripts.process_gecent import ParseTask  # Nginx
-from fileinfo.models import Fileinfo
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
 from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+
+
 # from fileinfo.models import Fileinfo
 # from scripts.parse_ppt import *  # manage
 # from scripts.readHDF import read_hdf  # manage
@@ -20,7 +22,7 @@ from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL,
 # from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
 
 
-# 从文件中读取channel
+# 处理通道信息： url(r'^channelList/$', ChannelList.as_view()),
 class ChannelList(View):
 
     # 文件通道信息
@@ -58,7 +60,7 @@ class ChannelList(View):
             "spread": True,
             "children": channel_dict_list
         }]
-        return JsonResponse({"file_info": main_info, "channel_list":list(set(set_channel_list))})
+        return JsonResponse({"file_info": main_info, "channel_list": list(set(set_channel_list))})
 
     # 通道去重
     def post(self, request):
@@ -86,7 +88,7 @@ class ChannelList(View):
         return HttpResponse("当前为POST请求，请检查请求方式！")
 
 
-# Calculate
+# 算法结果： url(r'^calculate/$', CalculateParse.as_view()),
 class CalculateParse(View):
 
     def get(self, request):
@@ -130,7 +132,7 @@ class CalculateParse(View):
         return render(request, 'calculate.html')
 
 
-# PPT
+# 处理PPT： url('^parse_ppt/$', PPTParse.as_view()),
 class PPTParse(View):
 
     # 接收文件名，返回算法数据
@@ -192,7 +194,6 @@ class PPTParse(View):
         except:
             return HttpResponse("Sorry but Not Found the File")
         return response
-
 
     # 返回分段取峰值
     def patch(self, request):
@@ -365,7 +366,7 @@ class PPTParse(View):
         return new_items
 
 
-# return_file_list: url(r'file_list/', views.return_file_list),
+# 返回文件列表: url(r'file_list/', views.return_file_list),
 def return_file_list(request):
     if request.method == "POST":
         body = request.body
@@ -381,7 +382,7 @@ def return_file_list(request):
         return JsonResponse({"file_list": file_list})
 
 
-# get algorithm results: url(r'^algorithm_results/$', views.get_algorithm_results)
+# 获取算法结果: url(r'^algorithm_results/$', views.get_algorithm_results)
 def get_algorithm_results(request):
     # get parameters from front end
     if request.method == "POST":

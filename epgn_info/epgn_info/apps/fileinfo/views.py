@@ -2,7 +2,6 @@ import os
 import json
 import re
 import time
-import h5py
 from .serializers import *
 from .models import Fileinfo
 from django.views import View
@@ -12,6 +11,7 @@ from django.db import transaction
 from django.db.models import Q, Max
 from django.core import serializers
 from django.shortcuts import render
+from django.utils.http import urlquote
 from rest_framework.response import Response
 from epgn_info.scripts.readHDF import read_hdf
 from drf_haystack.viewsets import HaystackViewSet
@@ -20,6 +20,7 @@ from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from epgn_info.epgn_info.settings.devp import FILE_HEAD_PATH, FILE_READ_PATH
 from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
+
 
 # 前端访问到页面的时候就发送查询`动力总成`的请求, 选择动力总成之后在发送k;`功率`的请求
 class PropulsionPowerView(ViewSet):
@@ -354,8 +355,6 @@ class ParseFile(View):
     def get(self, request):
         return render(request, 'upload.html')
 
-    # 上传文件
-    # @login_required
     def post(self, request):
         """
         用户的上传下载都需要先登录, 在这两个操作之前先进行用户身份认证
@@ -496,17 +495,19 @@ class ParseFile(View):
                         new_other_channel = Channel()
                         new_other_channel.name = value
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
-                        sum_other_channel = Channel.objects.filter(id=Channel.objects.get(name=key).id).count()  # 当前标准通道其他写法的数量
+                        sum_other_channel = Channel.objects.filter(
+                            id=Channel.objects.get(name=key).id).count()  # 当前标准通道其他写法的数量
 
                         if sum_other_channel == 0:
                             new_other_channel.id = new_other_channel.parent_id + 1
                         else:
-                            new_other_channel.id = new_other_channel.parent_id + Channel.objects.filter(id=Channel.objects.get(name=key).id).count()
+                            new_other_channel.id = new_other_channel.parent_id + Channel.objects.filter(
+                                id=Channel.objects.get(name=key).id).count()
                         # new_other_channel.parent_id = Channel.objects.get(Q(parent_id=None) & Q(name=key)).id
 
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
                         new_other_channel.save()
-                res_dict = {"code":0, "msg":"通道别名添加完成！"}
+                res_dict = {"code": 0, "msg": "通道别名添加完成！"}
                 # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
                 # file_list = body_json["filelist"]
                 # for file in set(file_list):
@@ -654,82 +655,6 @@ class FileSearchViewSet(HaystackViewSet):
     pass
 
 
-# 查询检索 + 分页查询 ==> 表格重载  ==> 使用模糊搜索
-# def file(request):
-#     # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
-#     carmodel = request.GET.get("carmodel", None)
-#     propulsion = request.GET.get("propulsion", None)
-#     power = request.GET.get("power", None)
-#     discipline = request.GET.get("discipline", None)
-#     parts = request.GET.get("parts", None)
-#     key_word = request.GET.get("key_word", None)
-#
-#     if key_word == "":
-#         key_word = None
-#
-#     # 这里是分页查询的page和limit
-#     page = request.GET.get('page')
-#     limit = int(request.GET.get('limit'))
-#
-#     print(carmodel, propulsion, power, discipline, parts, key_word)
-#     search_dict = {}
-#     if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
-#         # 如果用户什么都没有搜，显示所有
-#         items = Fileinfo.objects.all()
-#     else:
-#         # 如果用户搜索了，先获取上面几个的查询结 ==> 有没有key_word
-#         if carmodel:
-#             search_dict["carmodel"] = carmodel
-#         if propulsion:
-#             search_dict["propulsion"] = propulsion
-#         if power:
-#             search_dict["power"] = power
-#         if discipline:
-#             search_dict["direction"] = discipline
-#         if parts:
-#             search_dict["parts"] = parts
-#
-#         # 如果没有key_word， items就是这个值
-#         items = Fileinfo.objects.filter(**search_dict).order_by('-id')
-#
-#         # 如果key_word存在，再从上面搜索的QuerySet中搜索
-#         if key_word:
-#             print(key_word.replace(' ', ''))
-#             key_word = key_word.replace(' ', '')
-#             items = Fileinfo.objects.filter(**search_dict).filter(Q(produce__icontains=key_word) |
-#                                                                   Q(author__icontains=key_word) |
-#                                                                   Q(status__icontains=key_word) |
-#                                                                   Q(file_name__icontains=key_word) |
-#                                                                   Q(other_need__icontains=key_word)).order_by('-id')
-#
-#     # 这里是使用什么方法分页查询数据的
-#     paginator = Paginator(items, limit)
-#     try:
-#         page_item = paginator.page(page)
-#     except PageNotAnInteger:
-#         page_item = paginator.page(1)
-#     except EmptyPage:
-#         page_item = paginator.page(paginator.num_pages)
-#
-#     items = json.loads(serializers.serialize("json", page_item))
-#
-#     # 构建数据列表
-#     res_list = []
-#
-#     for item in items:
-#         item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
-#         res_list.append(item["fields"])
-#
-#     res = {
-#         "code": 0,
-#         "msg": "OK",
-#         "count": paginator.count,  # 数据的条数
-#         "data": res_list  # 返回的数据列表
-#     }
-#
-#     return JsonResponse(res)
-
-
 # 把数据渲染到base.html
 def parse_template(request, pk):
     # 平台
@@ -790,8 +715,6 @@ def file_down(request, pk):
     :param pk:当前用户想要下载的文件id
     :return:文件下载状态
     """
-
-    # 前段在发送请求的时候应该是从cookie里面拿到的id, 后端查询数据库，拿到文件名，拼接绝对路径
     user_id = request.GET.get("user_id")
     file_name = Fileinfo.objects.get(id=pk).file_name  # 从数据库里面查询当前id的文件名
     file_path = FILE_HEAD_PATH + file_name
@@ -812,27 +735,21 @@ def file_down(request, pk):
                     break
 
     try:
-        # 设置响应头
-        # StreamingHttpResponse将文件内容进行流式传输，数据量大可以用这个方法
         response = StreamingHttpResponse(file_iterator(file_path))
-        # 以流的形式下载文件,这样可以实现任意格式的文件下载
         response['Content-Type'] = 'application/octet-stream'
-        # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
-        # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
-        from django.utils.http import urlquote
         response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
-        # 在这里修改用户下载数据量
         try:
-            # 当前用户下载数据的时候, 后台记录下载的数量,将用户下载量+1
-            author = User.objects.get(id=user_id)  # 这个是当前在线的用户
-            author.download_files_data += 1
-            author.save(update_fields=['download_files_data'])
+            with transaction.atomic():  # 数据库回滚
+                # 用户下载量+1
+                author = User.objects.get(id=user_id)  # 当前在线的用户
+                author.download_files_data += 1
+                author.save(update_fields=['download_files_data'])
 
-            # 在作者的数据被下载的时候, 给试验员的浏览量+1
-            uploader_name = Fileinfo.objects.get(id=pk).author  # 通过文件获取当前文件的试验员
-            uploader = User.objects.get(username=uploader_name)
-            uploader.views += 1
-            uploader.save(update_fields=['views'])
+                # 试验员的浏览量+1
+                uploader_name = Fileinfo.objects.get(id=pk).author  # 反向查询
+                uploader = User.objects.get(username=uploader_name)
+                uploader.views += 1
+                uploader.save(update_fields=['views'])
         except:
             return HttpResponse("Sorry but Data storage error")
     except:
@@ -846,7 +763,7 @@ def change_file_status(request):
     file = Fileinfo.objects.get(file_name=file_name)
     file.file_status = "是"
     file.save()
-    return JsonResponse({"msg":"OK!"})
+    return JsonResponse({"msg": "OK!"})
 
 
 # 删除文件

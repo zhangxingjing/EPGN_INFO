@@ -75,7 +75,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'epgn_info.wsgi.application'
 
 # 配置数据库
-MySQL_NAME = "EPGN_INFO"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',

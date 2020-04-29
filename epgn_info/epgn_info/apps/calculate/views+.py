@@ -12,7 +12,7 @@ from django.shortcuts import render
 from fileinfo.models import Fileinfo
 from readHDF import read_hdf  # manage
 from scripts.parse_ppt import *  # manage
-from settings.devp import CalculateRule
+from settings.dev import CalculateRule
 from scripts.process_gecent import ParseTask  # manage
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage

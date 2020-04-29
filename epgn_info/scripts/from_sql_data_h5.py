@@ -2,7 +2,7 @@ import os
 import re
 import h5py
 import pymysql
-from epgn_info.epgn_info.settings.devp import FILE_HEAD_PATH, FILE_READ_PATH    # Ngincx
+from epgn_info.epgn_info.settings.dev import FILE_HEAD_PATH, FILE_READ_PATH    # Ngincx
 # from epgn_info.settings.devp import FILE_READ_PATH    # manage
 from epgn_info.epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # Nginx
 # from epgn_info.apps.calculate.algorithm.acousvw_v03_1 import *  # manage

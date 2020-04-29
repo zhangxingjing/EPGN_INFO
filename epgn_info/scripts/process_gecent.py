@@ -7,10 +7,10 @@ from multiprocessing import cpu_count, Pool, Manager
 from epgn_info.scripts.readHDF import read_hdf   # Nginx
 from epgn_info.epgn_info.apps.calculate.algorithm.class_calculate_two import *  # Nginx
 from epgn_info.epgn_info.apps.calculate.algorithm.calculate_name import CalculateNameDict   # Nginx
-from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
+from epgn_info.epgn_info.settings.dev import CHANNEL_LIST
 
 
-from epgn_info.epgn_info.settings.devp import CHANNEL_LIST
+from epgn_info.epgn_info.settings.dev import CHANNEL_LIST
 
 
 class ParseTask(object):

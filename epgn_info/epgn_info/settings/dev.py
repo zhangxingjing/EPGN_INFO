@@ -6,7 +6,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
-DEBUG = False
+DEBUG = True
 
 # 白名单
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -274,8 +274,8 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
-FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
+FILE_HEAD_PATH = "/home/zheng/Desktop/demo/H_HDF"
+FILE_READ_PATH = "/home/zheng/Desktop/demo/R_HDF"
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
     # "(N)G3 VZ": "2nd Order VS RPM",

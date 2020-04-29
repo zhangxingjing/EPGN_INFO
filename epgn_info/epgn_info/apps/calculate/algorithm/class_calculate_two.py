@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from scipy.signal.windows import hann
 from scipy.signal import butter, lfilter
 from epgn_info.scripts.readHDF import read_hdf   # Nginx
-from epgn_info.epgn_info.settings.prod import BASE_DIR    # Nginx
+from epgn_info.epgn_info.settings.pro import BASE_DIR    # Nginx
 # from scripts.readHDF import read_hdf  # manage
 # from epgn_info.settings.prod import BASE_DIR  # manage
 

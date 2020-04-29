@@ -13,7 +13,7 @@
 # 增加文件状态
 import os
 
-from settings.devp import FILE_HEAD_PATH, FILE_READ_PATH
+from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
 
 
 def file_current_status():

@@ -10,7 +10,7 @@ from epgn_info.scripts.readHDF import read_hdf  # Nginx
 from epgn_info.scripts.process_gecent import ParseTask  # Nginx
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from epgn_info.scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # Nginx
-from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
+from epgn_info.epgn_info.settings.dev import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
 
 
 # from fileinfo.models import Fileinfo

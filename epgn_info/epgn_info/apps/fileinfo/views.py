@@ -18,7 +18,7 @@ from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from epgn_info.epgn_info.settings.devp import FILE_HEAD_PATH, FILE_READ_PATH
+from epgn_info.epgn_info.settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
 from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 
 
@@ -170,7 +170,7 @@ class FileInfoViewSet(ModelViewSet):
         print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
         # return HttpResponse(json.dumps({"data":gearbox}))
 
-        if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform:
+        if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
             # 用户名 + 文件名
             new_name = create_date + "_" + filename
             # 在这里判断下文件格式 ==> 分开保存
@@ -400,7 +400,7 @@ class ParseFile(View):
         if status_id.isdigit():
             status = Direction.objects.get(id=status_id).name
 
-        if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform:
+        if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
             new_name = create_date + "_" + filename  # 用户名 + 文件名
             # 在这里判断下文件格式 ==> 分开保存
             try:

@@ -1,7 +1,7 @@
 import re
 import numpy as np
 from time import time
-from epgn_info.epgn_info.settings.devp import FILE_SAVE_PATH
+from epgn_info.epgn_info.settings.dev import FILE_SAVE_PATH
 
 def read_file_header(file_name):
     head_content = ""

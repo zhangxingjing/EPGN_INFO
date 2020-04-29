@@ -1,6 +1,6 @@
 import h5py
 
-from epgn_info.epgn_info.settings.devp import FILE_HEAD_PATH, FILE_READ_PATH    # Nginx
+from epgn_info.epgn_info.settings.dev import FILE_HEAD_PATH, FILE_READ_PATH    # Nginx
 # from epgn_info.settings.devp import FILE_HEAD_PATH  # manage
 # FILE_SAVE_PATH = "/home/zheng/Desktop/.demo/R_HDF/"
 

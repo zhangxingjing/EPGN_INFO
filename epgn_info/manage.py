@@ -3,8 +3,8 @@ import os
 import sys
 
 if __name__ == "__main__":
-    # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.dev")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.pro")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.dev") # 开发环境
+    # os.environ.setdefault("DJANGO_SETTINGS_MODULE", "epgn_info.epgn_info.settings.pro")   # 线上环境
     try:
         from django.core.management import execute_from_command_line
     except ImportError:

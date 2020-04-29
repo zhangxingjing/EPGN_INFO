@@ -522,3 +522,5 @@ insert into `tb_channel` values ('26100', 'EM_IsDrehzahl', NULL);
 insert into `tb_channel` values ('26200', 'ESP_v_Signal', NULL);
 
 insert into `tb_channel` values ('26300', 'MO_Mom_Ist_Summe', NULL);
+
+insert into `tb_channel` values ('26400', '无用通道', NULL);

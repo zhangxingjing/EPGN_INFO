@@ -6,20 +6,7 @@ from rest_framework_jwt.settings import api_settings
 
 # 创建用户 ==> 不让用户自己创建
 class CreateUserSerializer(serializers.ModelSerializer):
-    # ModelSerializer ==> 模型类序列化器(校验用户提交的数据)
-    # 用户注册
-    """
-    提交字段
-    1. username
-    5. nickname
-    2. password
-    3. password2
-    5. allow
-    返回字段
-    1. id
-    2. username
-    3. jwt token
-    """
+    # 用户注册 : ModelSerializer ==> 模型类序列化器(校验用户提交的数据)
     nickname = serializers.CharField(label="昵称", write_only=True)
     password2 = serializers.CharField(label='确认密码', write_only=True)
     allow = serializers.CharField(label='是否同意协议', write_only=True)

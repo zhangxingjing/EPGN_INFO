@@ -4,23 +4,15 @@ import numpy as np
 import pandas as pd
 from time import time
 from django.views import View
+from scripts.parse_ppt import *
 from django.shortcuts import render
+from scripts.readHDF import read_hdf
 from fileinfo.models import Fileinfo
+from scripts.process_gecent import ParseTask
 from scripts.from_sql_data_h5 import FileArrayInfo
-from scripts.parse_ppt import *  # Nginx
-from scripts.readHDF import read_hdf  # Nginx
-from scripts.process_gecent import ParseTask  # Nginx
+from calculate.algorithm.class_name import CalculateNameList
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from settings.dev import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
-from calculate.algorithm.class_name import CalculateNameList
-
-# from fileinfo.models import Fileinfo
-# from scripts.parse_ppt import *  # manage
-# from scripts.readHDF import read_hdf  # manage
-# from scripts.process_gecent import ParseTask  # manage
-# from epgn_info.settings.devp import BASE_DIR  # manage
-# from epgn_info.epgn_info.settings.devp import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
-# from scripts.from_sql_data_h5 import FileArrayInfo, CalculateNameList  # manage
 
 
 # 处理通道信息： url(r'^channelList/$', ChannelList.as_view()),

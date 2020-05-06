@@ -1,5 +1,5 @@
-import datetime
 import re
+import datetime
 from .models import User, Task
 from django.dispatch import receiver
 from django.db.models.signals import post_save

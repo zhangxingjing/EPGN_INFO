@@ -2,11 +2,10 @@ import re
 import base64
 import time
 from pprint import pprint
-
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from settings.dev import BASE_DIR    # Nginx
-# from epgn_info.settings.devp import BASE_DIR  # manage
+from settings.dev import BASE_DIR
+
 
 PPT_MODEL_PATH = BASE_DIR + '/apps/calculate/PPTModel/'
 IMAGE_LOCATION = [
@@ -112,7 +111,7 @@ class ParsePPT():
 
         # 在这里处理当前PPT，生成之后返回当前的PPT路径
         for item in self.data["items"]:
-            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["filename"] # 正则到合适的imgName
+            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["filename"]  # 正则到合适的imgName
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', item["base64"]).group(2)
             img = base64.b64decode(str_bas64)
             pic_path = PPT_MODEL_PATH + 'image/{}.jpg'.format(pic_info)
@@ -189,7 +188,7 @@ class ParsePPT():
         num = 0
         for key in IMAGE_LOCATION:  # 使用全局变量
             if img_dict["status"] in key:
-                num = IMAGE_LOCATION.index(key) + 2 -1
+                num = IMAGE_LOCATION.index(key) + 2 - 1
 
         if img_dict["channel"] == "VL" or img_dict["channel"] == "vorn links":
             # 左前
@@ -228,7 +227,7 @@ class ParsePPT():
         :return: 当前PPT存储的位置
         """
         # try:
-            # self.parse_title()
+        # self.parse_title()
         for img_dict in self.parse_pic():
             pprint(img_dict)
             self.insert_pic(img_dict)

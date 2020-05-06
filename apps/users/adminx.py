@@ -1,6 +1,4 @@
 import xadmin
-from django.forms import Textarea
-from django.shortcuts import reverse
 from .models import User, Task, Section, Direction
 
 

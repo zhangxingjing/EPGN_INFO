@@ -1,9 +1,8 @@
 import logging
-
-from rest_framework.response import Response
-from rest_framework.views import exception_handler as drf_exception_handler
 from django.db import DatabaseError
 from redis.exceptions import RedisError
+from rest_framework.response import Response
+from rest_framework.views import exception_handler as drf_exception_handler
 
 # 获取django日志器
 logger = logging.getLogger('django')
@@ -11,7 +10,6 @@ logger = logging.getLogger('django')
 
 def exception_handler(exc, context):
     """
-
     :param exc: 异常对象
     :param context: 异常上下文
     :return:

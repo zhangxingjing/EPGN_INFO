@@ -1,13 +1,11 @@
 import xadmin
-from django.contrib import admin
 from .models import Fileinfo, PropulsionPower, Platform, Direction, Channel
 
 
 # Vehicle data information
 @xadmin.sites.register(Fileinfo)
 class FileInfoAdmin():
-    list_display = ['id', 'file_name', 'platform', 'carmodel', 'direction', 'parts', 'status', 'produce', 'author', 'car_num', 'propulsion',
-                    'power', 'create_date', 'other_need']  # user data displayed on the page
+    list_display = ['id', 'file_name', 'platform', 'carmodel', 'direction', 'parts', 'status', 'produce', 'author', 'car_num', 'propulsion', 'power', 'create_date', 'other_need']  # user data displayed on the page
     search_fields = ['username', 'file_name', ]  # fields that can be searched
     list_display_links = ['file_name', ]
 

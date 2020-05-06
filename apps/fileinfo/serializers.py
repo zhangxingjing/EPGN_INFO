@@ -1,6 +1,4 @@
-# from .search_indexes import FileIndex
 from rest_framework import serializers
-# from drf_haystack.serializers import HaystackSerializer
 from .models import PropulsionPower, Platform, Direction, Fileinfo, GearBox, Channel
 
 

@@ -1,6 +1,3 @@
-"""
-直接返回数据的算法文件（复制 + 删除）
-"""
 import os
 import time
 import librosa
@@ -8,11 +5,9 @@ import numpy as np
 import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
+from settings.pro import BASE_DIR
 from scipy.signal.windows import hann
 from scipy.signal import butter, lfilter
-from settings.pro import BASE_DIR    # Nginx
-# from scripts.readHDF import read_hdf  # manage
-# from epgn_info.settings.prod import BASE_DIR  # manage
 
 
 class Calculate_Object(object):
@@ -397,8 +392,9 @@ class LevelVsRpm(LevelTime):
 class StartStop(Calculate_Object):
     """
     从前端传到后台的数据处理之后，接入算法的时候，算法应该返回当前数据的X、Y坐标数据
+    返回值为： X Y
     """
-    # TODO: 返回值为 X Y
+
     def butter_lowpass(self, cutoff, fs, order=5):
         '''
         构建滤波器

@@ -1,6 +1,7 @@
 """
 前端对应的算法名称
 """
+
 CalculateNameDict = {
     # the front end page： Corresponding class name
     "FFT": "FftCalculate",

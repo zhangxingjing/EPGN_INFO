@@ -1,5 +1,6 @@
 import json
 import math
+import numpy as np
 import pandas as pd
 from time import time
 from django.views import View
@@ -157,7 +158,7 @@ class PPTParse(View):
         try:
             ppt_path = ParsePPT(items).run()
             # 这里return的url，是可以直接下载的！
-            print("ppt_path:", ppt_path)
+            # print("ppt_path:", ppt_path)
             return JsonResponse({"status": 200, "path": ppt_path})
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
@@ -165,7 +166,7 @@ class PPTParse(View):
     # 接受需要下载的文件地址，返回文件信息
     def get(self, request):
         ppt_path = request.GET.get("path")
-        print("ppt_path:", ppt_path)
+        # print("ppt_path:", ppt_path)
         file_name = re.search(r'.*/(.*\.pptx)', ppt_path).group(1)
 
         def file_iterator(file_path, chunk_size=512):
@@ -205,7 +206,7 @@ class PPTParse(View):
         # # 向data里面添加数据的时候,先进行分段取峰值 ==> 调用segment_for()使用递归的方式对列表数据进行分段取值
         # # 列表里面装的是当前的点(x, y), 通过y来判断取点位置
         new_items = self.segment_for(list(return_items["data"]), 1000, [])
-        print(new_items)
+        # print(new_items)
 
         return JsonResponse({"status": 200, "msg": "前端请求正常, 查看数据处理!"})
 
@@ -222,7 +223,6 @@ class PPTParse(View):
         file_list = json.loads(body)["fileList"]
         for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
             rpm_type = 'rising'
-            print(file, type(file))
             status = Fileinfo.objects.get(file_name=file).status
 
             # 判断当前文件加减速：获取当前工况，通过迭代判断当前是加速还是减速
@@ -234,7 +234,6 @@ class PPTParse(View):
                 calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
                 channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
 
-                # 文件中的哪些数据通道需要放到算法中进行计算
                 # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
                 # channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
                 channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]
@@ -272,17 +271,14 @@ class PPTParse(View):
                 }
 
                 # 将data传入算法，进行计算，获取算法返回值
-                items = ParseTask(data, rpm_type).run()  # TODO: 这里两次接收items
+                items = ParseTask(data, rpm_type).run()  # TODO: 这里二次接收items
 
                 # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
                     return None
                     # return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
 
-                # items里面存放的一个文件中所有通道的算法结果
-                # 我们需要将 所有文件 中的 所有数据 ，按照键值对的形式存放到一个列表中，返回
-                # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
-                # TODO: 添加 KP 80-20 的求均值
+                # items里面存放的一个文件中所有通道的算法结果 ==> 添加 KP 80-20 的求均值
                 for item in items:
                     if status == "KP 80-20":
                         ave_items.append(item)
@@ -316,16 +312,27 @@ class PPTParse(View):
             # 使用 pandas 对列表中的字典进行分类
             result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
 
+            # 由于KP的数据大多是分段数采的，在这里一起计算所有KP的情况
             for channels in result:
                 # 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
-                y1 = channels["info"][0]["Y"]
-                y2 = channels["info"][1]["Y"]
-                y3 = channels["info"][2]["Y"]
+                # y1 = channels["info"][0]["Y"]
+                # y2 = channels["info"][1]["Y"]
+                # y3 = channels["info"][2]["Y"]
+
+                list_y_sum = []
+                for i in range(len(channels)):
+                    a = channels["info"][i]["Y"]
+                    list_y_sum.append(a)
 
                 y_list = []
-                for i in range(len(y1)):
-                    y = (y1[i] + y2[i] + y3[i]) / int(len(channels))
-                    y_list.append(y)
+                for i in range(len(channels["info"][0]["Y"])):
+                    # y = (y1[i] + y2[i] + y3[i]) / int(len(channels))
+                    # y = sum([y1[i], y2[i], y3[i]]) / int(len(channels))
+                    # y = sum(list_y_sum) / int(len(channels))
+
+                    np_list_y = np.array(list_y_sum)
+                    list_avg = np.mean(np_list_y, axis=1)
+                    y_list.append(list(list_avg))
 
                 x_list = channels["info"][2]["X"]
                 line_loc = []
@@ -344,6 +351,7 @@ class PPTParse(View):
                     "data": line_loc
                 })
 
+        # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
         return return_items
         # return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 

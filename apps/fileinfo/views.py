@@ -107,9 +107,6 @@ class GearBoxView(ViewSet):
 
 # 文件信息的增删改查： router.register(r'^parse_file', views.FileInfoViewSet)
 class FileInfoViewSet(ModelViewSet):
-    """
-    使用Django Rest Framework重写文件的增删改查
-    """
     queryset = Fileinfo.objects.all().order_by('-pk')
     serializer_class = FileSerializer
 
@@ -350,11 +347,13 @@ class FileInfoViewSet(ModelViewSet):
         return JsonResponse(res)
 
 
-# 用户对于文件的操作
+# 文件操作: router.register(r'parse_file', FileInfoViewSet)
 class ParseFile(View):
+    # 获取页面
     def get(self, request):
         return render(request, 'upload.html')
 
+    # 上传文件
     def post(self, request):
         """
         用户的上传下载都需要先登录, 在这两个操作之前先进行用户身份认证
@@ -472,6 +471,7 @@ class ParseFile(View):
         }
         return HttpResponse(res_dict)
 
+    # 修改通道名
     def put(self, request):
         """
         将其他写法的通道名修改为标准通道名, 并将文件中的通道名修改为标准通道名
@@ -556,7 +556,7 @@ class ParseFile(View):
         return JsonResponse(res_dict)
 
 
-# SQL中Channel的增删改查
+# 通道信息: url(r'channel_check/$', CheckChannel.as_view()),
 class CheckChannel(View):
 
     def get(self, request):
@@ -647,15 +647,7 @@ class CheckChannel(View):
         return JsonResponse({"status": 200, "msg": "OK"})
 
 
-# 使用elasticsearch搜索引擎
-class FileSearchViewSet(HaystackViewSet):
-    """Fileinfo搜索"""
-    # index_models = [Fileinfo]
-    # serializer_class = FileIndexSerializer
-    pass
-
-
-# 把数据渲染到base.html
+# 把数据渲染到base: url(r'^base/(?P<pk>\d+)/$', parse_template),
 def parse_template(request, pk):
     # 平台
     platform = Platform.objects.filter(parent=None)
@@ -698,7 +690,7 @@ def parse_template(request, pk):
     return render(request, 'datainfo.html', data)
 
 
-# 文档查看
+# 文档查看: url(r'^word/$', word),
 def word(request):
     file = open('/home/small-spider/Desktop/Work/EPGN_INFO_4.17/epgn_front_end/word/使用说明文档.docx', 'rb')
     response = FileResponse(file)
@@ -707,7 +699,7 @@ def word(request):
     return response
 
 
-# 文件下载
+# 文件下载: url(r'^download/(?P<pk>\d+)/$', file_down),
 def file_down(request, pk):
     """
     在这里缺少一个request的参数
@@ -757,7 +749,7 @@ def file_down(request, pk):
     return response
 
 
-# 增加文件状态
+# 文件状态: url(r'^file_status/$', change_file_status),
 def change_file_status(request):
     file_name = request.GET.get("file")
     file = Fileinfo.objects.get(file_name=file_name)
@@ -766,7 +758,7 @@ def change_file_status(request):
     return JsonResponse({"msg": "OK!"})
 
 
-# 删除文件
+# 删除文件: url(r'^delete_file/$', delete_file),
 def delete_file(request):
     body = request.body
     body_str = body.decode()

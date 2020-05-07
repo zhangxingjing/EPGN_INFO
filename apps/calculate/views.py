@@ -194,12 +194,7 @@ class PPTParse(View):
 
         for i in return_items:
             print(i["channel"])
-
-        # # 向data里面添加数据的时候,先进行分段取峰值 ==> 调用segment_for()使用递归的方式对列表数据进行分段取值
-        # # 列表里面装的是当前的点(x, y), 通过y来判断取点位置
         new_items = self.segment_for(list(return_items["data"]), 1000, [])
-        # print(new_items)
-
         return JsonResponse({"status": 200, "msg": "前端请求正常, 查看数据处理!"})
 
     # 算法处理
@@ -268,7 +263,6 @@ class PPTParse(View):
                 # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
                     return None
-                    # return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
 
                 # items里面存放的一个文件中所有通道的算法结果 ==> 添加 KP 80-20 的求均值
                 for item in items:
@@ -357,11 +351,9 @@ class PPTParse(View):
         :return: 分段取峰值之后的列表
         """
         if len(items) > step:
-            # new_items.append(max(items[:3]))
             new_items.append(max(items, key=lambda x: x[0]))  # 使用匿名函数, 获取比较y值之后的峰值
             self.segment_for(items[step:], step, new_items)
         else:
-            # new_items.append(max(items))
             new_items.append(max(items, key=lambda x: x[0]))
         return new_items
 

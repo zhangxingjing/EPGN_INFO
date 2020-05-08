@@ -197,35 +197,35 @@ class PPTParse(View):
         new_items = self.segment_for(list(return_items["data"]), 1000, [])
         return JsonResponse({"status": 200, "msg": "前端请求正常, 查看数据处理!"})
 
-    # 算法处理
+    # 算法处理 ==> 处理kp文件分段采集的数据量
     def parse_calculate(self, request):
-        """
-        从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
-        :param request: Request请求对象
-        :return: 前端数据列表产生的XY轴坐标信息
-        """
-        ave_items = []
-        return_items = []
-        body = request.body.decode()
-        file_list = json.loads(body)["fileList"]
-        for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
-            rpm_type = 'rising'
-            status = Fileinfo.objects.get(file_name=file).status
+            """
+            从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
+            :param request: Request请求对象
+            :return: 前端数据列表产生的XY轴坐标信息
+            """
+            ave_items = []
+            return_items = []
+            body = request.body.decode()
+            file_list = json.loads(body)["fileList"]
+            for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
+                # 获取文件工况，如果没有，直接返回None
+                try:
+                    status = Fileinfo.objects.get(file_name=file).status
+                except:
+                    return None
 
-            # 判断当前文件加减速：获取当前工况，通过迭代判断当前是加速还是减速
-            if status in FALLING_LIST:
-                rpm_type = 'falling'
+                # 判断加减速
+                if status in FALLING_LIST:
+                    rpm_type = 'falling'
+                else:
+                    rpm_type = 'rising'
 
-            # 如果当前文件的工况信息存在，说明这个文件是正确的
-            if status:
-                calculate_name = CALCULATE_RULE[status]  # 当前文件应该使用的算法名称
-                channel_dict, items = read_hdf(file)  # 获取当前文件的通道信息，每个通道都放到算法中进行计算
+                calculate_name = CALCULATE_RULE[status]
+                channel_dict, items = read_hdf(file)
+                channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]  # 去除参考通道
 
-                # 将参考通道删除，然后遍历其他通道将数据传给算法  ==> 使用列表推倒式
-                # channel_calculate_list = [channel_name for channel_name in channel_dict.values()]  # 当前文件中通道信息组成的列表
-                channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]
-
-                # 计算启停算法的时候，只计算一个通道的数据
+                # 判断启停算法
                 if status == "(Square&Lab)St-Sp":
                     for ss_channel in channel_calculate_list:
                         if "X" in ss_channel:
@@ -258,7 +258,7 @@ class PPTParse(View):
                 }
 
                 # 将data传入算法，进行计算，获取算法返回值
-                items = ParseTask(data, rpm_type).run()  # TODO: 这里二次接收items
+                items = ParseTask(data, rpm_type).run()
 
                 # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
@@ -274,9 +274,7 @@ class PPTParse(View):
                         line_loc = []
                         for x, y in zip(x_list, y_list):
                             point_loc = []
-
-                            # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
-                            try:
+                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
                                 if calculate_name == "FFT":
                                     point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
                                 else:
@@ -288,59 +286,74 @@ class PPTParse(View):
                         item["data"] = line_loc
                         item["status"] = status
                         return_items.append(item)
-            else:
-                return None
-                # return JsonResponse({"status": 500, "msg": "当前数据工况错误，请重新选择数据！"})
 
-        # 对KP80-20工况下的数据进行求均值
-        if len(ave_items) > 0:
-            df = pd.DataFrame(ave_items)
-            # 使用 pandas 对列表中的字典进行分类
-            result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
+            # 对KP80-20工况下的数据进行求均值
+            if len(ave_items) > 0:
+                df = pd.DataFrame(ave_items)
+                # 使用 pandas 对列表中的字典进行分类
+                result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
 
-            # 由于KP的数据大多是分段数采的，在这里一起计算所有KP的情况
-            for channels in result:
-                # 我怎么知道这里是多少个，用公式==> y(len(channels)) = channels["info"][len(channels)-1]
-                # y1 = channels["info"][0]["Y"]
-                # y2 = channels["info"][1]["Y"]
-                # y3 = channels["info"][2]["Y"]
+                # 处理KP的分段采集数据 result-通道的字典
+                for channels in result:
+                    """
+                    # y的平均值
+                    y1 = channels["info"][0]["Y"]
+                    y2 = channels["info"][1]["Y"]
+                    y3 = channels["info"][2]["Y"]
+                    y_list = []
+                    for i in range(len(channels["info"][0]["Y"])):
+                        y = sum([y1[i], y2[i], y3[i]]) / int(len(channels))
+                        y_list.append(y)
+                    y_list = []
+                        for i in range(len(channels["info"][0]["Y"])):
+                            np_list_y = np.array([list_y_sum])
+                            list_avg = np.mean(np_list_y, axis=1)
+                            y_list.append(list_avg)
 
-                list_y_sum = []
-                for i in range(len(channels)):
-                    a = channels["info"][i]["Y"]
-                    list_y_sum.append(a)
+                        x_list = channels["info"][2]["X"]
+                        line_loc = []
+                        for x, y in zip(x_list, list(y_list)):
+                            point_loc = []
+                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                                point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                            except:
+                                continue
+                            point_loc.append(y)
+                            line_loc.append(point_loc)
 
-                y_list = []
-                for i in range(len(channels["info"][0]["Y"])):
-                    # y = (y1[i] + y2[i] + y3[i]) / int(len(channels))
-                    # y = sum([y1[i], y2[i], y3[i]]) / int(len(channels))
-                    # y = sum(list_y_sum) / int(len(channels))
+                        return_items.append({
+                            "status": "KP 80-20",
+                            "filename": channels["filename"],
+                            "data": line_loc
+                        })
+                    """
 
-                    np_list_y = np.array(list_y_sum)
-                    list_avg = np.mean(np_list_y, axis=1)
-                    y_list.append(list(list_avg))
+                    # 不管kp文件的个数，获取正确的y均值
+                    list_y_sum = list_avg = []
+                    for i in range(len(list(set(file_list)))):
+                        a = channels["info"][i]["Y"]
+                        list_y_sum.append(a)
+                    y_list = np.mean(list_y_sum, axis=0)  # 使用numpy求列表均值
 
-                x_list = channels["info"][2]["X"]
-                line_loc = []
-                for x, y in zip(x_list, y_list):
-                    point_loc = []
-                    try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
-                        point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                    except:
-                        continue
-                    point_loc.append(y)
-                    line_loc.append(point_loc)
+                    x_list = channels["info"][0]["X"]
+                    line_loc = []
+                    for x, y in zip(x_list, y_list):
+                        point_loc = []
+                        try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                            point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                        except:
+                            continue
+                        point_loc.append(y)
+                        line_loc.append(point_loc)
 
-                return_items.append({
-                    "status": "KP 80-20",
-                    "filename": channels["filename"],
-                    "data": line_loc
-                })
-
-        # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
-        return return_items
-        # return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
-
+                    return_items.append({
+                        "status": "KP 80-20",
+                        "filename": channels["filename"],
+                        "data": line_loc
+                    })
+                # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
+            return return_items
+    
     # 取峰值
     def segment_for(self, items, step, new_items):
         """

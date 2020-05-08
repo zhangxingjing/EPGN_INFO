@@ -104,6 +104,10 @@
             /* background: rgb(57, 170, 226) url("../image/close.gif") right 9px no-repeat */
         }
 
+        .list-data1 {
+            white-space: nowrap;
+        }
+
         .list-data-close {
             padding-right: 8px;
             width: 9px;
@@ -293,7 +297,7 @@
 {% block right_data %}
     <div class="dataContrastList" id="dataContrastList">
         <div class="list-title">已选数据:</div>
-        <div class="data-list">
+        <div class="data-list1">
         </div>
         <div class="bulletbox-button">
             <button class="data-submit" onclick="confirmCalculate()">
@@ -339,7 +343,7 @@
             sessionArray = JSON.parse(judge_sessionValue);
             for (var i = 0; i < sessionArray.length; i++) {
                 $(".data-list").append(
-                    `<div class='list-data'><img class='list-data-close' src='../epgn_front_end/image/close.png'/>${sessionArray[i].file_name}</div>`
+                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${sessionArray[i].file_name}</div>`
                 );
             }
             ;
@@ -352,9 +356,10 @@
             $(".data-list").off('click');
             $(".data-list").on('click', '.list-data', function () {
                 var compare_dataIndex = $(".list-data").index(this);
-                console.log(compare_dataIndex);
+
                 $(this).remove();
-                sessionArray.splice(compare_dataIndex, 1);
+                var sessionArray = sessionArray.splice(compare_dataIndex, 1);
+                console.log(sessionArray);
                 sessionString = JSON.stringify(sessionArray);
                 sessionStorage.setItem("sessionString", sessionString);
                 if (sessionArray.length == 0) {
@@ -398,6 +403,14 @@
             for (let i = 0; i < sessionArray.length; i++) {
                 download('第' + i + '个文件', "/download/" + sessionArray[i].pk + "/?user_id=" + user_id);
             }
+            var compare_dataBlock = document.getElementById('dataDownload');
+            compare_dataBlock.style.display = "none";
+            sessionArray = [];
+            sessionStorage.removeItem("sessionString");
+            $(".data-list").html("");
+
+
+
         }
 
         function data_Blockskip() {
@@ -419,10 +432,8 @@
         function remove_compareData() {
             console.log(this);
             var compare_dataIndex = $(".data-list div").index(this);
-            console.log(compare_dataIndex);
             $(this).remove();
             sessionArray.splice(compare_dataIndex, 1);
-            console.log(sessionArray);
             sessionString = JSON.stringify(sessionArray);
             sessionStorage.setItem("sessionString", sessionString);
             if (sessionArray.length == 0) {
@@ -647,16 +658,17 @@
 
                             for (var i = 0; i < add_arrayData.length; i++) {
                                 $(".data-list").append(
-                                    `<div class='list-data'><img class='list-data-close' src='../epgn_front_end/image/close.png'/>${add_arrayData[i].file_name}</div>`
+                                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${add_arrayData[i].file_name}</div>`
                                 );
                             }
                             ;
                             $(".data-list").off('click');
                             $(".data-list").on('click', '.list-data', function () {
                                 var compare_dataIndex = $(".list-data").index(this);
-                                console.log(compare_dataIndex);
+
                                 $(this).remove();
                                 sessionArray.splice(compare_dataIndex, 1);
+                                console.log(sessionArray.length);
                                 sessionString = JSON.stringify(sessionArray);
                                 sessionStorage.setItem("sessionString", sessionString);
                                 if (sessionArray.length == 0) {
@@ -669,6 +681,7 @@
                         case 'getDownload':
                             var add_arrayData = checkStatus.data;
                             judge_sessionValue = sessionStorage.getItem("sessionString");
+                            console.log(judge_sessionValue);
                             if (judge_sessionValue == null) {
                                 sessionArray = add_arrayData;
                                 if (sessionArray.length == 0) {
@@ -706,20 +719,22 @@
 
                             for (var i = 0; i < add_arrayData.length; i++) {
                                 $(".data-list").append(
-                                    `<div class='list-data'><img class='list-data-close' src='../epgn_front_end/image/close.png'/>${add_arrayData[i].file_name}</div>`
+                                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${add_arrayData[i].file_name}</div>`
                                 );
                             }
                             ;
                             $(".data-list").off('click');
                             $(".data-list").on('click', '.list-data', function () {
                                 var compare_dataIndex = $(".list-data").index(this);
+
                                 console.log(compare_dataIndex);
                                 $(this).remove();
                                 sessionArray.splice(compare_dataIndex, 1);
                                 sessionString = JSON.stringify(sessionArray);
                                 sessionStorage.setItem("sessionString", sessionString);
+                                console.log(sessionArray.length);
                                 if (sessionArray.length == 0) {
-                                    var compare_dataBlock = document.getElementById('dataContrastList');
+                                    var compare_dataBlock = document.getElementById('dataDownload');
                                     compare_dataBlock.style.display = "none";
                                     sessionStorage.removeItem("sessionString");
                                 }

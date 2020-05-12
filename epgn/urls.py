@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^admin/', xadmin.site.urls, name="xadmin"),
 
     # 显示图片的请求 ==> /favicon.ico
-    url(r'^favicon\.ico$', RedirectView.as_view(url=r'epgn_front_end/image/favicon.ico')),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=r'static/image/favicon.ico')),
 
     # 这是直接访问IP时, 浏览器展示的页面 ==> templates文件夹中的文件
     # url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),

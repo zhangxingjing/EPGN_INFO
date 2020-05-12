@@ -17,3 +17,4 @@ insert into `tb_gearbox` values ('16', 'DL382-7F');
 insert into `tb_gearbox` values ('17', 'DL382-7A');
 insert into `tb_gearbox` values ('18', 'DQ400E-6F');
 insert into `tb_gearbox` values ('19', 'EQ270-1F');
+insert into `tb_gearbox` values ('20', '电驱动减速器');

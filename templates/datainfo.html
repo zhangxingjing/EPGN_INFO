@@ -295,23 +295,23 @@
 {% endblock content %}
 
 {% block right_data %}
-    <div class="dataContrastList" id="dataContrastList">
-        <div class="list-title">已选数据:</div>
-        <div class="data-list1">
-        </div>
-        <div class="bulletbox-button">
-            <button class="data-submit" onclick="confirmCalculate()">
-                <a href="/calculate/" style="color: white">
-                    确认计算
-                </a>
-            </button>
-            <button class="data-download">
-                <a href="/autocalculate/" style="color: white">
-                    自动统计
-                </a>
-            </button>
-        </div>
-    </div>
+{#    <div class="dataContrastList" id="dataContrastList">#}
+{#        <div class="list-title">已选数据:</div>#}
+{#        <div class="data-list1">#}
+{#        </div>#}
+{#        <div class="bulletbox-button">#}
+{#            <button class="data-submit" onclick="confirmCalculate()">#}
+{#                <a href="/calculate/" style="color: white">#}
+{#                    确认计算#}
+{#                </a>#}
+{#            </button>#}
+{#            <button class="data-download">#}
+{#                <a href="/autocalculate/" style="color: white">#}
+{#                    自动统计#}
+{#                </a>#}
+{#            </button>#}
+{#        </div>#}
+{#    </div>#}
     <div class="dataContrastList" id="dataDownload">
         <div class="list-title">已选数据:</div>
         <div class="data-list"></div>
@@ -319,8 +319,8 @@
             <button class="data-download" onclick="data_download()" style="background: #FF5722">
                 文件下载
             </button>
-            <button class="data-download" onclick="data_Blockskip()">
-                添加对比
+            <button class="data-download" onclick="confirmCalculate()" >
+                确认计算
             </button>
         </div>
     </div>
@@ -332,6 +332,8 @@
 
         function confirmCalculate() {
             sessionStorage.setItem("sessionType", 0);
+            window.location.href ="/calculate/" ;
+
         }
 
         var listArray = null;
@@ -349,7 +351,7 @@
             ;
 
             // 显示数组
-            var compare_dataBlock = document.getElementById('dataContrastList');
+            var compare_dataBlock = document.getElementById('dataDownload');
             compare_dataBlock.style.display = "block";
 
 
@@ -385,8 +387,7 @@
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
         <div class="demoTable">
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getDownload">下载</button>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getCheckData">添加对比</button>
+            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getDownload">下载与计算</button>
             <!--
             <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button>
             <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
@@ -615,66 +616,6 @@
                                 type: "get",
                                 success: function (result) {
                                     layer.msg("OK")
-                                }
-                            });
-                            break;
-                        case 'getCheckData':
-                            var add_arrayData = checkStatus.data;
-                            judge_sessionValue = sessionStorage.getItem("sessionString");
-                            if (judge_sessionValue == null) {
-                                sessionArray = add_arrayData;
-                                if (sessionArray.length == 0) {
-                                    return false;
-                                } else {
-                                    sessionString = JSON.stringify(sessionArray);
-                                    document.getElementById('dataContrastList').style.display = "block";
-                                }
-                            } else {
-                                var result = [];
-
-                                function get_sameArray() {
-                                    for (let i = 0; i < add_arrayData.length; i++) {
-                                        new_itemName = add_arrayData[i].file_name;
-                                        for (let j = 0; j < sessionArray.length; j++) {
-                                            old_itemName = sessionArray[j].file_name;
-                                            if (new_itemName === old_itemName) {
-                                                result.push(add_arrayData[i]);
-                                                break;
-                                                // console.log(arr1[i])
-                                            }
-                                        }
-                                    }
-                                }
-
-                                get_sameArray();
-                                add_arrayData = add_arrayData.filter(item => {
-                                    let idList = result.map(v => v.file_name)
-                                    return !idList.includes(item.file_name)
-                                })
-                                sessionArray = sessionArray.concat(add_arrayData);
-                                sessionString = JSON.stringify(sessionArray);
-                            }
-                            sessionStorage.setItem("sessionString", sessionString);
-
-                            for (var i = 0; i < add_arrayData.length; i++) {
-                                $(".data-list").append(
-                                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${add_arrayData[i].file_name}</div>`
-                                );
-                            }
-                            ;
-                            $(".data-list").off('click');
-                            $(".data-list").on('click', '.list-data', function () {
-                                var compare_dataIndex = $(".list-data").index(this);
-
-                                $(this).remove();
-                                sessionArray.splice(compare_dataIndex, 1);
-                                console.log(sessionArray.length);
-                                sessionString = JSON.stringify(sessionArray);
-                                sessionStorage.setItem("sessionString", sessionString);
-                                if (sessionArray.length == 0) {
-                                    var compare_dataBlock = document.getElementById('dataContrastList');
-                                    compare_dataBlock.style.display = "none";
-                                    sessionStorage.removeItem("sessionString");
                                 }
                             });
                             break;

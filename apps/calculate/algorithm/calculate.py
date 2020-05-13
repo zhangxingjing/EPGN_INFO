@@ -23,15 +23,10 @@ class Calculate_Object(object):
         self.timeWeighting = 0.125
         self.orderResolution = 0.5
         self.spectrum_size = 16384
-        # self.item = read_hdf(file_name)
         self.absolute_dir = os.getcwd() + '/'
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
         self.raw_rpm = channel_data[raw_rpm_num]
-        # print("raw_data", self.raw_data)
-        # print("raw_time", self.raw_time)
-        # print("raw_rpm", self.raw_rpm)
-
         # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
         # self.raw_time = self.item[:, raw_time_num]
         # self.raw_data = self.item[:, raw_data_num]

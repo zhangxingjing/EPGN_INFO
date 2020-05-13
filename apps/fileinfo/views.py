@@ -14,7 +14,7 @@ from django.shortcuts import render
 from scripts.readHDF import read_hdf
 from django.utils.http import urlquote
 from rest_framework.response import Response
-from drf_haystack.viewsets import HaystackViewSet
+# from drf_haystack.viewsets import HaystackViewSet
 from rest_framework.permissions import IsAuthenticated
 from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
 from rest_framework.viewsets import ViewSet, ModelViewSet

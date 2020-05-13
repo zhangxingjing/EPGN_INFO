@@ -80,8 +80,9 @@
             </div>
             <!-- <table id="data" lay-filter="test"></table> -->
             <table>
-                <div id="file_tree"></div>
+
             </table>
+            <div id="file_tree" class="demo-tree demo-tree-box"></div>
 
 
         </div>
@@ -106,7 +107,7 @@
             </div>
             <form class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
-                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">复选框</label>
+                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">数据通道</label>
                     <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
                          id="channelselectList">
 
@@ -180,6 +181,7 @@
                 type: "put",
                 success: function (result) {
                     echartdata = result.data;
+                    console.log(result);
                     getpic();
                 }
             });
@@ -303,7 +305,7 @@
                             , showCheckbox: true  //是否显示复选框
                             , id: 'demoId12'
                             , isJump: true //是否允许点击节点时弹出新窗口跳转
-                            , click: function (obj) {
+                            ,  edit: ['del'],click: function (obj) {
                                 var data = obj.data;  //获取当前点击的节点数据
                                 layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
                             }

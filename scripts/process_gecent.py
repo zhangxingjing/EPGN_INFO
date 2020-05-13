@@ -1,5 +1,6 @@
 import re
 from scripts.readHDF import read_hdf
+from apps.calculate.algorithm.calculate import *
 from multiprocessing import cpu_count, Pool, Manager
 from apps.calculate.algorithm.class_name import CalculateNameDict
 
@@ -54,8 +55,7 @@ class ParseTask(object):
 
                 # print(channel["title"], channel_file_list)
                 # channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
-                channel_data_key = list(channel_file_list.keys())[
-                    list(channel_file_list.values()).index(channel["title"])]
+                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
                 try:
                     # rpm_key
@@ -96,7 +96,7 @@ class ParseTask(object):
             # 这里确定返回到前端的数据
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})
         except:
-            print("当前数据计算出错！")
+            print("ParseTask >> calculate_process() 计算出错！")
 
     def run(self):
         # 使用进程间通信 返回多个数据的返回

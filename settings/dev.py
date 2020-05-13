@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # 注册全文检索
-    'haystack',
+    # 'haystack',
 
     # 使用xadmin
     'xadmin',
@@ -276,8 +276,8 @@ CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten re
 FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
 FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
 
-# FILE_HEAD_PATH = "/home/zheng/Desktop/demo/H_HDF/"
-# FILE_READ_PATH = "/home/zheng/Desktop/demo/R_HDF/"
+# FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
+# FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

@@ -11,6 +11,7 @@ from fileinfo.models import Fileinfo
 from scripts.process_gecent import ParseTask
 from scripts.from_sql_data_h5 import FileArrayInfo
 from calculate.algorithm.class_name import CalculateNameList
+from apps.calculate.algorithm.class_name import CalculateNameDict
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from settings.dev import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
 
@@ -131,6 +132,7 @@ class PPTParse(View):
     # 接收文件名，返回算法数据
     def put(self, request):
         return_items = self.parse_calculate(request)
+        # print("="*100, return_items)
         return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 
     # 接受base64，返回PPT地址
@@ -150,7 +152,8 @@ class PPTParse(View):
         try:
             ppt_path = ParsePPT(items).run()
             # 这里return的url，是可以直接下载的！
-            # print("ppt_path:", ppt_path)
+            print("ppt_path:", ppt_path)
+            print(ppt_path)
             return JsonResponse({"status": 200, "path": ppt_path})
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
@@ -208,20 +211,28 @@ class PPTParse(View):
             return_items = []
             body = request.body.decode()
             file_list = json.loads(body)["fileList"]
+
             for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
                 # 获取文件工况，如果没有，直接返回None
-                try:
-                    status = Fileinfo.objects.get(file_name=file).status
-                except:
-                    return None
-
+                # try:
+                #     print("FirstFile", file)
+                #     status = Fileinfo.objects.get(file_name=file).status
+                #     print("File:", file)
+                # except:
+                #     print("PPTParse >> parse_calculate() 出错！")
+                #     return None
+                status = Fileinfo.objects.filter(file_name=file)
+                if len(status) > 0:
+                    status = status[0].status
+                else:
+                    print("PPTParse >> parse_calculate() 出错！")
                 # 判断加减速
                 if status in FALLING_LIST:
                     rpm_type = 'falling'
                 else:
                     rpm_type = 'rising'
 
-                calculate_name = CALCULATE_RULE[status]
+                calculate_name = CalculateNameDict[status]
                 channel_dict, items = read_hdf(file)
                 channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]  # 去除参考通道
 
@@ -257,8 +268,11 @@ class PPTParse(View):
                     }
                 }
 
+
                 # 将data传入算法，进行计算，获取算法返回值
                 items = ParseTask(data, rpm_type).run()
+
+                # print(status, "items,length:", len(items))
 
                 # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
                 if len(items) == 0:
@@ -352,6 +366,7 @@ class PPTParse(View):
                         "data": line_loc
                     })
                 # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
+            # print(return_items,"="*100)
             return return_items
     
     # 取峰值

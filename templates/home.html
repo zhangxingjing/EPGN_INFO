@@ -497,37 +497,53 @@
                     switch (obj.event) {
                         case 'getCheckData':
                             var add_arrayData1 = checkStatus.data;
+                            var confirmstatus = 0;
                             if (add_arrayData1.length == 0) {
                                 layer.msg("请选择需要分析计算的文件！")
                             } else {
-                                for (let i = 0; i < add_arrayData1.length; i++) {
-                                    filenameArr.push(add_arrayData1[i].file_name)
-                                }
-                                sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
-                                nameArray = filenameArr;
-                                for (var i = 0; i < nameArray.length; i++) {
-                                    $("#namelist").append(
-                                        `<div class='list-data'><img class='list-data-close'src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
-                                    )
-                                }
-                                $("#shadowlayer").show();
-                                $("#shadowtext").show();
-                                $("#namelist").off('click');
-                                $("#namelist").on('click', '.list-data', function () {
-                                    var compare_dataIndex = $(".list-data").index(this);
-                                    $(this).remove();
-                                    nameArray.splice(compare_dataIndex, 1);
-                                    if (nameArray.length == 0) {
-                                        $("#shadowlayer").hide();
-                                        $("#shadowtext").hide();
-                                        sessionStorage.removeItem("uploadnewname");
-                                        filenameArr = [];
-                                    } else {
-                                        nameSession = JSON.stringify(nameArray);
-                                        sessionStorage.setItem("uploadnewname", nameSession);
-                                    }
+                                for (let j = 0; j < add_arrayData1.length; j++) {
 
-                                });
+                                    if (add_arrayData1[j]["file_status"] == "否") {
+
+                                        confirmstatus = 1;
+                                        break;
+                                    }else {
+                                        continue;
+                                    }
+                                }
+                                if (confirmstatus == 1) {
+                                    layer.msg("存在不可计算的文件，请重选！");
+                                } else {
+                                    for (let i = 0; i < add_arrayData1.length; i++) {
+                                        filenameArr.push(add_arrayData1[i].file_name)
+                                    }
+                                    sessionStorage.setItem("uploadnewname", JSON.stringify(filenameArr));
+                                    nameArray = filenameArr;
+                                    for (var i = 0; i < nameArray.length; i++) {
+                                        $("#namelist").append(
+                                            `<div class='list-data'><img class='list-data-close'src='{% static "image/close_window.png" %}'/>${nameArray[i]}</div>`
+                                        )
+                                    }
+                                    $("#shadowlayer").show();
+                                    $("#shadowtext").show();
+                                    $("#namelist").off('click');
+                                    $("#namelist").on('click', '.list-data', function () {
+                                        var compare_dataIndex = $(".list-data").index(this);
+                                        $(this).remove();
+                                        nameArray.splice(compare_dataIndex, 1);
+                                        if (nameArray.length == 0) {
+                                            $("#shadowlayer").hide();
+                                            $("#shadowtext").hide();
+                                            sessionStorage.removeItem("uploadnewname");
+                                            filenameArr = [];
+                                        } else {
+                                            nameSession = JSON.stringify(nameArray);
+                                            sessionStorage.setItem("uploadnewname", nameSession);
+                                        }
+
+                                    });
+                                }
+
                             }
                             ;
                             break;

@@ -27,7 +27,7 @@ class Calculate_Object(object):
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
         self.raw_rpm = channel_data[raw_rpm_num]
-        # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
+            # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
         # self.raw_time = self.item[:, raw_time_num]
         # self.raw_data = self.item[:, raw_data_num]
         # self.raw_rpm = self.item[:, raw_rpm_num]

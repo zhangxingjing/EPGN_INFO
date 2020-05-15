@@ -201,20 +201,26 @@
         function getpic() {
             for (let i = 0; i < echartdata.length; i++) {
                 letdata = echartdata[i].data;
+                let filename =  echartdata[i].filename;
                 let chartnum = "main" + i;
                 var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
                 $("#addsec").append(imgsection);
                 var myChart = echarts.init(document.getElementById(chartnum));
                 var option = {
+                    title:{
+                        text: filename,
+                        x:'center',
+                        y:'top',
+                    },
                     xAxis: {
                         type: 'value',
-                        name: '横坐标',
-                        fontSize: '25'
+                        {#name: '横坐标',#}
+                        {#fontSize: '25'#}
                     },
                     yAxis: {
                         type: 'value',
-                        name: '纵坐标',
-                        fontSize: '25'
+                        {#name: '纵坐标',#}
+                        {#fontSize: '25'#}
                     },
                     dataZoom: [
                         {

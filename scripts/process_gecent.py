@@ -13,6 +13,7 @@ class ParseTask(object):
     """
 
     def __init__(self, item, rpm_type):
+        print("item, rpm_type::::", item, rpm_type)
         self.item = item
         self.rpm_type = rpm_type
         self.queue = Manager().Queue()
@@ -21,7 +22,10 @@ class ParseTask(object):
         # 使用yield完成多协程的IO操作
         calculate_name = self.item["calculate"]  # 算法名称
         channel_info_list = self.item["file_info"]["children"]  # 前端发送的文件列表数据（一级列表）
-        calculate_class_name = CalculateNameDict[calculate_name]  # 将算法名称传递到工厂模式中 ==> 拿到当前算法中的类名
+        # calculate_class_name = CalculateNameDict[calculate_name]  # 将算法名称传递到工厂模式中 ==> 拿到当前算法中的类名
+        calculate_class_name = calculate_name  # 将算法名称传递到工厂模式中 ==> 拿到当前算法中的类名
+
+        # print(calculate_name, channel_info_list, calculate_class_name)
 
         for info_dict in channel_info_list:
             filename = info_dict["title"]
@@ -64,6 +68,8 @@ class ParseTask(object):
                     channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
                 except:
                     channel_rpm_num = 2
+
+                # print(calculate_class_name, filename, channel_data, self.rpm_type,)
 
                 """异步返回"""
                 # 使用队列接受多进程中的数据返回值

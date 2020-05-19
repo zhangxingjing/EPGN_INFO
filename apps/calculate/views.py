@@ -36,11 +36,11 @@ class ChannelList(View):
 
             for key, value in channel_dict.items():
                 set_channel_list.append(value.replace(' ', ''))
-                channel_key_list.append({"title": value.replace(' ', ''), "id": num_1})
+                channel_key_list.append({"title": value.replace(' ', ''), "id": 1000+num_1})
                 num_1 += 1
 
             file_channel_info["title"] = file_name
-            file_channel_info["id"] = num_1
+            file_channel_info["id"] = 10000+num_1
             file_channel_info["spread"] = True
             file_channel_info["children"] = channel_key_list
             channel_dict_list.append(file_channel_info)

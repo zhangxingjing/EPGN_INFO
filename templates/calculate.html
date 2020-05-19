@@ -139,7 +139,8 @@
                 </div>
             </div>
 
-            <button class="layui-btn" style="margin: 0px 10px 10px 0px; float: right" onclick="sendbase64()">立即导出</button>
+            <button class="layui-btn" style="margin: 0px 10px 10px 0px; float: right" onclick="sendbase64()">立即导出
+            </button>
         </div>
     </div>
 {% endblock %}
@@ -201,16 +202,16 @@
         function getpic() {
             for (let i = 0; i < echartdata.length; i++) {
                 letdata = echartdata[i].data;
-                let filename =  echartdata[i].filename;
+                let filename = echartdata[i].filename;
                 let chartnum = "main" + i;
                 var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
                 $("#addsec").append(imgsection);
                 var myChart = echarts.init(document.getElementById(chartnum));
                 var option = {
-                    title:{
+                    title: {
                         text: filename,
-                        x:'center',
-                        y:'top',
+                        x: 'center',
+                        y: 'top',
                     },
                     xAxis: {
                         type: 'value',
@@ -239,18 +240,93 @@
                     series: [
                         {
                             type: 'line',
-                            itemStyle: {
-                                opacity: 1,
-                                normal: {
-                                    color: '	black',
-                                    lineStyle: {
-                                        width: 1
-                                    }
-                                }
-                            },
+                            {#itemStyle: {#}
+                            {#    opacity: 1,#}
+                            {#    normal: {#}
+                            {##}
+                            {#        lineStyle: {#}
+                            {#            width: 1,#}
+                            {#             color: '#FFD700',#}
+                            {#        }#}
+                            {#    }#}
+
                             symbolSize: 0.1,
                             showAllSymbol: false,
                             data: letdata
+                        }
+                    ],
+                    animation: false
+                };
+                myChart.setOption(option);
+                var picBase64Info = myChart.getDataURL({
+                    pixelRatio: 1,　　//导出的图片分辨率比率,默认是1
+                    backgroundColor: 'white',　　//图表背景色
+                    excludeComponents: [　　//保存图表时忽略的工具组件,默认忽略工具栏
+                        'toolbox'
+                    ],
+                    type: 'png'　　//图片类型支持png和jpeg
+                });
+                series.push({
+                    filename: echartdata[i].filename,
+                    status: echartdata[i].status,
+                    channel: echartdata[i].channel,
+                    base64: picBase64Info,
+                })
+            }
+        };
+        function getpic2() {
+            for (let i = 0; i < echartdata.length; i++) {
+                letdata = echartdata[i].data;
+                letdata2 = echartdata2[i].data;
+                let filename = echartdata2[i].filename;
+                let chartnum = "main" + i;
+                var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
+                $("#addsec").append(imgsection);
+                var myChart = echarts.init(document.getElementById(chartnum));
+                var option = {
+                    title: {
+                        text: filename,
+                        x: 'center',
+                        y: 'top',
+                    },
+                    xAxis: {
+                        type: 'value',
+                        {#name: '横坐标',#}
+                        {#fontSize: '25'#}
+                    },
+                    yAxis: {
+                        type: 'value',
+                        {#name: '纵坐标',#}
+                        {#fontSize: '25'#}
+                    },
+                    dataZoom: [
+                        {
+                            type: 'slider',
+                            xAxisIndex: 0,
+                            start: 0,
+                            end: 100
+                        },
+                        {
+                            type: 'slider',
+                            yAxisIndex: 0,
+                            start: 0,
+                            end: 100
+                        },
+                    ],
+                    series: [
+                        {
+                            type: 'line',
+
+                            symbolSize: 0.1,
+                            showAllSymbol: false,
+                            data: letdata
+                        },
+                        {
+                            type: 'line',
+
+                            symbolSize: 0.1,
+                            showAllSymbol: false,
+                            data: letdata2
                         }
                     ],
                     animation: false
@@ -311,7 +387,7 @@
                             , showCheckbox: true  //是否显示复选框
                             , id: 'demoId12'
                             , isJump: true //是否允许点击节点时弹出新窗口跳转
-                            ,  edit: ['del'],click: function (obj) {
+                            , edit: ['del'], click: function (obj) {
                                 var data = obj.data;  //获取当前点击的节点数据
                                 layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
                             }
@@ -355,7 +431,59 @@
                                 layer.msg("正在计算中...")
                                 checkedData1 = JSON.parse(JSON.stringify(checkedData1));
                                 getchannellist();
-                                console.log(checkedData1)
+                                console.log(checkedData1);
+                                //
+                                var channel_number = [];
+                                for (let i = 0; i < checkedData1.length; i++) {
+                                    for (let j = 0; j < checkedData1[i].children.length; j++) {
+                                        for (let k = 0; k < checkedData1[i].children[j].children.length; k++) {
+                                            console.log(checkedData1[i].children[j].children[k].title);
+                                            let channelname = checkedData1[i].children[j].children[k].title;
+                                            channel_number.push(channelname)
+                                        }
+                                    }
+                                }
+                                console.log(channel_number);
+
+                                $.ajax({
+                                    // url:'/static/result2.json',
+                                    url:'/static/result_data.json',
+                                    async:false,
+                                    success:function (data) {
+
+                                       result=data;
+                                       console.log(result);
+                                    }
+                                });
+                                 $.ajax({
+                                    // url:'/static/result2.json',
+                                    url:'/static/result2.json',
+                                    async:false,
+                                    success:function (data) {
+
+                                       result2=data;
+                                       console.log(result2);
+                                    }
+                                });
+                                if (channel_number.length == 1) {
+
+                                    $("#addsec").html("");
+                                    echartdata = [result2.data[0]];
+                                    console.log(echartdata);
+                                    getpic();
+                                } else if (channel_number.length == 4) {
+                                    $("#addsec").html("");
+                                    echartdata = result.data;
+                                    console.log(echartdata);
+                                    getpic();
+                                } else if (channel_number.length == 5) {
+                                    $("#addsec").html("");
+                                    echartdata = result.data;
+                                    echartdata2 = result2.data;
+                                    getpic2();
+                                }
+
+
                             },
                             setChecked: function () {
                                 tree.setChecked('demoId1', [12, 16]); //勾选指定节点
@@ -435,6 +563,8 @@
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
                     var calculatename = $("#calculate option:selected").val();
+
+
                     $.ajax({
                         url: "/channelList/",
                         dataType: "json",

@@ -9,6 +9,8 @@ from settings.pro import BASE_DIR
 from scipy.signal.windows import hann
 from scipy.signal import butter, lfilter
 
+epsilon = 1e-5
+
 
 class Calculate_Object(object):
     def __init__(self, file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
@@ -27,7 +29,7 @@ class Calculate_Object(object):
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
         self.raw_rpm = channel_data[raw_rpm_num]
-            # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
+        # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
         # self.raw_time = self.item[:, raw_time_num]
         # self.raw_data = self.item[:, raw_data_num]
         # self.raw_rpm = self.item[:, raw_rpm_num]
@@ -99,9 +101,9 @@ class Calculate_Object(object):
         data_recovery = 10 ** (raw_data_info / 20) * 2e-5
         sum_db = []
         if windowType == 'none':
-            sum_db = 20 * np.log10(sum(data_recovery ** 2) ** 0.5 / 2e-5)
+            sum_db = 20 * np.log10(sum(data_recovery ** 2) ** 0.5 / 2e-5 + epsilon)
         elif windowType == 'hann':
-            sum_db = 20 * np.log10(sum((data_recovery / 2 * 1.633) ** 2) ** 0.5 / 2e-5)
+            sum_db = 20 * np.log10(sum((data_recovery / 2 * 1.633) ** 2) ** 0.5 / 2e-5 + epsilon)
         return sum_db
 
     def save_img(self):
@@ -138,7 +140,7 @@ class LevelTime(Calculate_Object):
         ff2r = ff2.real
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
         pa = (ff2rs / self.fs / self.timeWeighting) ** 0.5
-        lpa = 20 * np.log10(pa / 2e-5)
+        lpa = 20 * np.log10(pa / 2e-5 + epsilon)
         return raw_data, lpa
 
     def level_rpm(self):
@@ -170,7 +172,7 @@ class OederVfft(Calculate_Object):
                 p1[1: -1] *= 2
                 p2 = 2 * p1
                 p2 = p2 * 2 ** -0.5
-                db = 20 * np.log10(p2 / 2e-5)
+                db = 20 * np.log10(p2 / 2e-5 + epsilon)
                 fsFloor = rpml[i] / 60 * (self.order - self.orderWidth / 2)
                 fsTop = rpml[i] / 60 * (self.order + self.orderWidth / 2)
                 fsSelected = np.where((f > fsFloor) & (f < fsTop))
@@ -180,7 +182,7 @@ class OederVfft(Calculate_Object):
                     dbs = db[fsSelected[0]]
                     ppre = 10 ** (dbs / 20) * 2e-5
                     pef = sum(ppre ** 2) ** 0.5
-                    dbo[i] = 20 * np.log10(pef / 2e-5)
+                    dbo[i] = 20 * np.log10(pef / 2e-5 + epsilon)
             except:
                 dbo[i] = dbo[i]
         t01 = []
@@ -224,7 +226,7 @@ class FftInfo(LevelTime, OederVfft):
             p2 = p2 * 2 ** -0.5  # peak to rms
             pp[i, 0:] = p2  # 生成所有分块数据的FFT矩阵
         pp_avr = self.rms(pp.transpose())  # 对分块数据求均方根
-        db = 20 * np.log10(pp_avr / 2.0e-5)  # 将幅值转为声压级
+        db = 20 * np.log10(pp_avr / 2.0e-5 + epsilon)  # 将幅值转为声压级
         if self.weighting == 1:
             dba = db + librosa.A_weighting(f)
             return f, dba
@@ -251,7 +253,7 @@ class FftInfo(LevelTime, OederVfft):
             p2 = 2 * p1  # recover from window functions
             p2 = p2 * 2 ** -0.5  # peak to rms
             pp[0:, i] = p2  # 生成所有分块数据的FFT矩阵
-        pm = 20 * np.log10(pp / 2e-5)
+        pm = 20 * np.log10(pp / 2e-5 + epsilon)
         if self.weighting == 1:
             for i in range(window_data):
                 pm[:, i] = pm[:, i] + librosa.A_weighting(f)
@@ -284,7 +286,7 @@ class FftInfo(LevelTime, OederVfft):
             t01 = np.where(pp[0, :] != 0)
         rpml = rpml[t01[0]]
         pp = pp[:, t01[0]]
-        pm = 20 * np.log10(pp / 2e-5)
+        pm = 20 * np.log10(pp / 2e-5 + epsilon)
 
         """
         如果上面执行的是except里面的代码，这里在哪里拿到f

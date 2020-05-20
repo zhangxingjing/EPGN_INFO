@@ -111,7 +111,7 @@ class ParsePPT():
 
         # 在这里处理当前PPT，生成之后返回当前的PPT路径
         for item in self.data["items"]:
-            pic_info = re.search(r' (.*)', item["status"]).group(1) + "_" + item["filename"]  # 正则到合适的imgName
+            pic_info = re.search(r' data_(.*)', item["filename"]).group(1)  # 正则到合适的imgName
             str_bas64 = re.match(r'(data:image/png;base64,(.*))', item["base64"]).group(2)
             img = base64.b64decode(str_bas64)
             pic_path = PPT_MODEL_PATH + 'image/{}.jpg'.format(pic_info)
@@ -121,7 +121,7 @@ class ParsePPT():
 
             # yield item["status"], item["channel"], pic_path
             img_dict = {
-                "channel": item["filename"],
+                "channel": re.search(r' data_(.*)', item["filename"]).group(1),
                 "status": item["status"],
                 "pic_path": pic_path
             }
@@ -133,57 +133,6 @@ class ParsePPT():
         通过处理后的前端数据，合成规定的报告
         :return:处理完成的PPT
         """
-
-        # TODO: 后面多个工况在一起的情况怎么处理的？
-
-        """
-        if self.ml:  # 要么是4坐， 要么就是6坐 ==> 复制幻灯片
-            self.prs = Presentation(PPT_MODEL_PATH + "PPTModel/6zuo.pptx")
-            for key in key_list:
-                num = key_list.index(key)
-                # 左前
-                left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vl[key]), left, top,
-                                                                width, height)
-                # 右前
-                left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vr[key]), left, top,
-                                                                width, height)
-                # 左中
-                left, top, width, height = Inches(0.5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.hl[key]), left, top,
-                                                                width, height)
-                # 右中
-                left, top, width, height = Inches(5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 1].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.hr[key]), left, top,
-                                                                width, height)
-                # 左后
-                left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vl[key]), left, top,
-                                                                width, height)
-                # 右后
-                left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[2 * num + 2].shapes.add_picture('{}'.format(PPT_MODEL_PATH + self.vr[key]), left, top,
-                                                                width, height)
-        else:
-            for key in key_list:
-                num = img_dict.index(key)
-                # 左前
-                left, top, width, height = Inches(0.5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict[key]), left, top, width,height)
-                # 右前
-                left, top, width, height = Inches(5), Inches(1.6), Inches(4.5), Inches(2.4)
-                self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict[key]), left, top, width,height)
-                # 左后
-                left, top, width, height = Inches(0.5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict[key]), left, top, width,height)
-                # 右后
-                left, top, width, height = Inches(5), Inches(4), Inches(4.5), Inches(2.4)
-                self.prs.slides[num + 1].shapes.add_picture('{}'.format(img_dict[key]), left, top, width, height)
-    """
-
-        print(img_dict["channel"], img_dict["status"])
-
         # 获取当前图片在幻灯片中的位置，将其放置在对应位置上
         num = 0
         for key in IMAGE_LOCATION:  # 使用全局变量
@@ -226,13 +175,7 @@ class ParsePPT():
         面向对象的接口
         :return: 当前PPT存储的位置
         """
-        # try:
-        # self.parse_title()
         for img_dict in self.parse_pic():
-            pprint(img_dict)
             self.insert_pic(img_dict)
         ppt_path = self.save_ppt()
         return ppt_path
-        # except Exception as e:
-        #     print(e)
-        #     raise Exception

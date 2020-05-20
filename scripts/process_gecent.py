@@ -102,7 +102,8 @@ class ParseTask(object):
             # 这里确定返回到前端的数据
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})
         except:
-            print("ParseTask >> calculate_process() 计算出错！")
+            # print("ParseTask >> calculate_process() 计算出错！")
+            pass
 
     def run(self):
         # 使用进程间通信 返回多个数据的返回

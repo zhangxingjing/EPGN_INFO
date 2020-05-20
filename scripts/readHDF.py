@@ -14,7 +14,7 @@ def read_hdf(file_name):
     channel_dict = {}
     i = 1
     for key in read_info.keys():
-        items.append(read_info[key].value)
+        items.append(read_info[key][:])
         channel_dict["Channel " + str(i)] = key
 
         # print(key, read_info[key].value)

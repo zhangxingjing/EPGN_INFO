@@ -353,12 +353,13 @@ class PPTParse(View):
                     line_loc = []
                     for x, y in zip(x_list, y_list):
                         point_loc = []
-                        try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
-                            point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                        except:
-                            continue
-                        point_loc.append(y)
-                        line_loc.append(point_loc)
+                        if x>=1 and y>0:
+                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                                point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                            except:
+                                continue
+                            point_loc.append(y)
+                            line_loc.append(point_loc)
 
                     return_items.append({
                         "status": "KP 80-20",

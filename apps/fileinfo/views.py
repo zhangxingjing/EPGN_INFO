@@ -164,7 +164,7 @@ class FileInfoViewSet(ModelViewSet):
         status = status_id
         if status_id.isdigit():
             status = Direction.objects.get(id=status_id).name
-        print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
+        # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
         # return HttpResponse(json.dumps({"data":gearbox}))
 
         if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
@@ -231,7 +231,6 @@ class FileInfoViewSet(ModelViewSet):
                 instance = self.get_object()  # 获取当前指定记录的QuerySet
                 instance.delete()  # 删除当前指定的记录信息
 
-                print(instance.file_name)  # 拿到当前选择的文件名
                 file_path = FILE_READ_PATH + instance.file_name
                 if os.path.exists(file_path):
                     try:
@@ -278,9 +277,9 @@ class FileInfoViewSet(ModelViewSet):
         # 这里是分页查询的page和limit
         page = request.GET.get('page', "1")
         limit = int(request.GET.get('limit', "20"))
-        print(page, limit)
+        # print(page, limit)
 
-        print(carmodel, propulsion, power, discipline, parts, key_word)
+        # print(carmodel, propulsion, power, discipline, parts, key_word)
         search_dict = {}
         if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
             # 如果用户什么都没有搜，显示所有
@@ -303,7 +302,6 @@ class FileInfoViewSet(ModelViewSet):
 
             # 如果key_word存在，再从上面搜索的QuerySet中搜索
             if key_word:
-                print(key_word.replace(' ', ''))
                 key_word = key_word.replace(' ', '')
                 items = Fileinfo.objects.filter(**search_dict).filter(Q(produce__icontains=key_word) |
                                                                       Q(author__icontains=key_word) |
@@ -600,7 +598,6 @@ class CheckChannel(View):
         body_json = json.loads(text)
         channel_list = body_json["channel_list"]
 
-        print(channel_list)
         channel_none_list = []
         channel_norm_list = []
         for channel_name in channel_list:

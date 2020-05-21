@@ -1,7 +1,8 @@
 import os
-import json
 import re
+import json
 import time
+import threading
 from .serializers import *
 from .models import Fileinfo
 from django.views import View
@@ -21,6 +22,7 @@ from rest_framework.viewsets import ViewSet, ModelViewSet
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 
+lock = threading.Lock() # 创建一个锁的实例
 
 # 前端访问到页面的时候就发送查询`动力总成`的请求, 选择动力总成之后在发送k;`功率`的请求
 class PropulsionPowerView(ViewSet):
@@ -117,69 +119,59 @@ class FileInfoViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-        print("进入了POST请求的数据上传")
-        # permission_classes = (IsAuthenticated,)  # 限定必须是已经认证的用户
         if request.method == "GET":
             # 获取session中的数据
             return render(request, 'upload.html')
 
         a = time.time()
         # 从前端获取的数据
-        car_model_id = request.POST.get("car_model", None)  # 车型
-        produce = request.POST.get("produce", None)  # 生产阶段
-        direction_id = request.POST.get("direction", None)  # 方向
-        part_id = request.POST.get("parts", None)  # 零部件
-        status_id = request.POST.get("status", None)  # 工况
-        author = request.POST.get("author", None)  # 用户名
-        car_num = request.POST.get("car_num", None)  # 车号
-        propulsion_id = request.POST.get("propulsion", None)  # 动力总成
-        power_id = request.POST.get("power", None)  # 功率
-        create_date = request.POST.get("date_hash", None)  # 时间
         files = request.FILES.get("file")  # 文件
-        # gearbox = request.POST.get('gearbox')
         filename = str(files)
+        part_id = request.POST.get("parts", None)  # 零部件
+        author = request.POST.get("author", None)  # 用户名
+        power_id = request.POST.get("power", None)  # 功率
+        produce = request.POST.get("produce", None)  # 生产阶段
+        car_num = request.POST.get("car_num", None)  # 车号
+        status_id = request.POST.get("status", None)  # 工况
+        gearbox_id = request.POST.get('gearbox', None)  # 发送机
+        create_date = request.POST.get("date_hash", None)  # 时间
+        car_model_id = request.POST.get("car_model", None)  # 车型
+        direction_id = request.POST.get("direction", None)  # 方向
+        propulsion_id = request.POST.get("propulsion", None)  # 动力总成
 
-        """这里是非必选参数"""
+        # 这里是非必选参数
         kv = request.POST.get('kv')
         EPG = request.POST.get('EPG')
         other = request.POST.get('other')
         gearbox = request.POST.get('gearbox', None)
         other_need = request.POST.get("other_need")
 
-        # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
-        car_model = Platform.objects.get(id=car_model_id).name
-
         # 获取平台
+        car_model = Platform.objects.get(id=car_model_id).name
         platform_id = Platform.objects.get(id=car_model_id).parent_id
         platform = Platform.objects.get(id=platform_id).name
 
-        propulsion = PropulsionPower.objects.get(id=propulsion_id).num
+        parts = Direction.objects.get(id=part_id).name
         power = PropulsionPower.objects.get(id=power_id).num
         direction = Direction.objects.get(id=direction_id).name
-        parts = Direction.objects.get(id=part_id).name
+        propulsion = PropulsionPower.objects.get(id=propulsion_id).num
 
         # 在获取到前端的工况数据时，判断是否是数字 ==> 自定义工况
         status = status_id
         if status_id.isdigit():
             status = Direction.objects.get(id=status_id).name
-        # print(platform, car_model, direction, parts, status, author, car_num, propulsion, power, create_date, gearbox)
-        # return HttpResponse(json.dumps({"data":gearbox}))
-
         if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
-            # 用户名 + 文件名
             new_name = create_date + "_" + filename
             # 在这里判断下文件格式 ==> 分开保存
             try:
-                with transaction.atomic():  # 数据库回滚
-                    # 写入本地
+                with transaction.atomic():  # rollback
+                    # location
                     new_file_hdf = open(FILE_HEAD_PATH + filename[-3:] + "/" + new_name, 'wb+')
                     for chunk in files.chunks():
                         new_file_hdf.write(chunk)
                     new_file_hdf.close()
 
-                    # 写入数据库
+                    # sql
                     file_type = "KV" + str(kv) + "EPG" + str(EPG) + "other" + str(other)
                     Fileinfo(platform=platform, carmodel=car_model, direction=direction, parts=parts,
                              status=status, author=author,
@@ -197,7 +189,6 @@ class FileInfoViewSet(ModelViewSet):
                             "file_new_name": new_name,
                         }
                     }
-                    print(new_name, "上传时间: ", time.time() - a)
                     return HttpResponse(json.dumps(res_dict))
             except FileExistsError as error:
                 os.remove(FILE_HEAD_PATH + filename[-3:] + "/" + new_name)
@@ -208,7 +199,7 @@ class FileInfoViewSet(ModelViewSet):
                         "info": "Server Error..."
                     }
                 }
-                return HttpResponse(json.dumps(res_dict))
+                return JsonResponse(res_dict)
 
         res_dict = {
             "code": 1,
@@ -217,14 +208,11 @@ class FileInfoViewSet(ModelViewSet):
                 "info": "Please check the form information...",
             }
         }
-        # return render(request, 'upload.html', json.dumps(res_dict))
-        # return HttpResponse(res_dict)
         return Response(res_dict, status=status.HTTP_201_CREATED, headers=headers)
 
     # 删 : DELETE /parse_file/1/
     def destroy(self, request, *args, **kwargs):
-        # 在这里删除当前指定的文件： SQL记录 和本地文件
-        # TODO: 删除SQL中的数据时候，需要回滚==> 选择使用乐观锁
+        # 删除当前指定的文件： SQL记录 和本地文件
         with transaction.atomic():
             save_id = transaction.savepoint()  # 创建一个保存点
             try:
@@ -250,9 +238,6 @@ class FileInfoViewSet(ModelViewSet):
                     "info": "not find file",
                     "status": file_path + "不存在！"
                 })
-            # except serializers.ValidationError:
-            #     raise
-
             except Exception as e:
                 transaction.savepoint_rollback(save_id)
                 raise
@@ -264,12 +249,12 @@ class FileInfoViewSet(ModelViewSet):
     # 查 : GET /parse_file/ (/parse_file/1/)
     def list(self, request, *args, **kwargs):
         # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
-        carmodel = request.GET.get("carmodel", None)
-        propulsion = request.GET.get("propulsion", None)
         power = request.GET.get("power", None)
-        discipline = request.GET.get("discipline", None)
         parts = request.GET.get("parts", None)
+        carmodel = request.GET.get("carmodel", None)
         key_word = request.GET.get("key_word", None)
+        propulsion = request.GET.get("propulsion", None)
+        discipline = request.GET.get("discipline", None)
 
         if key_word == "":
             key_word = None
@@ -277,9 +262,6 @@ class FileInfoViewSet(ModelViewSet):
         # 这里是分页查询的page和limit
         page = request.GET.get('page', "1")
         limit = int(request.GET.get('limit', "20"))
-        # print(page, limit)
-
-        # print(carmodel, propulsion, power, discipline, parts, key_word)
         search_dict = {}
         if carmodel is None and propulsion is None and power is None and discipline is None and parts is None and key_word is None:
             # 如果用户什么都没有搜，显示所有
@@ -314,8 +296,7 @@ class FileInfoViewSet(ModelViewSet):
                                                                       Q(status__icontains=key_word) |
                                                                       Q(file_name__icontains=key_word) |
                                                                       Q(other_need__icontains=key_word) |
-                                                                      Q(direction__icontains=key_word)).order_by(
-                    '-id')
+                                                                      Q(direction__icontains=key_word)).order_by('-id')
 
         # 这里是使用什么方法分页查询数据的
         paginator = Paginator(items, limit)
@@ -358,34 +339,30 @@ class ParseFile(View):
         :param request: 数据携带的参数信息
         :return: 文件和文件信息存储的状态
         """
-        permission_classes = (IsAuthenticated,)  # 限定必须是已经认证的用户
-
         # 从前端获取的数据
-        car_model_id = request.POST.get("car_model", None)  # 车型
-        produce = request.POST.get("produce", None)  # 生产阶段
-        direction_id = request.POST.get("direction", None)  # 方向
-        part_id = request.POST.get("parts", None)  # 零部件
-        status_id = request.POST.get("status", None)  # 工况
-        author = request.POST.get("author", None)  # 用户名
-        car_num = request.POST.get("car_num", None)  # 车号
-        propulsion_id = request.POST.get("propulsion", None)  # 动力总成
-        power_id = request.POST.get("power", None)  # 功率
-        create_date = request.POST.get("date_hash", None)  # 时间
         files = request.FILES.get("file")  # 文件
-        gearbox = request.POST.get('gearbox')
         filename = str(files)
+        author = request.POST.get("author", None)  # 用户名
+        part_id = request.POST.get("parts", None)  # 零部件
+        power_id = request.POST.get("power", None)  # 功率
+        gearbox = request.POST.get('gearbox', None)
+        car_num = request.POST.get("car_num", None)  # 车号
+        produce = request.POST.get("produce", None)  # 生产阶段
+        status_id = request.POST.get("status", None)  # 工况
+        create_date = request.POST.get("date_hash", None)  # 时间
+        car_model_id = request.POST.get("car_model", None)  # 车型
+        direction_id = request.POST.get("direction", None)  # 方向
+        propulsion_id = request.POST.get("propulsion", None)  # 动力总成
 
-        # 这里是非必选参数
+        # 非必选参数
         kv = request.POST.get('kv')
         EPG = request.POST.get('EPG')
         other = request.POST.get('other')
         other_need = request.POST.get("other_need")
 
-        # 从数据库中查询vue框架绑定的id(车型, 动力总成-功率, 专业方向-零部件-工况)
-        car_model = Platform.objects.get(id=car_model_id).name
-
         # 获取前端发送的参数
         parts = Direction.objects.get(id=part_id).name
+        car_model = Platform.objects.get(id=car_model_id).name
         power = PropulsionPower.objects.get(id=power_id).num
         direction = Direction.objects.get(id=direction_id).name
         platform_id = Platform.objects.get(id=car_model_id).parent_id
@@ -428,7 +405,6 @@ class ParseFile(View):
 
                     # 将头文件中的通道信息, 返回给前端
                     channel_list = re.findall(r'name str:\W+(\w+)', HDF_header, re.S)
-                    # key_list = re.findall(r'channel definition:\W+(\d+)', HDF_header, re.S)
                     res_dict = {
                         "code": 0,
                         "data": {
@@ -441,9 +417,11 @@ class ParseFile(View):
 
                     # 在这里修改当前用户的用户上传量, 上传失败则删除文件
                     try:
+                        lock.acquire()
                         author = User.objects.get(username=author)
                         author.update_files_data += 1
                         author.save(update_fields=['update_files_data'])
+                        lock.release()
                     except FileExistsError as error:
                         os.remove(FILE_HEAD_PATH + filename[-3:] + "/" + new_name)
                         res_dict = {
@@ -454,7 +432,6 @@ class ParseFile(View):
 
                     # 上传成功返回当前上传状态
                     return HttpResponse(json.dumps(res_dict))
-                    # return JsonResponse({"status":500, "msg":"Server Error"})
             except FileExistsError as error:  # 文件操作失败是, 数据库回滚, 同时删除网盘中已上传的原始HDF文件
                 os.remove(FILE_HEAD_PATH + filename[-3:] + "/" + new_name)
                 res_dict = {
@@ -506,49 +483,6 @@ class ParseFile(View):
                         new_other_channel.parent_id = Channel.objects.get(name=key).id
                         new_other_channel.save()
                 res_dict = {"code": 0, "msg": "通道别名添加完成！"}
-                # 从前端数据中,获取本次需要操作的文件列表, 修改文件中的通道名
-                # file_list = body_json["filelist"]
-                # for file in set(file_list):
-                #     # 在这里拿到文件中通道名, 进行修改 ==> 可以使用多任务进行优化
-                #     read_info = h5py.File(FILE_READ_PATH + file, 'r+')
-                #     for channel_key in read_info.keys():
-                #         # 找到当前通道对应的标准通道
-                #         try:
-                #             read_hdf_channel = re.search(r'data_(.*)', channel_key, re.S).group(1)
-                #         except:
-                #             read_hdf_channel = channel_key
-                #
-                #         # print("read_hdf_channel:", read_hdf_channel)
-                #         norm_channel_key = Channel.objects.filter(name=read_hdf_channel)  # 从数据查询数据返回空[]
-                #
-                #         # 判断当前通道名 是不是 标准写法
-                #         if len(norm_channel_key) == 0:
-                #             # print("norm_channel_key:", norm_channel_key)
-                #             if norm_channel_key[0].parent_id is not None:
-                #                 # 不是标准写法
-                #                 change_channel_to_norm = Channel.objects.get(id=norm_channel_key[0].parent_id)
-                #                 norm_channel_key.name = change_channel_to_norm.name
-                #
-                #             # 跳过已修改的部分
-                #             if norm_channel_key.name == channel_key:
-                #                 continue
-                #
-                #             # 最后修改文件中的通道名
-                #             read_info[norm_channel_key.name] = read_info[channel_key]
-                #             del read_info[channel_key]
-                #             read_info.update({norm_channel_key: read_info.pop(channel_key)})
-                #             read_info[norm_channel_key] = read_info[channel_key].value
-                #             res_dict = {
-                #                 "code": 0,
-                #                 "msg": "File Channel Change to Success"
-                #             }
-                #         else:
-                #             os.remove(FILE_READ_PATH + file)
-                #             os.remove(FILE_HEAD_PATH + file)
-                #             res_dict = {
-                #                 "code": 1,
-                #                 "msg": DatabaseError
-                #             }
         except FileExistsError:
             return JsonResponse({"code": 1, "msg": DatabaseError})
         return JsonResponse(res_dict)
@@ -564,20 +498,13 @@ class CheckChannel(View):
             2. 不在： 让用户选择标准通道，然后将标准-不标准的传给后台
             3. 后台接受到标准-不标准数据，将其写入数据库
         """
-        # 从前端接受一个文件列表，后台通过读取文件列表中的文件，将文件中的通道进行对比
-        # json
         text = request.body.decode()
         body_json = json.loads(text)
         file_list = body_json["fileList"]
-        # params
-        # file_list = request.POST.get("fileList", None)
-
         if file_list:
             B_channel_dict = {}
             for filename in file_list:
                 channel_dict, items = read_hdf(filename)
-                # print(channel_dict)
-                # dict() 是可变类型，迭代的时候直接操作
                 for key, value in channel_dict.items():
                     sql_channel_list = Channel.objects.filter(name=value)
                     if sql_channel_list:
@@ -589,7 +516,6 @@ class CheckChannel(View):
                     else:
                         # 不在时，根据用户选择的标准通道，配置正确的SQL记录
                         B_channel_dict.update({key: value})
-
             return JsonResponse({"status": 200, "data": B_channel_dict})
         return JsonResponse({"status": 400, "msg": "后台未接收到数据！"})
 
@@ -617,27 +543,17 @@ class CheckChannel(View):
         for channel_dict in channel_list:
             with transaction.atomic():  # 数据库回滚
                 channel_data = Channel()
-                # print(list(channel_dict.values())[0], list(channel_dict.keys())[0])
                 channel_data.name = list(channel_dict.values())[0]
-
                 channel_data_parent = Channel.objects.filter(name=list(channel_dict.keys())[0])
 
                 if channel_data_parent:
-                    # 前端数据在SQL中有主键时，我们
                     channel_data.parent_id = channel_data_parent[0].id
                     channel_data.save()
                 else:
-                    # 当前端发来的数据中，不在标准写法，也不再其他写法中 ==> 我们新建一条数据
                     NewParentChannel = Channel()
-                    # print(Channel.objects.filter(parent=None).aggregate(Max("id")))  # {'id__max': 25500}
                     NewParentChannel.id = int(Channel.objects.filter(parent=None).aggregate(Max("id"))["id__max"]) + 100
                     NewParentChannel.name = list(channel_dict.keys())[0]
-
                     channel_data.parent_id = NewParentChannel.id
-
-                    # print(NewParentChannel.id, NewParentChannel.name)
-                    # print(channel_data.parent_id, channel_data.name)
-
                     NewParentChannel.save()
                     channel_data.save()
 
@@ -730,6 +646,7 @@ def file_down(request, pk):
         try:
             with transaction.atomic():  # 数据库回滚
                 # 用户下载量+1
+                lock.acquire()  # 加锁
                 author = User.objects.get(id=user_id)  # 当前在线的用户
                 author.download_files_data += 1
                 author.save(update_fields=['download_files_data'])
@@ -739,6 +656,8 @@ def file_down(request, pk):
                 uploader = User.objects.get(username=uploader_name)
                 uploader.views += 1
                 uploader.save(update_fields=['views'])
+
+                lock.release()  # 解锁
         except:
             return HttpResponse("Sorry but Data storage error")
     except:

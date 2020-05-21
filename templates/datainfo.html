@@ -280,8 +280,7 @@
                     <div id="LAY_preview">
                         <div class="demoTable">
                             <div class="layui-inline">
-                                <input class="layui-input" name="id" id="demoReload" autocomplete="off"
-                                       placeholder="这里是模糊搜索字段...">
+                                <input class="layui-input" name="id" id="demoReload" autocomplete="off" placeholder="这里是模糊搜索字段...">
                             </div>
                             <button class="layui-btn" id="search-work" data-type="reload">模糊搜索</button>
                             <table id="info" lay-filter="test"></table>
@@ -295,23 +294,6 @@
 {% endblock content %}
 
 {% block right_data %}
-{#    <div class="dataContrastList" id="dataContrastList">#}
-{#        <div class="list-title">已选数据:</div>#}
-{#        <div class="data-list1">#}
-{#        </div>#}
-{#        <div class="bulletbox-button">#}
-{#            <button class="data-submit" onclick="confirmCalculate()">#}
-{#                <a href="/calculate/" style="color: white">#}
-{#                    确认计算#}
-{#                </a>#}
-{#            </button>#}
-{#            <button class="data-download">#}
-{#                <a href="/autocalculate/" style="color: white">#}
-{#                    自动统计#}
-{#                </a>#}
-{#            </button>#}
-{#        </div>#}
-{#    </div>#}
     <div class="dataContrastList" id="dataDownload">
         <div class="list-title">已选数据:</div>
         <div class="data-list"></div>
@@ -329,7 +311,6 @@
 {% block javascript %}
     <!-- 使用layui框架 -->
     <script>
-
         function confirmCalculate() {
             sessionStorage.setItem("sessionType", 0);
             window.location.href ="/calculate/" ;
@@ -372,28 +353,22 @@
             });
         }
 
-        layui.config({
-            base: '../../../epgn_front_end/home/' //静态资源所在路径
-        }).use('index', function () {
-            var $ = layui.jquery,
-                layer = layui.layer,
-                admin = layui.admin,
-                element = layui.element,
-                table = layui.table,
-                form = layui.form;
-        });
+        // layui.config({
+        //     base: '{% static 'home/' %}' //静态资源所在路径
+        // }).use('index', function () {
+        //     var $ = layui.jquery,
+        //         layer = layui.layer,
+        //         // admin = layui.admin,
+        //         element = layui.element,
+        //         table = layui.table,
+        //         form = layui.form;
+        // });
     </script>
 
     <!-- 使用script的方式把这段代码添加到html中 -->
     <script type="text/html" id="toolbarDemo">
         <div class="demoTable">
             <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="getDownload">下载与计算</button>
-            <!--
-            <button class=" layui-btn layui-btn-sm" id="addContrast" lay-event="addContrast">添加</button>
-            <button class="layui-btn layui-btn-sm" lay-event="rebootContrast">刷新</button>
-            <a class="layui-btn layui-btn-sm layui-btn-normal" id="download-btn" onclick="file_download();">下载</a>
-            <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="catContrast">查看</button>
-            -->
         </div>
     </script>
 
@@ -409,9 +384,6 @@
             sessionArray = [];
             sessionStorage.removeItem("sessionString");
             $(".data-list").html("");
-
-
-
         }
 
         function data_Blockskip() {

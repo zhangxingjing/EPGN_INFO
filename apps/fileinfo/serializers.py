@@ -57,15 +57,6 @@ class GearBoxSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-# cookie存储的序列化器
-# class ContrasCartSerializer(serializers.ModelSerializer):
-#     file_name = serializers.IntegerField(label='文件名', read_only=True)
-#
-#     class Meta:
-#         model = Fileinfo
-#         fields = ['id', 'file_name']
-
-
 # 返回的文件信息序列化器
 class FileSerializer(serializers.ModelSerializer):
     """指定返回的数据中有哪些字段"""
@@ -82,6 +73,7 @@ class UserFileSerializer(serializers.ModelSerializer):
         model = Fileinfo
         fields = ['id', 'car_num', 'produce', 'status', 'file_name', 'other_need']
 
+
 # 通道的序列化器
 class ChannelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,15 +88,3 @@ class OtherChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
         fields = ["id", "name", "subs"]
-
-# 处理搜索引擎返回数据的序列化器
-# class FileIndexSerializer(HaystackSerializer):
-#     """
-#     索引结果数据序列化器:检查前端传入的参数text，并且检索出数据后再使用这个序列化器返回给前端
-#     object字段是用来向前端返回数据时序列化的字段
-#     """
-#     object = FileSerializer(read_only=True)
-#
-#     class Meta:
-#         index_classes = [FileIndex]  # 绑定的搜索索引
-#         fields = ('text', 'object')

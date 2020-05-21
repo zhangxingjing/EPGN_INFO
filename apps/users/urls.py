@@ -10,7 +10,7 @@ urlpatterns = [
     # jwt登录
     url(r'^authorizations/$', obtain_jwt_token),
 
-    # 获取用户认证信息
+    # 获取用户信息
     url('^user/$', UserDetailView.as_view()),
 
     # 退出登录
@@ -22,6 +22,7 @@ urlpatterns = [
 
     # 返回用户个人数据
     url('^user_file/(?P<pk>\d+)$', user_file),
+
     # 返回home
     url('^home/$', home),
 ]

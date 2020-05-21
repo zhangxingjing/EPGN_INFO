@@ -9,11 +9,10 @@ from django.shortcuts import render
 from scripts.readHDF import read_hdf
 from fileinfo.models import Fileinfo
 from scripts.process_gecent import ParseTask
-from scripts.from_sql_data_h5 import FileArrayInfo
+from settings.dev import REFERENCE_CHANNEL, FALLING_LIST
 from calculate.algorithm.class_name import CalculateNameList
 from apps.calculate.algorithm.class_name import CalculateNameDict
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
-from settings.dev import CALCULATE_RULE, REFERENCE_CHANNEL, FALLING_LIST
 
 
 # 处理通道信息： url(r'^channelList/$', ChannelList.as_view()),
@@ -36,11 +35,11 @@ class ChannelList(View):
 
             for key, value in channel_dict.items():
                 set_channel_list.append(value.replace(' ', ''))
-                channel_key_list.append({"title": value.replace(' ', ''), "id": 1000+num_1})
+                channel_key_list.append({"title": value.replace(' ', ''), "id": 1000 + num_1})
                 num_1 += 1
 
             file_channel_info["title"] = file_name
-            file_channel_info["id"] = 10000+num_1
+            file_channel_info["id"] = 10000 + num_1
             file_channel_info["spread"] = True
             file_channel_info["children"] = channel_key_list
             channel_dict_list.append(file_channel_info)
@@ -66,9 +65,9 @@ class ChannelList(View):
             file_list = []
             set_channel_list = []
             for data in data_list:
+                print(data)
                 file_name = data["file_name"]
                 file_list.append(file_name)
-                # channel_list = read_file_header(file_name)    修改为使用可读HDF
                 channel_list, items = read_hdf(file_name)
                 for values in channel_list.values():
                     if values not in set_channel_list:
@@ -86,13 +85,6 @@ class ChannelList(View):
 class CalculateParse(View):
 
     def get(self, request):
-        """
-        1. 获取前端用户选择的文件名
-        2. 通过算法，用通道匹配算法（图片位置）
-        3. 将算法处理的结果数据返回到前端
-        :param request: request请求对象
-        :return: 当前calculate处理结果
-        """
         return render(request, 'calculate.html')
 
     # 通过算法返回数组数据
@@ -103,6 +95,7 @@ class CalculateParse(View):
             body_str = body.decode()
             body_json = json.loads(body_str)
 
+            # TODO: 这里的逻辑不完整
             items = ParseTask(body_json).run()
             if len(items) == 0:
                 return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
@@ -119,8 +112,6 @@ class CalculateParse(View):
                     point_loc.append(y)
                     line_loc.append(point_loc)
                 item["data"] = line_loc
-            # data = json.dumps(items, cls=NumpyEncoder)  # TODO: 将Array放入字典
-            # return HttpResponse(data)
             print("当前后台处理时间：", time() - ST)  # 从收到数据到返回数据时间
             return JsonResponse({"data_info": items})
         return render(request, 'calculate.html')
@@ -132,28 +123,14 @@ class PPTParse(View):
     # 接收文件名，返回算法数据
     def put(self, request):
         return_items = self.parse_calculate(request)
-        # print("="*100, return_items)
         return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 
     # 接受base64，返回PPT地址
     def post(self, request):
-        # save_path = 'PPTModel/'
-        # body = request.body
-        # body_str = body.decode()
-        # body_json = json.loads(body_str)
-        #
-        # # 首先根据前端数据生成PPT，拿到扉页文件的绝对路径
-        # ppt_path = ParsePPT(body_json, save_path).run()  # 在本地生成一份指定的PPT
-        # file_name = re.search(r'(.*)/(.*\.pptx)', ppt_path).group(2)
-        # print(ppt_path, file_name)
-        # return JsonResponse({"path": ppt_path, "file_name": file_name})
         body = request.body.decode()
         items = json.loads(body)
         try:
             ppt_path = ParsePPT(items).run()
-            # 这里return的url，是可以直接下载的！
-            print("ppt_path:", ppt_path)
-            print(ppt_path)
             return JsonResponse({"status": 200, "path": ppt_path})
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
@@ -161,7 +138,6 @@ class PPTParse(View):
     # 接受需要下载的文件地址，返回文件信息
     def get(self, request):
         ppt_path = request.GET.get("path")
-        # print("ppt_path:", ppt_path)
         file_name = re.search(r'.*/(.*\.pptx)', ppt_path).group(1)
 
         def file_iterator(file_path, chunk_size=512):
@@ -181,10 +157,7 @@ class PPTParse(View):
 
         try:
             response = StreamingHttpResponse(file_iterator(ppt_path))
-            # 以流的形式下载文件,这样可以实现任意格式的文件下载
             response['Content-Type'] = 'application/octet-stream'
-            # Content-Disposition就是当用户想把请求所得的内容存为一个文件的时候提供一个默认的文件名
-            # response['Content-Disposition'] = 'attachment;filename="{}"'.format(file_name)
             from django.utils.http import urlquote
             response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
         except:
@@ -202,174 +175,127 @@ class PPTParse(View):
 
     # 算法处理 ==> 处理kp文件分段采集的数据量
     def parse_calculate(self, request):
-            """
-            从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
-            :param request: Request请求对象
-            :return: 前端数据列表产生的XY轴坐标信息
-            """
-            ave_items = []
-            return_items = []
-            body = request.body.decode()
-            file_list = json.loads(body)["fileList"]
+        """
+        从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
+        :param request: Request请求对象
+        :return: 前端数据列表产生的XY轴坐标信息
+        """
+        ave_items = []
+        return_items = []
+        body = request.body.decode()
+        file_list = json.loads(body)["fileList"]
 
-            for file in list(set(file_list)):  # 防止前端多传文件，对文件列表进行去重
-                # 获取文件工况，如果没有，直接返回None
-                # try:
-                #     print("FirstFile", file)
-                #     status = Fileinfo.objects.get(file_name=file).status
-                #     print("File:", file)
-                # except:
-                #     print("PPTParse >> parse_calculate() 出错！")
-                #     return None
-                status = Fileinfo.objects.filter(file_name=file)
-                if len(status) > 0:
-                    status = status[0].status
-                else:
-                    print("PPTParse >> parse_calculate() 出错！")
-                # 判断加减速
-                if status in FALLING_LIST:
-                    rpm_type = 'falling'
-                else:
-                    rpm_type = 'rising'
+        for file in list(set(file_list)):
+            status = Fileinfo.objects.filter(file_name=file)
+            if len(status) > 0:
+                status = status[0].status
+            else:
+                print("PPTParse >> parse_calculate() 出错！")
 
-                calculate_name = CalculateNameDict[status]
-                channel_dict, items = read_hdf(file)
-                channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]  # 去除参考通道
+            # 判断加减速
+            if status in FALLING_LIST:
+                rpm_type = 'falling'
+            else:
+                rpm_type = 'rising'
 
-                # 判断启停算法
-                if status == "(Square&Lab)St-Sp":
-                    for ss_channel in channel_calculate_list:
-                        if "X" in ss_channel:
-                            channel_calculate_list = [ss_channel]
+            calculate_name = CalculateNameDict[status]
+            channel_dict, items = read_hdf(file)
+            channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]  # 去除参考通道
 
-                # 构建children中的字典数据
-                i = 1
-                children_list = []
-                for channel in channel_calculate_list:
-                    children_list.append({"id": i, "title": channel})
-                    i += 1
+            # 启停 ==> 只计算一个通道
+            if status == "(Square&Lab)St-Sp":
+                for ss_channel in channel_calculate_list:
+                    if "X" in ss_channel:
+                        channel_calculate_list = [ss_channel]
 
-                # 构建传入算法的字典数据
-                data = {
-                    "calculate": calculate_name,
-                    "file_info": {
-                        "checked": "True",
-                        "children": [
-                            {
-                                "children": children_list,
-                                "id": 1,
-                                "title": file
-                            },
-                        ],
-                        "field": "name1",
-                        "id": 1,
-                        "spread": "True",
-                        "title": "文件夹名"
-                    }
+            # 构建children中的字典数据
+            i = 1
+            children_list = []
+            for channel in channel_calculate_list:
+                children_list.append({"id": i, "title": channel})
+                i += 1
+
+            # 构建传入算法的字典数据
+            data = {
+                "calculate": calculate_name,
+                "file_info": {
+                    "checked": "True",
+                    "children": [
+                        {
+                            "children": children_list,
+                            "id": 1,
+                            "title": file
+                        },
+                    ],
+                    "field": "name1",
+                    "id": 1,
+                    "spread": "True",
+                    "title": "文件夹名"
                 }
+            }
 
+            # 将data传入算法，进行计算，获取算法返回值
+            items = ParseTask(data, rpm_type).run()
 
-                # 将data传入算法，进行计算，获取算法返回值
-                items = ParseTask(data, rpm_type).run()
+            # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
+            if len(items) == 0:
+                return None
 
-                # print(status, "items,length:", len(items))
-
-                # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
-                if len(items) == 0:
-                    return None
-
-                # items里面存放的一个文件中所有通道的算法结果 ==> 添加 KP 80-20 的求均值
-                for item in items:
-                    if status == "KP 80-20":
-                        ave_items.append(item)
-                    else:
-                        x_list = list(item["data"]["X"])
-                        y_list = list(item["data"]["Y"])
-                        line_loc = []
-                        for x, y in zip(x_list, y_list):
-                            point_loc = []
-                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
-                                if calculate_name == "FFT":
-                                    point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                                else:
-                                    point_loc.append(x)
-                            except:
-                                continue
-                            point_loc.append(y)
-                            line_loc.append(point_loc)
-                        item["data"] = line_loc
-                        item["status"] = status
-                        return_items.append(item)
-
-            # 对KP80-20工况下的数据进行求均值
-            if len(ave_items) > 0:
-                df = pd.DataFrame(ave_items)
-                # 使用 pandas 对列表中的字典进行分类
-                result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
-
-                # 处理KP的分段采集数据 result-通道的字典
-                for channels in result:
-                    """
-                    # y的平均值
-                    y1 = channels["info"][0]["Y"]
-                    y2 = channels["info"][1]["Y"]
-                    y3 = channels["info"][2]["Y"]
-                    y_list = []
-                    for i in range(len(channels["info"][0]["Y"])):
-                        y = sum([y1[i], y2[i], y3[i]]) / int(len(channels))
-                        y_list.append(y)
-                    y_list = []
-                        for i in range(len(channels["info"][0]["Y"])):
-                            np_list_y = np.array([list_y_sum])
-                            list_avg = np.mean(np_list_y, axis=1)
-                            y_list.append(list_avg)
-
-                        x_list = channels["info"][2]["X"]
-                        line_loc = []
-                        for x, y in zip(x_list, list(y_list)):
-                            point_loc = []
-                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
-                                point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                            except:
-                                continue
-                            point_loc.append(y)
-                            line_loc.append(point_loc)
-
-                        return_items.append({
-                            "status": "KP 80-20",
-                            "filename": channels["filename"],
-                            "data": line_loc
-                        })
-                    """
-
-                    # 不管kp文件的个数，获取正确的y均值
-                    list_y_sum = list_avg = []
-                    for i in range(len(list(set(file_list)))):
-                        a = channels["info"][i]["Y"]
-                        list_y_sum.append(a)
-                    y_list = np.mean(list_y_sum, axis=0)  # 使用numpy求列表均值
-
-                    x_list = channels["info"][0]["X"]
+            # items里面存放的一个文件中所有通道的算法结果 ==> 添加 KP 80-20 的求均值
+            for item in items:
+                if status == "KP 80-20":
+                    ave_items.append(item)
+                else:
+                    x_list = list(item["data"]["X"])
+                    y_list = list(item["data"]["Y"])
                     line_loc = []
                     for x, y in zip(x_list, y_list):
                         point_loc = []
-                        if x>=1 and y>0:
-                            try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                        try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                            if calculate_name == "FFT":
                                 point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
-                            except:
-                                continue
-                            point_loc.append(y)
-                            line_loc.append(point_loc)
+                            else:
+                                point_loc.append(x)
+                        except:
+                            continue
+                        point_loc.append(y)
+                        line_loc.append(point_loc)
+                    item["data"] = line_loc
+                    item["status"] = status
+                    return_items.append(item)
 
-                    return_items.append({
-                        "status": "KP 80-20",
-                        "filename": channels["filename"],
-                        "data": line_loc
-                    })
-                # 为了前端页面的数据结果展示，我们需要将数据包装成[(x1,y1),(x2,y2)..]的形式，返回
-            # print(return_items,"="*100)
-            return return_items
-    
+        # 对KP80-20工况下的数据进行求均值
+        if len(ave_items) > 0:
+            df = pd.DataFrame(ave_items)
+            # 使用 pandas 对列表中的字典进行分类
+            result = [{"filename": k, "info": g["data"].tolist()} for k, g in df.groupby("channel")]
+
+            # 处理KP的分段采集数据 result-通道的字典
+            for channels in result:
+                list_y_sum = []
+                for i in range(len(list(set(file_list)))):
+                    a = channels["info"][i]["Y"]
+                    list_y_sum.append(a)
+                y_list = np.mean(list_y_sum, axis=0)  # 使用numpy求列表均值
+                x_list = channels["info"][0]["X"]
+                line_loc = []
+                for x, y in zip(x_list, y_list):
+                    point_loc = []
+                    if x >= 1 and y > 0:
+                        try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                            point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                        except:
+                            continue
+                        point_loc.append(y)
+                        line_loc.append(point_loc)
+
+                return_items.append({
+                    "status": "KP 80-20",
+                    "filename": channels["filename"],
+                    "data": line_loc
+                })
+        return return_items
+
     # 取峰值
     def segment_for(self, items, step, new_items):
         """
@@ -385,6 +311,19 @@ class PPTParse(View):
         else:
             new_items.append(max(items, key=lambda x: x[0]))
         return new_items
+
+
+# 手动报告
+def manual_report(request):
+    """
+    从前端获取参数，生成手动报告
+    :param request: 携带前端发送的参数信息
+    :return: 当前文件、通道、算法的结果
+    """
+    file_info = request.POST.get("file_info", None)
+    channel_name = request.POST.get("channel_list", None)
+    calculate_name = request.POST.get("calculate_name", None)
+
 
 
 # 返回文件列表: url(r'file_list/', views.return_file_list),
@@ -403,36 +342,13 @@ def return_file_list(request):
         return JsonResponse({"file_list": file_list})
 
 
-# 获取算法结果: url(r'^algorithm_results/$', views.get_algorithm_results)
-def get_algorithm_results(request):
-    # get parameters from front end
-    if request.method == "POST":
-        body = request.body
-        body_str = body.decode()
-        body_json = json.loads(body_str)
-        channel = body_json["channel"]
-        algorithm_name = body_json["algorithm_name"]
-        filename = body_json["filename"]
-
-        # pass data into the algorithm to draw & return data
-        item = FileArrayInfo().get_from_sql(channel + '--' + algorithm_name, filename)
-        image_path = item
-        data = {
-            "channel": channel,
-            "algorithm_name": algorithm_name,
-            "filename": filename,
-            "img": image_path
-        }
-        return JsonResponse(data=data)
-    return HttpResponse("当前为POST请求，请检查请求方式")
-
-
-# 数据挖掘页面
+# 数据挖掘页面：url(r'autocalculate/', auto_calculate),
 def auto_calculate(request):
     if request.method == "POST":
         return JsonResponse({"data": "data"})
     return render(request, 'calculate.html')
 
 
+# PDF：url('^test_page/$', test_page)
 def test_page(request):
     return render(request, 'testpage.html')

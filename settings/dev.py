@@ -113,7 +113,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # 配置缓存 ==> 要使用redis的话，要修改配置文件中的访问地址，再重启服务器
 CACHES = {
@@ -273,11 +273,11 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
-FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
+# FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
+# FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
 
-# FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
-# FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
+FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

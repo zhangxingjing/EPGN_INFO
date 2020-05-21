@@ -29,10 +29,6 @@ class Calculate_Object(object):
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
         self.raw_rpm = channel_data[raw_rpm_num]
-        # 使用asc文件读取时，channel_data获取的应该是当前列，那在这里获取就应该使用下面这种方式
-        # self.raw_time = self.item[:, raw_time_num]
-        # self.raw_data = self.item[:, raw_data_num]
-        # self.raw_rpm = self.item[:, raw_rpm_num]
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -150,7 +146,6 @@ class LevelTime(Calculate_Object):
         for i in range(len(rpmf)):
             lpr[i] = lpa[int(rpmf[i]) - 1]  # 最后一项是n-1
         return rpml, lpr
-        # return rpml, lpr.astype(np.int32)
 
 
 class OederVfft(Calculate_Object):
@@ -330,17 +325,6 @@ class FftInfo(LevelTime, OederVfft):
 class FftCalculate(FftInfo):
     def run(self):
         f, db = self.fft_average()
-        # plt.figure()
-        # plt.plot(f, db)
-        # plt.xscale('log')
-        # plt.xlim(10, 20000)
-        # plt.xlabel('fs/Hz')
-        # plt.ylabel('dB(A)')
-        # plt.grid(b=bool, which='both')
-        # plt.title('fft average', )
-        # plt.tight_layout()
-        # image_path = self.save_img()
-        # print(image_path)
         return f, db
 
 
@@ -370,18 +354,6 @@ class LevelVsRpm(LevelTime):
     def run(self):
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
-        # plt.figure()
-        # plt.plot(rpml, lpr)
-        # plt.xscale('log')
-        # plt.xlim(10, 20000)
-        # plt.xlabel('fs/Hz')
-        # plt.ylabel('dB(A)')
-        # plt.grid(b=bool, which='both')
-        # plt.title('fft average', )
-        # plt.tight_layout()
-        # plt.show()
-        # image_path = self.save_img()
-        # print(image_path)
         return rpml, lpr
 
 

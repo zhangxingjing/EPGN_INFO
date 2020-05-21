@@ -1,6 +1,4 @@
-"""
-前端对应的算法名称
-"""
+# 算法名称
 
 # CalculateNameDict = {
 #     # the front end page： Corresponding class name
@@ -16,13 +14,12 @@
 
 
 CalculateNameDict = {
-    # "(N)G3 VZ": "Level VS RPM",
-    # "(N)G3 VZ": "2nd Order VS RPM",
     "(N)G3 VZ": "LevelVsTime",
-    # "(N)G3 VS": "Level VS RPM",
     "(N)G3 VS": "OrderVsVfft",
     "(N)G5 VZ": "OrderVsVfft",
+
     "KP 80-20": "FftCalculate",
+
     "(Square&Lab)Leerlauf D Gang mit AC": "LevelVsTime",
     "(Square&Lab)Leerlauf P Gang mit AC": "LevelVsTime",
     "(Square&Lab)Leerlauf R Gang mit AC": "LevelVsTime",
@@ -37,8 +34,8 @@ CalculateNameDict = {
     "(Square&Lab)Leerlauf P Gang mit Verbrauche": "LevelVsTime",
     "(Square&Lab)Leerlauf R Gang mit Verbrauche": "LevelVsTime",
     "(Square&Lab)Leerlauf N Gang mit Verbrauche": "LevelVsTime",
+
     "(Square&Lab)St-Sp": "StartStop"
 }
 
-# 发送给前端的算法名称
 CalculateNameList = ['write_result', 'fft_average', 'octave_fft', ]

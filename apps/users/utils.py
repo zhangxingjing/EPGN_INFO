@@ -29,16 +29,12 @@ class UsernameMobileAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         # 在这里使用上面自定义的获取用户信息方法, 拿到用户后校验jwt
         user = get_user_by_account(username)
-        # print("用户在这里开始校验", user, user.nickname)
         if user is not None and user.check_password(password):
-            print("用户校验成功")
             return user
 
 
 # 自定义jwt认证成功返回的数据 ==> 用户登录成功返回的数据
 def jwt_response_payload_handler(token, user=None, request=None):
-    # 用户登录成功, 后台向session中存储数据
-
     # 在这里修改用户登录后的配置信息
     user.is_staff = True  # 修改用户登录状态
     user.last_login = str(datetime.datetime.today())  # 修改用户最后登录时间

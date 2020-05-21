@@ -18,7 +18,7 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
-# 重写 ==> admin创建的用户密码加密登录校验
+# Admin创建用户
 class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
     serializer_class = AuthUserSerializer
     queryset = User.objects.all()
@@ -30,11 +30,6 @@ class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.List
         self.perform_create(serializers)
         headers = self.get_success_headers(serializers.data)
         return Response(serializers.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
-# 注册： url(r'^users/$', views.UserView.as_view()),
-class UserView(CreateAPIView):
-    serializer_class = CreateUserSerializer
 
 
 # 获取用户信息： url('^user/$', views.UserDetailView.as_view()),
@@ -89,14 +84,10 @@ class UserInfoViewSet(viewsets.ModelViewSet):
 
 # 退出登录
 class LogoutView(View):
-    '''退出登录'''
+    """退出登录'"""
 
     def get(self, request):
-        '''退出登录'''
-        # 清楚用户的session信息
         logout(request)
-
-        # 跳转到首页
         return render(request, 'login.html')
 
 
@@ -134,7 +125,6 @@ def home(request):
 def user_file(request, pk):
     # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
 
-    # 这里是分页查询的page和limit
     page = request.GET.get('page', "1")
     limit = int(request.GET.get('limit', "20"))
 
@@ -175,8 +165,6 @@ def user_info(request, pk):
     old_password = request.POST.get("old_password", None)
     new_password = request.POST.get("new_password", None)
     re_password = request.POST.get("re_password", None)
-
-    print(username, old_password, new_password, re_password)
 
     user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
     if user is None:

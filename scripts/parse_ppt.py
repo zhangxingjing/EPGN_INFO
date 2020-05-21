@@ -1,11 +1,9 @@
 import re
 import base64
 import time
-from pprint import pprint
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from settings.dev import BASE_DIR
-
 
 PPT_MODEL_PATH = BASE_DIR + '/apps/calculate/PPTModel/'
 IMAGE_LOCATION = [
@@ -68,46 +66,6 @@ class ParsePPT():
         处理前端返回的算法结果的图片 ==> base64--pic
         :return: 返回图片存储路径（图片使用完成后是否删除当前生成的图片）
         """
-        """
-        for noise in self.data["internal_noise"]:  # 内部噪声
-            pic_info = noise["info"]
-            for key, value in noise["data"].items():
-                str_bas64 = re.match(r'(data:image/png;base64,(.*))', value).group(2)
-                img = base64.b64decode(str_bas64)
-                pic_path = self.save_path + 'image/{}.jpg'.format(pic_info + " " + key)
-                fh = open(PPT_MODEL_PATH + pic_path, 'wb')
-                fh.write(img)
-                fh.close()
-                if key == "VL":
-                    self.vl[pic_info] = pic_path
-                elif key == "VR":
-                    self.vr[pic_info] = pic_path
-                elif key == "HL":
-                    self.hl[pic_info] = pic_path
-                elif key == "HR":
-                    self.hr[pic_info] = pic_path
-                elif key == "ML":
-                    self.ml[pic_info] = pic_path
-                elif key == "MR":
-                    self.mr[pic_info] = pic_path
-
-        pic_gun_info = self.data["roolgeraeush_noise"]["info"]
-        for key, value in self.data["roolgeraeush_noise"]["data"].items():
-            str_bas64 = re.match(r'(data:image/png;base64,(.*))', value).group(2)
-            img = base64.b64decode(str_bas64)
-            pic_path = self.save_path + 'image/{}.jpg'.format(pic_gun_info + " " + key)
-            fh = open(PPT_MODEL_PATH + pic_path, 'wb')
-            fh.write(img)
-            fh.close()
-            if key == "VL":
-                self.vl[pic_gun_info] = pic_path
-            elif key == "VR":
-                self.vr[pic_gun_info] = pic_path
-            elif key == "HL":
-                self.hl[pic_gun_info] = pic_path
-            elif key == "HR":
-                self.hr[pic_gun_info] = pic_path
-        """
 
         # 在这里处理当前PPT，生成之后返回当前的PPT路径
         for item in self.data["items"]:
@@ -126,7 +84,6 @@ class ParsePPT():
                 "pic_path": pic_path
             }
             yield img_dict
-            # self.img_list.append(img_dict)
 
     def insert_pic(self, img_dict):
         """

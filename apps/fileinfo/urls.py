@@ -65,7 +65,4 @@ urlpatterns = [
     url(r'gearbox/$', GearBoxView.as_view({'get': 'get_gearbox'})),
 ]
 
-# 搜索引擎的URL
-# router.register('fileinfo/search', FileSearchViewSet, base_name='fileinfo_search')
-
 urlpatterns += router.urls

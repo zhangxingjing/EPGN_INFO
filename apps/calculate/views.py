@@ -89,16 +89,32 @@ class CalculateParse(View):
 
     # 通过算法返回数组数据
     def post(self, request):
-        if request.method == "POST":
-            ST = time()
-            body = request.body
-            body_str = body.decode()
-            body_json = json.loads(body_str)
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+        result_data = []
 
-            # TODO: 这里的逻辑不完整
-            items = ParseTask(body_json).run()
-            if len(items) == 0:
-                return JsonResponse({"status": 403, "msg": "当前文件出现的通道信息未登记，请联系管理员"})
+        # params-->filename-->status-->rpm_type
+        for file in body_json["file_info"]["children"]:
+            rpm_type = 'rising' # 先设置一个默认值
+            filename = file["title"]
+            status = Fileinfo.objects.filter(file_name=filename)
+            if len(status) > 0:
+                status = status[0].status
+                if status in FALLING_LIST:
+                    rpm_type = 'falling'
+            else:
+                print("PPTParse >> parse_calculate() 出错！")
+                return JsonResponse({"code": 500, "msg": "获取工况出错！"})
+
+            # 重构传入算法的通道信息
+            channel_info_list = []
+            for channel_info in body_json["file_info"]["children"][0]["children"]:
+                if channel_info["title"] not in REFERENCE_CHANNEL:
+                    channel_info_list.append(channel_info)
+            body_json["file_info"]["children"][0]["children"] = channel_info_list
+
+            items = ParseTask(body_json, rpm_type).user_run()
             for item in items:
                 x_list = list(item["data"]["X"])
                 y_list = list(item["data"]["Y"])
@@ -106,15 +122,14 @@ class CalculateParse(View):
                 for x, y in zip(x_list, y_list):
                     point_loc = []
                     try:
-                        point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                        point_loc.append(math.log(abs(x), 10))
                     except:
                         continue
                     point_loc.append(y)
                     line_loc.append(point_loc)
                 item["data"] = line_loc
-            print("当前后台处理时间：", time() - ST)  # 从收到数据到返回数据时间
-            return JsonResponse({"data_info": items})
-        return render(request, 'calculate.html')
+                result_data.append(item)
+        return JsonResponse({"data_info": result_data})
 
 
 # 处理PPT： url('^parse_ppt/$', PPTParse.as_view()),
@@ -323,7 +338,10 @@ def manual_report(request):
     file_info = request.POST.get("file_info", None)
     channel_name = request.POST.get("channel_list", None)
     calculate_name = request.POST.get("calculate_name", None)
+    # for file in file_info:
+    #     channel_dict, items = read_hdf(file)
 
+    pass
 
 
 # 返回文件列表: url(r'file_list/', views.return_file_list),

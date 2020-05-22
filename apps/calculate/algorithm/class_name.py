@@ -18,7 +18,15 @@ CalculateNameDict = {
     "(N)G3 VS": "OrderVsVfft",
     "(N)G5 VZ": "OrderVsVfft",
 
+    "FFT": "FftCalculate",
     "KP 80-20": "FftCalculate",
+    "Start Stop": "StartStop",  # 启停算法
+    "Level VS RPM": "LevelVsRpm",
+    "Level VS Time": "LevelVsTime",
+    "2nd Order VS RPM": "OrderVsVfft",
+    # "FFT对时间": "FftVsTime",    # 这两个目前没法返回数据，可以返回图片
+    # "FFT对转速": "FftVsRpm",
+    # "倍频程": "OctaveFft",   # 暂时不用管
 
     "(Square&Lab)Leerlauf D Gang mit AC": "LevelVsTime",
     "(Square&Lab)Leerlauf P Gang mit AC": "LevelVsTime",

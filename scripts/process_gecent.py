@@ -95,3 +95,34 @@ class ParseTask(object):
                 break
             items.append(self.queue.get())
         return items
+
+    def user_run(self):
+        """用户从前端页面选择数据信息、通道信息，同时制定使用的算法==>算法直接接受使用参数就可以"""
+        items = []
+        for channel_file_list, channel_front_list, calculate_class_name, filename, channel_data in self.parse_json():
+            for channel in channel_front_list:
+                if channel['title'] in ["EngineRPM"]:
+                    channel_front_list.remove(channel)
+
+            for channel in channel_front_list:
+                # time_key
+                channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
+                channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
+
+                # data_key
+                channel_data_key = list(channel_file_list.keys())[
+                    list(channel_file_list.values()).index(channel["title"])]
+                channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
+                try:
+                    # rpm_key
+                    channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
+                    channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                except:
+                    channel_rpm_num = 2
+                try:
+                    print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
+                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
+                    items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
+                except:
+                    pass
+        return items

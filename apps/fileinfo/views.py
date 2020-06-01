@@ -689,18 +689,22 @@ def delete_file(request):
                 if os.path.exists(file_path):
                     try:
                         os.remove(file_path)
+                        # 修改用户删除文件之后的文件上传量
+                        user = User.objects.get(username=file.author)
+                        user.update_files_data -= 1
+                        user.save()
                         res = {
                             "info": 0,
                             "status": file_path + "删除完成！"
                         }
                     except FileExistsError as e:
-                        transaction.savepoint_rollback(save_id)
+                        # transaction.savepoint_rollback(save_id)   # 还原到保存点
                         res = {
                             "info": e,
                             "status": file_path + "删除失败！"
                         }
                 else:
-                    transaction.savepoint_rollback(save_id)
+                    # transaction.savepoint_rollback(save_id)
                     res = {
                         "info": "not find file",
                         "status": file_path + "不存在！"

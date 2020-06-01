@@ -128,6 +128,24 @@
                             <cite>挖掘</cite>
                         </a>
                     </li>
+
+
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">
+                            <i class="layui-icon layui-icon-chart-screen"></i>
+                            抱怨库</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="/complainUpload/">
+                                <i class="layui-icon layui-icon-upload-circle"></i>
+                                数据上传</a></dd>
+                            <dd><a href="/complainSearch/">
+                                <i class="layui-icon layui-icon-search"></i>
+                                文件检索</a></dd>
+
+                        </dl>
+                    </li>
+
+
                     <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
                 </ul>
             </div>
@@ -157,6 +175,7 @@
         sessionStorage.removeItem("token");
         window.location.href = "/logout/";
     }
+
     var vm = new Vue({
         el: "#platforms",
         delimiters: ['[[', ']]'],

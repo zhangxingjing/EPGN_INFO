@@ -113,6 +113,13 @@
 
                     </div>
                 </div>
+                <div class="layui-form-item" style="margin-top: 10px">
+                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">参考通道</label>
+                    <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
+                         id="referenceChannel">
+
+                    </div>
+                </div>
                 <div class="layui-form-item">
                     <div class="layui-input-block">
                         <button class="layui-btn" id="run" lay-submit="" lay-filter="formDemo" lay-demo="pic_data">
@@ -170,6 +177,7 @@
         var arr = [];
         var series = [];
         var data1 = [];
+        var referenceChannel = [];
         var sessionType = sessionStorage.getItem("sessionType");
         console.log(sessionType);
         if (sessionType == 1) {
@@ -274,6 +282,7 @@
                 })
             }
         };
+
         function getpic2() {
             for (let i = 0; i < echartdata.length; i++) {
                 letdata = echartdata[i].data;
@@ -373,6 +382,7 @@
                     for (let i = 0; i < VList.length; i++) {
                         console.log(VList[i]);
                         $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
+                        $("#referenceChannel").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
                     }
 
                     layui.use(['tree', 'util', 'form', 'layer'], function () {
@@ -432,6 +442,11 @@
                                 checkedData1 = JSON.parse(JSON.stringify(checkedData1));
                                 getchannellist();
                                 console.log(checkedData1);
+
+                                $("#referenceChannel input:checkbox:checked").each(function (i) {
+                                    referenceChannel.push($(this).val()) ;
+                                });
+                                console.log(referenceChannel);
                                 //
                                 var channel_number = [];
                                 for (let i = 0; i < checkedData1.length; i++) {
@@ -447,22 +462,22 @@
 
                                 $.ajax({
                                     // url:'/static/result2.json',
-                                    url:'/static/result_data.json',
-                                    async:false,
-                                    success:function (data) {
+                                    url: '/static/result_data.json',
+                                    async: false,
+                                    success: function (data) {
 
-                                       result=data;
-                                       console.log(result);
+                                        result = data;
+                                        console.log(result);
                                     }
                                 });
-                                 $.ajax({
+                                $.ajax({
                                     // url:'/static/result2.json',
-                                    url:'/static/result2.json',
-                                    async:false,
-                                    success:function (data) {
+                                    url: '/static/result2.json',
+                                    async: false,
+                                    success: function (data) {
 
-                                       result2=data;
-                                       console.log(result2);
+                                        result2 = data;
+                                        console.log(result2);
                                     }
                                 });
                                 if (channel_number.length == 1) {
@@ -557,9 +572,11 @@
             });
         };
 
+
         function getchannellist() {
             layui.use('form', function () {
                 var form = layui.form;
+
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
                     var calculatename = $("#calculate option:selected").val();

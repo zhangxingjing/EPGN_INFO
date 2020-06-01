@@ -341,12 +341,12 @@
                 var compare_dataIndex = $(".list-data").index(this);
 
                 $(this).remove();
-                var sessionArray = sessionArray.splice(compare_dataIndex, 1);
+                sessionArray.splice(compare_dataIndex, 1);
                 console.log(sessionArray);
                 sessionString = JSON.stringify(sessionArray);
                 sessionStorage.setItem("sessionString", sessionString);
                 if (sessionArray.length == 0) {
-                    var compare_dataBlock = document.getElementById('dataContrastList');
+                    var compare_dataBlock = document.getElementById('dataDownload');
                     compare_dataBlock.style.display = "none";
                     sessionStorage.removeItem("sessionString");
                 }
@@ -410,7 +410,7 @@
             sessionString = JSON.stringify(sessionArray);
             sessionStorage.setItem("sessionString", sessionString);
             if (sessionArray.length == 0) {
-                var compare_dataBlock = document.getElementById('dataContrastList');
+                var compare_dataBlock = document.getElementById('dataDownload');
                 compare_dataBlock.style.display = "none";
                 sessionStorage.removeItem("sessionString");
             }

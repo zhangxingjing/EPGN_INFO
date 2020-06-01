@@ -1,0 +1,279 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Audio</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        #app {
+            margin-top: 30px;
+        }
+
+        h3 {
+            display: flex;
+            flex-direction: row;
+        }
+
+        h3:before,
+        h3:after {
+            content: "";
+            flex: 1 1;
+            border-bottom: 1px solid #000;
+            margin: 10px;
+        }
+
+        .demo-input-suffix {
+
+        }
+
+        .demo-input-suffix div {
+            display: flex;
+            white-space: nowrap;
+        }
+
+        .item-flex {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        #submit-button {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+
+    <h3>抱怨信息表</h3>
+    <div class="demo-input-suffix">
+        <el-form :inline="true" :model="formInline" class="demo-form-inline">
+            <el-form-item label="简单描述：">
+                <el-select v-model="formInline.region" placeholder="请选择">
+                    <el-option label="Brmmen" value="Brmmen"></el-option>
+                    <el-option label="Pfeifen" value="Pfeifen"></el-option>
+                    <el-option label="Heulen" value="Heulen"></el-option>
+                    <el-option label="Schnarren" value="Schnarren"></el-option>
+                    <el-option label="RasseIn" value="RasseIn"></el-option>
+                    <el-option label="Heckraeusch" value="Heckraeusch"></el-option>
+                    <el-option label="Rollgeraeusch" value="Rollgeraeusch"></el-option>
+                    <el-option label="Torus" value="Torus"></el-option>
+                    <el-option label="Start/stop" value="Start/stop"></el-option>
+                    <el-option label="Motor Rauh/laut/present" value="Motor Rauh/laut/present"></el-option>
+                    <el-option label="Bodyboom" value="Bodyboom"></el-option>
+                    <el-option label="自行输入" value="self"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="车型：">
+                <el-select v-model="formInline.region2" placeholder="请选择">
+                    <el-option label="车型1" value="shanghai1"></el-option>
+                    <el-option label="车型2" value="beijing2"></el-option>
+                    <el-option label="车型3" value="beijing122"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="发动机：">
+                <el-select v-model="formInline.region3" placeholder="请选择">
+                    <el-option label="区域一1" value="shanghai12"></el-option>
+                    <el-option label="区域二12" value="beijing12"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="功率：">
+                <el-select v-model="formInline.region4" placeholder="请选择">
+                    <el-option label="区域一1" value="shanghai12"></el-option>
+                    <el-option label="区域二12" value="beijing12"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="变速箱：">
+                <el-select v-model="formInline.region5" placeholder="请选择">
+                    <el-option label="区域一1" value="shanghai12"></el-option>
+                    <el-option label="区域二12" value="beijing12"></el-option>
+                </el-select>
+            </el-form-item>
+
+        </el-form>
+
+        <el-form :inline="true" :model="formInline2" class="demo-form-inline ">
+            <el-form-item label="抱怨特征：">
+                <el-input v-model="formInline2.user" placeholder="具体频率"></el-input>
+            </el-form-item>
+            <el-form-item label="工况：">
+                <el-select v-model="formInline2.region2" placeholder="请选择">
+                    <el-option label="车型1" value="shanghai12"></el-option>
+                    <el-option label="车型2" value="beijing22"></el-option>
+                    <el-option label="车型3" value="beijing1222"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="上传人：">
+                <el-input v-model="formInline2.user" placeholder="上传人"></el-input>
+            </el-form-item>
+            <el-form-item label="轮胎型号：">
+                <el-select v-model="formInline2.region4" placeholder="请选择">
+                    <el-option label="区域一1" value="shanghai12"></el-option>
+                    <el-option label="区域二12" value="beijing12"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="措施：">
+                <el-input v-model="formInline2.region5" placeholder="具体措施" clearable></el-input>
+            </el-form-item>
+
+        </el-form>
+
+        <el-form :inline="true" :model="formInline3" class="demo-form-inline">
+            <el-form-item label="关键零件或因素：">
+                <el-input v-model="formInline2.region5" placeholder="" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="抱怨详细描述：">
+                <el-input
+                        type="textarea"
+                        :autosize="{ minRows: 2, maxRows: 4}"
+                        placeholder="请输入内容"
+                        v-model="textarea2">
+                </el-input>
+            </el-form-item>
+        </el-form>
+
+
+    </div>
+</div>
+<div id="app2">
+    <h3>文件上传</h3>
+
+    <el-form :inline="true" :model="formInline3" class="demo-form-inline item-flex">
+        <el-form-item label="抱怨原始数据：">
+            <el-upload
+                    class="upload-demo"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :limit="3"
+                    :on-exceed="handleExceed"
+                    :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            </el-upload>
+        </el-form-item>
+        <el-form-item label="抱怨特征图：">
+            <el-upload
+                    class="upload-demo"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :limit="1"
+                    :on-exceed="handleExceed"
+                    :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+            </el-upload>
+        </el-form-item>
+        <el-form-item label="抱怨音频：">
+            <el-upload
+                    class="upload-demo"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :limit="1"
+                    :on-exceed="handleExceed"
+                    :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+        </el-form-item>
+        <el-form-item label="分析报告：">
+            <el-upload
+                    class="upload-demo"
+                    action="https://jsonplaceholder.typicode.com/posts/"
+                    :on-preview="handlePreview"
+                    :on-remove="handleRemove"
+                    :before-remove="beforeRemove"
+                    multiple
+                    :limit="1"
+                    :on-exceed="handleExceed"
+                    :file-list="fileList">
+                <el-button size="small" type="primary">点击上传</el-button>
+            </el-upload>
+        </el-form-item>
+    </el-form>
+    <div id="submit-button">
+        <el-button type="primary">开始上传</el-button>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+
+                formInline: {
+                    user: '',
+                    region: '',
+                    region2: '',
+                    region3: '',
+                    region4: '',
+                    region5: ''
+                },
+                formInline2: {
+                    user: '',
+                    region: '',
+                    region2: '',
+                    region3: '',
+                    region4: '',
+                    region5: ''
+                },
+
+                textarea2: ''
+            }
+        },
+    })
+    new Vue({
+        el: '#app2',
+        data: function () {
+            return {
+                formInline3: {
+                    user: '',
+                    region: '',
+                    region2: '',
+                    region3: '',
+                    region4: '',
+                    region5: ''
+                },
+                fileList: [{
+                    name: 'food.jpeg',
+                    url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                }, {
+                    name: 'food2.jpeg',
+                    url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                }],
+
+            }
+        },
+        methods: {
+            handleRemove(file, fileList) {
+                console.log(file, fileList);
+            },
+            handlePreview(file) {
+                console.log(file);
+            },
+            handleExceed(files, fileList) {
+                this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+            },
+            beforeRemove(file, fileList) {
+                return this.$confirm(`确定移除 ${file.name}？`);
+            }
+        },
+    })
+</script>
+</html>

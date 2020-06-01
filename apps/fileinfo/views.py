@@ -652,11 +652,13 @@ def file_down(request, pk):
                 author.save(update_fields=['download_files_data'])
 
                 # 试验员的浏览量+1
-                uploader_name = Fileinfo.objects.get(id=pk).author  # 反向查询
-                uploader = User.objects.get(username=uploader_name)
-                uploader.views += 1
-                uploader.save(update_fields=['views'])
-
+                try:
+                    uploader_name = Fileinfo.objects.get(id=pk).author  # 反向查询
+                    uploader = User.objects.get(username=uploader_name)
+                    uploader.views += 1
+                    uploader.save(update_fields=['views'])
+                except:
+                    pass
                 lock.release()  # 解锁
         except:
             return HttpResponse("Sorry but Data storage error")

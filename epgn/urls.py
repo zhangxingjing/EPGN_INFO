@@ -26,4 +26,7 @@ urlpatterns = [
 
     # 算法
     url(r'', include('calculate.urls')),
+
+    # 音频库
+    url(r'', include('audio.urls'))
 ]

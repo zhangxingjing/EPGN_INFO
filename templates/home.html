@@ -705,16 +705,16 @@
                 filenameArr = [];
                 sessionStorage.setItem("sessionType", 1);
                 window.open('/calculate/')
-                $.ajax({
-                    url: /parsefilelist/,
-                    dataType: "json",
-                    data: JSON.stringify({"fileList": filenameArr}),
-                    type: "post",
-                    success: function (result) {
-                        $('#jumpbox').html(result);
-                        $('#jumpbox').modal('show');
-                    }
-                });
+                // $.ajax({
+                //     url: /parsefilelist/,
+                //     dataType: "json",
+                //     data: JSON.stringify({"fileList": filenameArr}),
+                //     type: "post",
+                //     success: function (result) {
+                //         $('#jumpbox').html(result);
+                //         $('#jumpbox').modal('show');
+                //     }
+                // });
             })
         });
 

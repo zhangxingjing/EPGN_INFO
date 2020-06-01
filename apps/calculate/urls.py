@@ -19,6 +19,9 @@ urlpatterns = [
     url('^parse_ppt/$', PPTParse.as_view()),
 
     # 跳转扉页
-    url('^test_page/$', test_page)
+    url('^test_page/$', test_page),
+
+    # 手动报告
+    url('^user_calculate/$', manual_report),
 
 ]

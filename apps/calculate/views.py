@@ -96,7 +96,7 @@ class CalculateParse(View):
 
         # params-->filename-->status-->rpm_type
         for file in body_json["file_info"]["children"]:
-            rpm_type = 'rising' # 先设置一个默认值
+            rpm_type = 'rising'  # 先设置一个默认值
             filename = file["title"]
             status = Fileinfo.objects.filter(file_name=filename)
             if len(status) > 0:
@@ -328,20 +328,81 @@ class PPTParse(View):
         return new_items
 
 
-# 手动报告
+# 手动报告: url('^user_calculate/$', manual_report)
 def manual_report(request):
     """
     从前端获取参数，生成手动报告
     :param request: 携带前端发送的参数信息
     :return: 当前文件、通道、算法的结果
     """
-    file_info = request.POST.get("file_info", None)
-    channel_name = request.POST.get("channel_list", None)
-    calculate_name = request.POST.get("calculate_name", None)
-    # for file in file_info:
-    #     channel_dict, items = read_hdf(file)
+    return_items = []
+    body = request.body
+    body_str = body.decode()
+    body_json = json.loads(body_str)
+    for children_file in body_json["children"]:  # 前端发送的数据通道不止一条
+        # 获取文件信息
+        filename = children_file["title"]
+        status = Fileinfo.objects.filter(file_name=filename)
+        if len(status) > 0:
+            status = status[0].status
+        else:
+            return JsonResponse({"code": 0, "msg": "PPTParse >> parse_calculate() 出错！"})
+        # 判断加减速
+        if status in FALLING_LIST:
+            rpm_type = 'falling'
+        else:
+            rpm_type = 'rising'
+        # 构建传入算法的字典数据
+        i = 1
+        children_list = []
+        for channel in children_file["children"]:
+            children_list.append({"id": i, "title": channel["title"]})
+            i += 1
+        data = {
+            "calculate": body_json["calculate_name"],
+            "file_info": {
+                "checked": "True",
+                "children": [
+                    {
+                        "children": children_list,
+                        "id": 1,
+                        "title": filename
+                    },
+                ],
+                "field": "name1",
+                "id": 1,
+                "spread": "True",
+                "title": "文件夹名"
+            }
+        }
+        # 将data传入算法，进行计算，获取算法返回值
+        items = ParseTask(data, rpm_type).run()
+        # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
+        if len(items) == 0:
+            return JsonResponse({"code": 0, "msg": "manual_report ==>  line 392 ==> len(items)=0"})
 
-    pass
+        for item in items:
+            x_list = list(item["data"]["X"])
+            y_list = list(item["data"]["Y"])
+            line_loc = []
+            for x, y in zip(x_list, y_list):
+                point_loc = []
+                try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
+                    if body_json["calculate_name"] == "FFT":
+                        point_loc.append(math.log(abs(x), 10))  # abs-取绝对值， log-取对数
+                    else:
+                        point_loc.append(x)
+                except:
+                    continue
+                point_loc.append(y)
+                line_loc.append(point_loc)
+            item["data"] = line_loc
+            item["status"] = status
+            return_items.append(item)
+    return JsonResponse({
+        "code": 1,
+        "data": return_items
+    })
 
 
 # 返回文件列表: url(r'file_list/', views.return_file_list),

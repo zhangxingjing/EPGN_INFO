@@ -38,7 +38,6 @@ class ParseTask(object):
             for channel in channel_front_list:
                 if channel['title'] in ["EngineRPM"]:
                     channel_front_list.remove(channel)
-
             for channel in channel_front_list:
                 # time_key
                 channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
@@ -103,12 +102,15 @@ class ParseTask(object):
             for channel in channel_front_list:
                 if channel['title'] in ["EngineRPM"]:
                     channel_front_list.remove(channel)
-
             for channel in channel_front_list:
-                # time_key
-                channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
-                channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
-
+                # 针对没有Time参数的情况
+                try:
+                    # time_key
+                    print(channel_file_list, channel_front_list)
+                    channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
+                    channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
+                except:
+                    return []
                 # data_key
                 channel_data_key = list(channel_file_list.keys())[
                     list(channel_file_list.values()).index(channel["title"])]
@@ -120,8 +122,10 @@ class ParseTask(object):
                 except:
                     channel_rpm_num = 2
                 try:
-                    print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
-                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
+                    # print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
+                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"],
+                                                      int(channel_time_num) - 1, int(channel_data_num) - 1,
+                                                      int(channel_rpm_num) - 1).run()
                     items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
                 except:
                     pass

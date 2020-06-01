@@ -1,8 +1,8 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Author    : Zheng Xingtao
-# File      : Rollgeraeusch.py
-# Datetime  : 2020/5/26 下午1:54
+# Author    : Zheng Xingtao
+# File      : Rollgeraeusch.py
+# Datetime  : 2020/5/26 下午1:54
 
 
 import re
@@ -34,30 +34,6 @@ CalculateNameDict = {
 REFERENCE_CHANNEL = ["time", "data_EngineRPM", "data_EngineCoolantTemp", "data_VehicleSpeed"]
 
 
-# 读取HDF文件
-def read_hdf(file_path):
-    """
-    读取 HDF 文件
-    :param file_path: 需要读取的文件路径
-    :return: 当前文件中的所有数据
-    """
-    file_path = file_path
-    try:
-        read_info = h5py.File(file_path, 'r')
-        items = []
-        channel_dict = {}
-        i = 1
-        for key in read_info.keys():
-            items.append(read_info[key][:])
-            channel_dict["Channel " + str(i)] = key
-            i += 1
-        return channel_dict, items
-    except OSError as e:
-        print(e)
-        return None, None
-
-
-# 多任务处理
 class ParseTask(object):
     """
     Note：这部分有两个部分
@@ -142,7 +118,24 @@ class ParseTask(object):
         return items
 
 
-# 指向FFT算法
+def read_hdf(file_path):
+    """
+    读取 HDF 文件
+    :param file_path: 需要读取的文件路径
+    :return: 当前文件中的所有数据
+    """
+    file_path = file_path
+    read_info = h5py.File(file_path, 'r')
+    items = []
+    channel_dict = {}
+    i = 1
+    for key in read_info.keys():
+        items.append(read_info[key][:])
+        channel_dict["Channel " + str(i)] = key
+        i += 1
+    return channel_dict, items
+
+
 class Calculate_Object(object):
     def __init__(self, file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         self.A = 1
@@ -317,6 +310,7 @@ class FftInfo(LevelTime, OederVfft):
         return fc, octave
 
 
+# FFT
 class FftCalculate(FftInfo):
     def run(self):
         f, db = self.fft_average()
@@ -325,8 +319,6 @@ class FftCalculate(FftInfo):
 
 # 所有FFT的区间取值
 class Rollgeraeusch():
-    """获取目前数据库中所有KP 80-20工况下的，180-240Hz区间内的峰值"""
-
     def __init__(self):
         # class初始化
         self.conn = pymysql.connect(
@@ -338,13 +330,13 @@ class Rollgeraeusch():
             charset="utf8"
         )
         self.cursor = self.conn.cursor()  # 得到一个可以执行SQL语句的光标对象
-        self.FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"
-        self.excel_path = './Desktop/KP80-20.xls'
+        self.FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+        self.excel_path = '/home/zheng/Desktop/KP80-20.xls'
 
     def get_data(self):
         # 从MySQL中获取数据信息
         try:
-            sql = "select * from tb_car where status='KP 80-20';"
+            sql = "select * from tb_car where status='KP 80-20'"
             self.cursor.execute(sql)
             results = self.cursor.fetchall()
         except:
@@ -354,7 +346,7 @@ class Rollgeraeusch():
             item = {
                 "filename": result[12],
                 "status": result[6],
-                "car_model": result[2],
+                "car_model": result[3],
                 "car_number": result[8],
                 "produce": result[3],
             }
@@ -368,8 +360,6 @@ class Rollgeraeusch():
 
         file_path = self.FILE_READ_PATH + item["filename"]
         channel_dict, channel_data = read_hdf(file_path)
-        if channel_dict == None:
-            return return_items
         channel_calculate_list = [i for i in channel_dict.values() if i not in REFERENCE_CHANNEL]  # 去除参考通道
         i = 1
         children_list = []
@@ -421,41 +411,17 @@ class Rollgeraeusch():
 
     def save_excel(self, item, row):
         # 保存为excel
-        workbook = xlrd.open_workbook('./KP80-20.xls', formatting_info=True)
+        workbook = xlrd.open_workbook('/home/zheng/Desktop/KP80-20.xls', formatting_info=True)
         copy_workbook = copy(workbook)
         sheet = copy_workbook.get_sheet(0)
         sheet.write(row, 0, item["car_model"])
         sheet.write(row, 1, item["car_number"])
         sheet.write(row, 2, item["produce"])
-        try:
-            try:
-                try:
-                    try:
-                        sheet.write(row, 3, item["data"]["data_vorn rechits"][1])
-                        sheet.write(row, 4, item["data"]["data_vorn links"][1])
-                        sheet.write(row, 5, item["data"]["data_hinten rechits"][1])
-                        sheet.write(row, 6, item["data"]["data_hinten links"][1])
-                    except:
-                        sheet.write(row, 3, item["data"]["data_VR"][1])
-                        sheet.write(row, 4, item["data"]["data_VL"][1])
-                        sheet.write(row, 5, item["data"]["data_HR"][1])
-                        sheet.write(row, 6, item["data"]["data_HL"][1])
-                except:
-                    sheet.write(row, 3, item["data"]["data_vorn rechts"][1])
-                    sheet.write(row, 4, item["data"]["data_vorn links"][1])
-                    sheet.write(row, 5, item["data"]["data_hinten rechts"][1])
-                    sheet.write(row, 6, item["data"]["data_hinten links"][1])
-            except:
-                sheet.write(row, 3, item["data"]["VR"][1])
-                sheet.write(row, 4, item["data"]["VL"][1])
-                sheet.write(row, 5, item["data"]["HR"][1])
-                try:
-                    sheet.write(row, 6, item["data"]["HL"][1])
-                except:
-                    pass
-        except:
-            print(item)
-        copy_workbook.save('./KP80-20.xls')
+        sheet.write(row, 3, item["data"]["data_vorn rechits"][1])
+        sheet.write(row, 4, item["data"]["data_vorn links"][1])
+        sheet.write(row, 5, item["data"]["data_hinten rechits"][1])
+        sheet.write(row, 6, item["data"]["data_hinten links"][1])
+        copy_workbook.save('/home/zheng/Desktop/KP80-20.xls')
 
     def data_plt(self):
         # 数据可视化
@@ -467,21 +433,19 @@ class Rollgeraeusch():
         if items is not None:
             row = 1  # 行 随文件名列表变化
             for item in items:
-                # print(item)
                 return_items = self.calculate(item)
-                if len(return_items) > 0:
+                excel_info = {}
+                excel_info["data"] = {}
+                for return_item in return_items:
+                    item["channel"] = return_item["channel"]
+                    item["max_x_y"] = self.get_max(return_item)
 
-                    excel_info = {}
-                    excel_info["data"] = {}
-                    for return_item in return_items:
-                        item["channel"] = return_item["channel"]
-                        item["max_x_y"] = self.get_max(return_item)
-                        excel_info["car_model"] = item["car_model"]
-                        excel_info["car_number"] = item["car_number"]
-                        excel_info["produce"] = item["produce"]
-                        excel_info["data"].update({item["channel"]: list(item["max_x_y"])})
-                    self.save_excel(excel_info, row)
-                    row += 1
+                    excel_info["car_model"] = item["car_model"]
+                    excel_info["car_number"] = item["car_number"]
+                    excel_info["produce"] = item["produce"]
+                    excel_info["data"].update({item["channel"]: list(item["max_x_y"])})
+                self.save_excel(excel_info, row)
+                row += 1
 
 
 if __name__ == '__main__':

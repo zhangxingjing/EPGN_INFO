@@ -46,6 +46,16 @@ class UserInfoViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserFileSerializer
 
+    # 删："DELETE" /user_name/3
+    def destroy(self, request, *args, **kwargs):
+        items = []
+        file_list = request.PSOT.get("file_list", None)
+        for file_id in file_list:
+            file = Fileinfo.objects.get(id=file_id)
+            file.delete()
+
+        return JsonResponse({"items": items})  # 用户删除数据完成之后刷新页面上的显示
+
     # 改： "PATCH" /user_name/3/
     def update(self, request, *args, **kwargs):
         # 获取数据

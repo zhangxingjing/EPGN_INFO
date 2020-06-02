@@ -9,11 +9,14 @@ from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-# router.register(r'^user_name', UserInfoViewSet)
 
 urlpatterns = [
-    # 上传
-    url(r'^audio_upload/$', audio_upload),
+    # 抱怨工况
+    url(r'^audio_status/$', audio_status),
+
+    # 下载抱怨
+    url(r'^audio_download/(?P<pk>\d+)$', audio_download)
 ]
 
+router.register(r'^audio', AudioViewSet)
 urlpatterns += router.urls

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'fileinfo.apps.FileInfoConfig',
     'calculate.apps.CalculateConfig',
+    'audio.apps.AudioConfig',
 ]
 
 # 中间件
@@ -278,6 +279,7 @@ CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten re
 
 FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
 FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

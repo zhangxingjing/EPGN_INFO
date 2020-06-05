@@ -70,16 +70,14 @@ class ParseTask(object):
         pool.close()
         pool.join()
 
-    def calculate_process(self, queue, calculate_class_name, file_name, channel_data, rpm_type, channel_name,
-                          raw_time_num, raw_data_num, raw_rpm_num):
+    def calculate_process(self, queue, calculate_class_name, file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num):
         # 返回图片
         # img_path = eval(calculate_class_name)(file_name, channel_data, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
         # img_path = re.match(r'.*?(/epgn_front_end/calculate_image/.*)', img_path).group(1)
 
         # 返回item
         try:
-            X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num,
-                                              raw_data_num, raw_rpm_num).run()
+            X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})
         except:
             pass  # print("ParseTask >> calculate_process() 计算出错！")
@@ -122,18 +120,12 @@ class ParseTask(object):
                     # TODO: 当RPM不存在的时候
                     channel_rpm_num = 2
                     try:
-                        # print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
-                        X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"],
-                                                          int(channel_time_num) - 1, int(channel_data_num) - 1,
-                                                          None).run()
+                        X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, None).run()
                         items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
                     except:
                         pass
                 try:
-                    # print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
-                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"],
-                                                      int(channel_time_num) - 1, int(channel_data_num) - 1,
-                                                      int(channel_rpm_num) - 1).run()
+                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
                     items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
                 except:
                     pass

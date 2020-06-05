@@ -62,50 +62,79 @@ class Calculate_Object(object):
         dataA = temp4.real
         return dataA
 
-    @njit
-    def get_first_index(self, A, k, delta):
-        for i in range(len(A)):
-            if A[i] > k - delta and A[i] < k + delta:
-                return i
-        return -1
+    # @njit
+    # def get_first_index(self, A, k, delta):
+    #     for i in range(len(A)):
+    #         if A[i] > k - delta and A[i] < k + delta:
+    #             return i
+    #     return -1
+    #
+    # def rpmSelect2(self):
+    #     """
+    #     :param raw_time:时间数据
+    #     :param raw_rpm:转速数据
+    #     :param rpm_step: 步长
+    #     :param rpmtype:'falling'；
+    #     :return: rpml: 从最低转速到最高转速的列表或从最高转速到最低转速的列表（步长为rpm_step）
+    #              rpmf:对应raw_time中的采样点位置（相差不超过deltaR）
+    #     """
+    #     if self.rpmtype == 'falling':  # 如果是falling，将raw_rpm翻转
+    #         raw_rpm = self.raw_rpm[::-1]
+    #     else:
+    #         raw_rpm = self.raw_rpm
+    #     r_minp = np.argmin(raw_rpm)  # raw_rpm最小值对应位置
+    #     r_maxp = np.argmax(raw_rpm)  # raw_rpm最大值对应位置
+    #     s_rpm = raw_rpm[r_minp:r_maxp + 1]
+    #     rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step  # rpm_ini：1110
+    #     rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step  # rpm_end：5980
+    #     rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)  # rpml: 从最低转速到最高转速的列表（步长为rpm_step）
+    #     rpmf = np.zeros(len(rpml))
+    #
+    #     # 寻找rpml中每个转速对应的raw_time中的采样点位置（相差不超过deltaR）
+    #     tag = 0
+    #     print(self.rpmtype) # TODO: 这里有print，后面报错
+    #     for i in range(len(rpml)):
+    #         deltaR = 0.05
+    #         not_find = True
+    #         while not_find:
+    #             j = self.get_first_index(s_rpm, rpml[i], deltaR)
+    #             if j != -1:
+    #                 not_find = False
+    #                 rpmf[i] = j
+    #             else:
+    #                 deltaR = deltaR + 0.05
+    #     rpmf = rpmf + r_minp
+    #     if self.rpmtype == 'falling':
+    #         rpml = rpml[::-1]
+    #         t01 = len(raw_rpm) - rpmf
+    #         rpmf = t01[::-1]
+    #     return rpmf, rpml
 
     def rpmSelect2(self):
-        """
-        :param raw_time:时间数据
-        :param raw_rpm:转速数据
-        :param rpm_step: 步长
-        :param rpmtype:'falling'；
-        :return: rpml: 从最低转速到最高转速的列表或从最高转速到最低转速的列表（步长为rpm_step）
-                 rpmf:对应raw_time中的采样点位置（相差不超过deltaR）
-        """
-        if self.rpmtype == 'falling':  # 如果是falling，将raw_rpm翻转
-            raw_rpm = self.raw_rpm[::-1]
-        else:
-            raw_rpm = self.raw_rpm
-        r_minp = np.argmin(raw_rpm)  # raw_rpm最小值对应位置
-        r_maxp = np.argmax(raw_rpm)  # raw_rpm最大值对应位置
-        s_rpm = raw_rpm[r_minp:r_maxp + 1]
-        rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step  # rpm_ini：1110
-        rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step  # rpm_end：5980
-        rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)  # rpml: 从最低转速到最高转速的列表（步长为rpm_step）
-        rpmf = np.zeros(len(rpml))
+        raw_rpm = self.raw_rpm
 
-        # 寻找rpml中每个转速对应的raw_time中的采样点位置（相差不超过deltaR）
-        tag = 0
+        print(self.rpmtype, self.timeWeighting)
+        if self.rpmtype == 'falling':
+            raw_rpm = self.raw_rpm[::-1]
+        # raw_rpm = self.raw_rpm[::-1]
+        r_minp = np.argmin(raw_rpm)
+        r_maxp = np.argmax(raw_rpm)
+        s_rpm = raw_rpm[r_minp:r_maxp + 1]
+        rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step
+        rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step
+        rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)
+        rpmf = np.zeros(len(rpml))
         for i in range(len(rpml)):
             deltaR = 0.05
-            not_find = True
-            while not_find:
-                j = self.get_first_index(s_rpm, rpml[i], deltaR)
-                if j != -1:
-                    not_find = False
-                    rpmf[i] = j
-                else:
-                    deltaR = deltaR + 0.05
+            t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+            while np.size(t01, 1) == 0:
+                deltaR = deltaR + 0.05
+                t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+            rpmf[i] = t01[0][0]
         rpmf = rpmf + r_minp
         if self.rpmtype == 'falling':
             rpml = rpml[::-1]
-            t01 = len(raw_rpm) - rpmf
+            t01 = len(self.raw_time) - rpmf
             rpmf = t01[::-1]
         return rpmf, rpml
 
@@ -160,7 +189,7 @@ class LevelTime(Calculate_Object):
 
     def level_rpm(self):
         raw_data, lpa = self.level_time()
-        rpmf, rpml = self.rpmSelect2()  # rpmSelect2应该是没有问题的
+        rpmf, rpml = self.rpmSelect2()  # TODO: 上面一行有数据， 这一步之后没有结果了
         lpr = np.zeros(len(rpmf))
         for i in range(len(rpmf)):
             lpr[i] = lpa[int(rpmf[i]) - 1]  # 最后一项是n-1
@@ -350,6 +379,7 @@ class FftCalculate(FftInfo):
 # 倍频程
 class OctaveFft(FftInfo):
     def run(self):
+        print("倍频程")
         fc, db = self.octave_fft()
         return fc, db
 
@@ -357,6 +387,7 @@ class OctaveFft(FftInfo):
 # 二阶对转速
 class OrderVsVfft(OederVfft):
     def run(self):
+        print("二阶 对 转速")
         rpml, dbo = self.order_vfft()
         return rpml, dbo
 
@@ -371,6 +402,7 @@ class LevelVsTime(LevelTime):
 # LEVEL对转速
 class LevelVsRpm(LevelTime):
     def run(self):
+        print("Level 对 转速")
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
         return rpml, lpr

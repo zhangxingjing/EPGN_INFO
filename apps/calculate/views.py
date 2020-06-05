@@ -363,7 +363,7 @@ def manual_report(request):
             children_list.append({"id": i, "title": channel["title"]})
             i += 1
         data = {
-            "calculate": CalculateNameDict[body_json["calculate_name"]],
+            "calculate": body_json["calculate_name"],
             "file_info": {
                 "checked": "True",
                 "children": [
@@ -388,7 +388,7 @@ def manual_report(request):
         for item in items:
             x_list = list(item["data"]["X"])
             y_list = list(item["data"]["Y"])
-            line_loc = []
+            line_loc = line_loc_result = []
             for x, y in zip(x_list, y_list):
                 point_loc = []
                 try:  # 当我们使用的算法是FFT的时候，需要对算法返回只进行log处理
@@ -400,7 +400,17 @@ def manual_report(request):
                     continue
                 point_loc.append(y)
                 line_loc.append(point_loc)
-            item["data"] = line_loc
+
+            if body_json["calculate_name"] == "LevelVsTime":
+                level_vs_time_step = 44100
+                if len(line_loc) % level_vs_time_step == 0:
+                    # 当列表是步长的非整数倍时，最后留一个值   ==> 步长为44100
+                    # TODO: 条件：如果取得最后一个值不是列表的最后一个，再添加`列表的最后一个值`
+                    line_loc_result = line_loc[0::level_vs_time_step]
+                else:
+                    line_loc_result = line_loc[0::level_vs_time_step]
+                    line_loc_result.append(line_loc[-1])
+            item["data"] = line_loc_result
             item["status"] = status
             return_items.append(item)
     return JsonResponse({

@@ -1,4 +1,5 @@
 import os
+import re
 import json
 from django.db import transaction
 from rest_framework import viewsets
@@ -134,6 +135,11 @@ class AudioViewSet(viewsets.ModelViewSet):
         power = request.GET.get("power", None)
         gearbox = request.GET.get("gearbox", None)
         frequency = request.GET.get("frequency", None)
+        frequency_result = re.findall(r'(\d+).*?(\d+)', frequency)
+        frequency_0 = frequency_result[0][0]
+        frequency_1 = frequency_result[0][1]
+        if frequency in range(frequency_0, frequency_1):
+            print(frequency, "这里是对频率范围进行判断取值！")
         order = request.GET.get("order", None)
         reason = request.GET.get("reason", None)
         status = request.GET.get("status", None)

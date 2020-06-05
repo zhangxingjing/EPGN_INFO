@@ -2,6 +2,7 @@ import os
 import time
 import librosa
 import numpy as np
+from numba import njit
 import statsmodels.api as sm
 from scipy.fftpack import fft
 import matplotlib.pyplot as plt
@@ -28,8 +29,7 @@ class Calculate_Object(object):
         self.absolute_dir = os.getcwd() + '/'
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
-        if raw_rpm_num is not None:
-            self.raw_rpm = channel_data[raw_rpm_num]
+        self.raw_rpm = channel_data[raw_rpm_num]
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -62,32 +62,50 @@ class Calculate_Object(object):
         dataA = temp4.real
         return dataA
 
-    def rpmSelect2(self):
-        raw_rpm = self.raw_rpm
+    @njit
+    def get_first_index(self, A, k, delta):
+        for i in range(len(A)):
+            if A[i] > k - delta and A[i] < k + delta:
+                return i
+        return -1
 
-        # TODO: 这里数据做判断的时候，注意加减速
-        print(self.rpmtype, self.timeWeighting)
-        if self.rpmtype == 'falling':
+    def rpmSelect2(self):
+        """
+        :param raw_time:时间数据
+        :param raw_rpm:转速数据
+        :param rpm_step: 步长
+        :param rpmtype:'falling'；
+        :return: rpml: 从最低转速到最高转速的列表或从最高转速到最低转速的列表（步长为rpm_step）
+                 rpmf:对应raw_time中的采样点位置（相差不超过deltaR）
+        """
+        if self.rpmtype == 'falling':  # 如果是falling，将raw_rpm翻转
             raw_rpm = self.raw_rpm[::-1]
-        # raw_rpm = self.raw_rpm[::-1]
-        r_minp = np.argmin(raw_rpm)
-        r_maxp = np.argmax(raw_rpm)
+        else:
+            raw_rpm = self.raw_rpm
+        r_minp = np.argmin(raw_rpm)  # raw_rpm最小值对应位置
+        r_maxp = np.argmax(raw_rpm)  # raw_rpm最大值对应位置
         s_rpm = raw_rpm[r_minp:r_maxp + 1]
-        rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step
-        rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step
-        rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)
+        rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step  # rpm_ini：1110
+        rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step  # rpm_end：5980
+        rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)  # rpml: 从最低转速到最高转速的列表（步长为rpm_step）
         rpmf = np.zeros(len(rpml))
+
+        # 寻找rpml中每个转速对应的raw_time中的采样点位置（相差不超过deltaR）
+        tag = 0
         for i in range(len(rpml)):
             deltaR = 0.05
-            t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
-            while np.size(t01, 1) == 0:
-                deltaR = deltaR + 0.05
-                t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
-            rpmf[i] = t01[0][0]
+            not_find = True
+            while not_find:
+                j = self.get_first_index(s_rpm, rpml[i], deltaR)
+                if j != -1:
+                    not_find = False
+                    rpmf[i] = j
+                else:
+                    deltaR = deltaR + 0.05
         rpmf = rpmf + r_minp
         if self.rpmtype == 'falling':
             rpml = rpml[::-1]
-            t01 = len(self.raw_time) - rpmf
+            t01 = len(raw_rpm) - rpmf
             rpmf = t01[::-1]
         return rpmf, rpml
 
@@ -138,7 +156,7 @@ class LevelTime(Calculate_Object):
         ff2rs = ff2r[len(self.raw_time) - 1:len(self.raw_time) * 2 - 1]
         pa = (ff2rs / self.fs / self.timeWeighting) ** 0.5
         lpa = 20 * np.log10(pa / 2e-5 + epsilon)
-        return raw_data, lpa
+        return self.raw_time, lpa
 
     def level_rpm(self):
         raw_data, lpa = self.level_time()
@@ -346,7 +364,6 @@ class OrderVsVfft(OederVfft):
 # LEVEL对时间（A）
 class LevelVsTime(LevelTime):
     def run(self):
-        self.raw_rpm = None
         raw_time, lpa = self.level_time()
         return raw_time, lpa
 

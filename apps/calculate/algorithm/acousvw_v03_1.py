@@ -64,41 +64,41 @@ def dataA(raw_time, raw_data):  # need to be improved
     return dataA
 
 
-def rpmSelect2(raw_time, raw_rpm):
-    rpmtype = detectRpm(raw_rpm)
-    if rpmtype == 'falling':
-        raw_rpm = raw_rpm[::-1]
-
-    fs = detectFs(raw_time)
-    r_min = np.min(raw_rpm)
-    r_max = np.max(raw_rpm)
-
-    rpm_step = 10
-    r_minp = np.argmin(raw_rpm)
-    r_maxp = np.argmax(raw_rpm)
-    s_time = raw_time[r_minp:r_maxp + 1]
-    s_rpm = raw_rpm[r_minp:r_maxp + 1]
-    rpm_ini = np.ceil(s_rpm[0] / rpm_step) * rpm_step
-    rpm_end = np.floor(s_rpm[-1] / rpm_step) * rpm_step
-
-    #    rpml = np.arange(rpm_ini,rfp = open("test.txt",w)    pm_end+rpm_step,rpm_step)
-    rpml = np.arange(rpm_ini, rpm_end + rpm_step, rpm_step)
-    # 截止到现在，转速取整，并且能保证取到最后一个数
-    rpmf = np.zeros(len(rpml))
-    for i in range(len(rpml)):
-        deltaR = 0.05
-        t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
-        # t02 = np.where(np.logical_and(np.greater(s_rpm,rs-deltaR),np.less(s_rpm,rs+deltaR)))
-        while np.size(t01, 1) == 0:
-            deltaR = deltaR + 0.05
-            t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
-        rpmf[i] = t01[0][0]
-    rpmf = rpmf + r_minp
-    if rpmtype == 'falling':
-        rpml = rpml[::-1]
-        t01 = len(raw_time) - rpmf
-        rpmf = t01[::-1]
-    return rpmf, rpml
+# def rpmSelect2(raw_time, raw_rpm):
+#     rpmtype = detectRpm(raw_rpm)
+#     if rpmtype == 'falling':
+#         raw_rpm = raw_rpm[::-1]
+#
+#     fs = detectFs(raw_time)
+#     r_min = np.min(raw_rpm)
+#     r_max = np.max(raw_rpm)
+#
+#     rpm_step = 10
+#     r_minp = np.argmin(raw_rpm)
+#     r_maxp = np.argmax(raw_rpm)
+#     s_time = raw_time[r_minp:r_maxp + 1]
+#     s_rpm = raw_rpm[r_minp:r_maxp + 1]
+#     rpm_ini = np.ceil(s_rpm[0] / rpm_step) * rpm_step
+#     rpm_end = np.floor(s_rpm[-1] / rpm_step) * rpm_step
+#
+#     #    rpml = np.arange(rpm_ini,rfp = open("test.txt",w)    pm_end+rpm_step,rpm_step)
+#     rpml = np.arange(rpm_ini, rpm_end + rpm_step, rpm_step)
+#     # 截止到现在，转速取整，并且能保证取到最后一个数
+#     rpmf = np.zeros(len(rpml))
+#     for i in range(len(rpml)):
+#         deltaR = 0.05
+#         t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+#         # t02 = np.where(np.logical_and(np.greater(s_rpm,rs-deltaR),np.less(s_rpm,rs+deltaR)))
+#         while np.size(t01, 1) == 0:
+#             deltaR = deltaR + 0.05
+#             t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+#         rpmf[i] = t01[0][0]
+#     rpmf = rpmf + r_minp
+#     if rpmtype == 'falling':
+#         rpml = rpml[::-1]
+#         t01 = len(raw_time) - rpmf
+#         rpmf = t01[::-1]
+#     return rpmf, rpml
 
 
 def sum_db(raw_data, windowType='none'):
@@ -274,6 +274,7 @@ raw_time = item[:, 0]
 raw_data = item[:, 1]
 raw_rpm = item[:, 6]
 
+
 # level_time
 raw_time, lpa = level_time(raw_time, raw_data)
 data_front = []
@@ -281,4 +282,84 @@ for a, b in zip(raw_time, lpa):
     data_front.append([a,b])
 with open('FFT3.txt', 'a') as f:
     f.write(json.dumps({"asxdasd":data_front}))
+"""
+######################## 聂昂 ##############################
+from numba import njit
+
+
+@njit
+def get_first_index(A, k, delta):
+    for i in range(len(A)):
+        if A[i] > k - delta and A[i] < k + delta:
+            return i
+    return -1
+
+
+def rpmSelect2(raw_rpm, rpm_step, rpmtype='rising'):
+    """
+    :param raw_time:时间数据
+    :param raw_rpm:转速数据
+    :param rpm_step: 步长
+    :param rpmtype:'falling'；
+    :return: rpml: 从最低转速到最高转速的列表或从最高转速到最低转速的列表（步长为rpm_step）
+             rpmf:对应raw_time中的采样点位置（相差不超过deltaR）
+    """
+    if rpmtype == 'falling':  # 如果是falling，将raw_rpm翻转
+        raw_rpm = raw_rpm[::-1]
+    r_minp = np.argmin(raw_rpm)  # raw_rpm最小值对应位置
+    r_maxp = np.argmax(raw_rpm)  # raw_rpm最大值对应位置
+    s_rpm = raw_rpm[r_minp:r_maxp + 1]
+    rpm_ini = np.ceil(s_rpm[0] / rpm_step) * rpm_step  # rpm_ini：1110
+    rpm_end = np.floor(s_rpm[-1] / rpm_step) * rpm_step  # rpm_end：5980
+    rpml = np.arange(rpm_ini, rpm_end + rpm_step, rpm_step)  # rpml: 从最低转速到最高转速的列表（步长为rpm_step）
+    rpmf = np.zeros(len(rpml))
+
+    # 寻找rpml中每个转速对应的raw_time中的采样点位置（相差不超过deltaR）
+    tag = 0
+    for i in range(len(rpml)):
+        deltaR = 0.05
+        not_find = True
+        while not_find:
+            j = get_first_index(s_rpm, rpml[i], deltaR)
+            if j != -1:
+                not_find = False
+                rpmf[i] = j
+            else:
+                deltaR = deltaR + 0.05
+    rpmf = rpmf + r_minp
+    if rpmtype == 'falling':
+        rpml = rpml[::-1]
+        t01 = len(raw_rpm) - rpmf
+        rpmf = t01[::-1]
+    return rpmf, rpml
+
+
+"""class
+    # def rpmSelect2(self):
+    #     raw_rpm = self.raw_rpm
+    #
+    #     print(self.rpmtype, self.timeWeighting)
+    #     if self.rpmtype == 'falling':
+    #         raw_rpm = self.raw_rpm[::-1]
+    #     # raw_rpm = self.raw_rpm[::-1]
+    #     r_minp = np.argmin(raw_rpm)
+    #     r_maxp = np.argmax(raw_rpm)
+    #     s_rpm = raw_rpm[r_minp:r_maxp + 1]
+    #     rpm_ini = np.ceil(s_rpm[0] / self.rpm_step) * self.rpm_step
+    #     rpm_end = np.floor(s_rpm[-1] / self.rpm_step) * self.rpm_step
+    #     rpml = np.arange(rpm_ini, rpm_end + self.rpm_step, self.rpm_step)
+    #     rpmf = np.zeros(len(rpml))
+    #     for i in range(len(rpml)):
+    #         deltaR = 0.05
+    #         t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+    #         while np.size(t01, 1) == 0:
+    #             deltaR = deltaR + 0.05
+    #             t01 = np.where((s_rpm > rpml[i] - deltaR) & (s_rpm < rpml[i] + deltaR))
+    #         rpmf[i] = t01[0][0]
+    #     rpmf = rpmf + r_minp
+    #     if self.rpmtype == 'falling':
+    #         rpml = rpml[::-1]
+    #         t01 = len(self.raw_time) - rpmf
+    #         rpmf = t01[::-1]
+    #     return rpmf, rpml
 """

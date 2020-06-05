@@ -24,7 +24,8 @@ CalculateNameDict = {
     "Level VS RPM": "LevelVsRpm",
     "Level VS Time": "LevelVsTime",
     "2nd Order VS RPM": "OrderVsVfft",
-    # "FFT对时间": "FftVsTime",    # 这两个目前没法返回数据，可以返回图片
+    "FFT对时间": "FftVsTime",    # 这两个目前没法返回数据，可以返回图片
+    "FFT vs Time": "FftVsTime",    # 这两个目前没法返回数据，可以返回图片
     # "FFT对转速": "FftVsRpm",
     # "倍频程": "OctaveFft",   # 暂时不用管
 

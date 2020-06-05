@@ -28,7 +28,8 @@ class Calculate_Object(object):
         self.absolute_dir = os.getcwd() + '/'
         self.raw_time = channel_data[raw_time_num]
         self.raw_data = channel_data[raw_data_num]
-        self.raw_rpm = channel_data[raw_rpm_num]
+        if raw_rpm_num is not None:
+            self.raw_rpm = channel_data[raw_rpm_num]
         self.fs = self.detectFs()
 
     def detectFs(self):  # seems to be completed
@@ -345,6 +346,7 @@ class OrderVsVfft(OederVfft):
 # LEVEL对时间（A）
 class LevelVsTime(LevelTime):
     def run(self):
+        self.raw_rpm = None
         raw_time, lpa = self.level_time()
         return raw_time, lpa
 

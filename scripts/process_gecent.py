@@ -44,8 +44,7 @@ class ParseTask(object):
                 channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
 
                 # data_key
-                channel_data_key = list(channel_file_list.keys())[
-                    list(channel_file_list.values()).index(channel["title"])]
+                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
                 try:
                     # rpm_key
@@ -120,7 +119,16 @@ class ParseTask(object):
                     channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
                     channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
                 except:
+                    # TODO: 当RPM不存在的时候
                     channel_rpm_num = 2
+                    try:
+                        # print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
+                        X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"],
+                                                          int(channel_time_num) - 1, int(channel_data_num) - 1,
+                                                          None).run()
+                        items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
+                    except:
+                        pass
                 try:
                     # print(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1,int(channel_data_num) - 1, int(channel_rpm_num) - 1)
                     X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"],

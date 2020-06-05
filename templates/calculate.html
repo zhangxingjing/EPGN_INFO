@@ -96,25 +96,25 @@
                     <select lay-verify="required" id="calculate" lay-filter="calculatename">
                         <option value="">直接选择或搜索选择</option>
                         <option value="FFT">FFT</option>
-                        <option value="倍频程">Octave</option>
-                        <option value="二阶对转速">2nd Order vs RPM</option>
-                        <option value="FFT对时间">FFT vs Time</option>
-                        <option value="FFT对转速">FFT vs RPM</option>
-                        <option value="LEVEL对时间">Level vs Time/option>
-                        <option value="LEVEL对转速">Level vs RPM</option>
+                        <option value="Octave">倍频程</option>
+                        <option value="2nd Order vs RPM">二阶对转速</option>
+                        <option value="FFT vs Time">FFT vs Time</option>
+                        <option value="FFT vs RPM"> FFT对转速</option>
+                        <option value="Level VS Time">Level vs Time</option>
+                        <option value="Level vs RPM">LEVEL对转速</option>
                     </select>
                 </div>
             </div>
             <form class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
-                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">数据通道</label>
+                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">数据通道:</label>
                     <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
                          id="channelselectList">
 
                     </div>
                 </div>
                 <div class="layui-form-item" style="margin-top: 10px">
-                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">参考通道</label>
+                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">参考通道:</label>
                     <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
                          id="referenceChannel">
 
@@ -182,7 +182,6 @@
         console.log(sessionType);
         if (sessionType == 1) {
             var uploadfilenewname = JSON.parse(sessionStorage.getItem("uploadnewname"));
-            console.log(Array.isArray(uploadfilenewname))
             $.ajax({
                 url: /parse_ppt/,
                 dataType: "json",
@@ -361,7 +360,6 @@
         function sendbase64() {
             series = JSON.stringify(series);
             sessionStorage.setItem("filebase64list", series);
-            console.log(sessionStorage.getItem("filebase64list"));
             window.open('/test_page/')
         }
 
@@ -374,13 +372,12 @@
                 type: "put",
                 data: JSON.stringify({"file_info": send_message}),
                 success: function (result) {
+                    console.log("111"+result);
                     old_tree = result.file_info;
                     console.log(old_tree);
                     data1 = old_tree;
                     var VList = result.channel_list;
-                    console.log(VList.length)
                     for (let i = 0; i < VList.length; i++) {
-                        console.log(VList[i]);
                         $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
                         $("#referenceChannel").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
                     }
@@ -437,14 +434,12 @@
                             },
                             pic_data: function () {
                                 checkedData1 = tree.getChecked('demoId12'); //获取选中节点的数据
-                                {#layer.alert(JSON.stringify(checkedData1), {shade: 0});#}
-                                layer.msg("正在计算中...")
                                 checkedData1 = JSON.parse(JSON.stringify(checkedData1));
                                 getchannellist();
                                 console.log(checkedData1);
 
                                 $("#referenceChannel input:checkbox:checked").each(function (i) {
-                                    referenceChannel.push($(this).val()) ;
+                                    referenceChannel.push($(this).val());
                                 });
                                 console.log(referenceChannel);
                                 //
@@ -452,51 +447,32 @@
                                 for (let i = 0; i < checkedData1.length; i++) {
                                     for (let j = 0; j < checkedData1[i].children.length; j++) {
                                         for (let k = 0; k < checkedData1[i].children[j].children.length; k++) {
-                                            console.log(checkedData1[i].children[j].children[k].title);
                                             let channelname = checkedData1[i].children[j].children[k].title;
                                             channel_number.push(channelname)
                                         }
                                     }
-                                }
-                                console.log(channel_number);
+                                };
+                                let calculatename = $("#calculate option:selected").val();
+
+                                var getdata  = old_tree;
+
+                                getdata[0].children = checkedData1[0].children;
+                                getdata[0].calculate_name = calculatename;
+                                getdata[0].refer_channel = referenceChannel;
+                                console.log(getdata);
 
                                 $.ajax({
-                                    // url:'/static/result2.json',
-                                    url: '/static/result_data.json',
-                                    async: false,
-                                    success: function (data) {
-
-                                        result = data;
+                                    url: /user_calculate/,
+                                    dataType: "json",
+                                    data: JSON.stringify(getdata[0]),
+                                    type: "put",
+                                    success: function (result) {
+                                        echartdata = result.data;
                                         console.log(result);
+                                        getpic();
                                     }
-                                });
-                                $.ajax({
-                                    // url:'/static/result2.json',
-                                    url: '/static/result2.json',
-                                    async: false,
-                                    success: function (data) {
 
-                                        result2 = data;
-                                        console.log(result2);
-                                    }
                                 });
-                                if (channel_number.length == 1) {
-
-                                    $("#addsec").html("");
-                                    echartdata = [result2.data[0]];
-                                    console.log(echartdata);
-                                    getpic();
-                                } else if (channel_number.length == 4) {
-                                    $("#addsec").html("");
-                                    echartdata = result.data;
-                                    console.log(echartdata);
-                                    getpic();
-                                } else if (channel_number.length == 5) {
-                                    $("#addsec").html("");
-                                    echartdata = result.data;
-                                    echartdata2 = result2.data;
-                                    getpic2();
-                                }
 
 
                             },
@@ -525,7 +501,7 @@
                     elem: '#file_tree'
                     , data: data
                     , showCheckbox: true  //是否显示复选框
-                    , id: 'demoId1'
+                    , id: 'demoId12'
                     , isJump: true //是否允许点击节点时弹出新窗口跳转
                     ,
                     edit: ['del'], click: function (obj) {
@@ -579,7 +555,8 @@
 
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
-                    var calculatename = $("#calculate option:selected").val();
+                    let calculatename = $("#calculate option:selected").val();
+
 
 
                     $.ajax({

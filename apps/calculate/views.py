@@ -34,8 +34,12 @@ class ChannelList(View):
             channel_key_list = []
 
             for key, value in channel_dict.items():
+                if value == "time" or value == "Time":
+                    continue
                 set_channel_list.append(value.replace(' ', ''))
                 channel_key_list.append({"title": value.replace(' ', ''), "id": 1000 + num_1})
+                # set_channel_list.append(value)
+                # channel_key_list.append({"title": value, "id": 1000 + num_1})
                 num_1 += 1
 
             file_channel_info["title"] = file_name
@@ -359,7 +363,7 @@ def manual_report(request):
             children_list.append({"id": i, "title": channel["title"]})
             i += 1
         data = {
-            "calculate": body_json["calculate_name"],
+            "calculate": CalculateNameDict[body_json["calculate_name"]],
             "file_info": {
                 "checked": "True",
                 "children": [

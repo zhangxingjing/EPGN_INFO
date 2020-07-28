@@ -26,6 +26,7 @@ CalculateNameDict = {
 
     # 手动报告-前端参数
     "FFT": "FftCalculate",
+    "FftCalculate": "FftCalculate",
     "Start Stop": "StartStop",  # 启停算法
     "Level vs rpm": "LevelVsRpm",
     "Level vs time": "LevelVsTime",

@@ -112,8 +112,6 @@ class Calculate_Object(object):
 
     def rpmSelect2(self):
         raw_rpm = self.raw_rpm
-
-        print(self.rpmtype, self.timeWeighting)
         if self.rpmtype == 'falling':
             raw_rpm = self.raw_rpm[::-1]
         # raw_rpm = self.raw_rpm[::-1]
@@ -379,7 +377,6 @@ class FftCalculate(FftInfo):
 # 倍频程
 class OctaveFft(FftInfo):
     def run(self):
-        print("倍频程")
         fc, db = self.octave_fft()
         return fc, db
 
@@ -387,7 +384,6 @@ class OctaveFft(FftInfo):
 # 二阶对转速
 class OrderVsVfft(OederVfft):
     def run(self):
-        print("二阶 对 转速")
         rpml, dbo = self.order_vfft()
         return rpml, dbo
 
@@ -402,7 +398,6 @@ class LevelVsTime(LevelTime):
 # LEVEL对转速
 class LevelVsRpm(LevelTime):
     def run(self):
-        print("Level 对 转速")
         self.timeWeighting = 1  # 初始化timeWeighting
         rpml, lpr = self.level_rpm()
         return rpml, lpr

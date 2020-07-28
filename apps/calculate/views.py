@@ -11,6 +11,7 @@ from django.shortcuts import render
 from scripts.readHDF import read_hdf
 from fileinfo.models import Fileinfo
 from scripts.process_gecent import ParseTask
+from scripts.segment import parse
 from settings.dev import REFERENCE_CHANNEL, FALLING_LIST
 from calculate.algorithm.class_name import CalculateNameList
 from apps.calculate.algorithm.class_name import CalculateNameDict
@@ -26,6 +27,8 @@ class ChannelList(View):
         body_str = body.decode()
         data_list = json.loads(body_str)["file_info"]
 
+        if data_list is None:
+            return JsonResponse({"code": 1, "msg": "TypeError: 'NoneType' object is not iterable"})
         set_channel_list = []
         channel_dict_list = []
         num_1 = 1
@@ -91,7 +94,7 @@ class ChannelList(View):
 class CalculateParse(View):
 
     def get(self, request):
-        return render(request, 'calculate.html')
+        return render(request, 'calculate/calculate.html')
 
     # 通过算法返回数组数据
     def post(self, request):
@@ -187,12 +190,118 @@ class PPTParse(View):
 
     # 返回分段取峰值
     def patch(self, request):
-        return_items = self.parse_calculate(request)
+        """
+        分段去峰值的时候，只接受数据本身，需要先进行算法计算，然后获取当前的结果
+        处理数据本身的时候，应该选择x=0-1000，这个范围内获取最大值，而不是隔1000取点
+        返回数据的同时，携带当前数据中的文件信息（文件名，通道信息，取点范围）
+        """
+        result_list = []
+        body = request.body
+        body_str = body.decode()
+        body_json = json.loads(body_str)
+        # print(body_json)
+        calculate_name = body_json["calculate_name"]
+        range_key = int(body_json["step"])
+        refer_channel = body_json["refer_channel"]
+        rpm_type = 'rising'  # 设置rpm_type的默认值
+        for children_file in body_json["children"]:  # 前端发送的数据通道不止一条
+            # 获取文件信息
+            filename = children_file["title"]
 
-        for i in return_items:
-            print(i["channel"])
-        new_items = self.segment_for(list(return_items["data"]), 1000, [])
-        return JsonResponse({"status": 200, "msg": "前端请求正常, 查看数据处理!"})
+            return_items = {}
+            return_items["data"] = []
+            return_items["filename"] = filename
+            status = Fileinfo.objects.filter(file_name=filename)
+
+            i = 1
+            children_list = []
+            for channel in children_file["children"]:
+                children_list.append({"id": i, "title": channel["title"]})
+                i += 1
+
+            if len(status) > 0:
+                status = status[0].status
+                if status in FALLING_LIST:
+                    rpm_type = 'falling'
+
+                data = {
+                    "calculate": calculate_name,
+                    "file_info": {
+                        "checked": "True",
+                        "children": [{"children": children_list, "id": 1, "title": filename}, ],
+                        "field": "name1",
+                        "id": 1,
+                        "spread": "True",
+                        "title": "文件夹名"
+                    }
+                }
+                # pprint(data)
+                try:
+                    items = ParseTask(data, rpm_type, refer_channel).user_run()
+                    # print(items)
+                    if items:
+                        for item in items:
+                            line_loc = [[x, y] for x, y in zip(
+                                list(item["data"]["X"]),
+                                list(item["data"]["Y"])
+                            )]  # 所有点的列表
+
+                            # 对所有点的列表进行分段取峰值
+                            # 通过 X的值的间隔 取值
+                            x_list = list(map(lambda k: k[0], line_loc))
+                            point_index_list = parse(x_list, range_key)
+                            point_index_list.append(line_loc[0][0])
+
+                            point_max_list = []
+                            for i in range(len(sorted(point_index_list)) - 1):
+                                i_in_x_index_2 = x_list.index(point_index_list[i])
+                                i_in_x_index_1 = x_list.index(point_index_list[i - 1])
+
+                                segment_list = line_loc[i_in_x_index_1:i_in_x_index_2]
+                                if i == 0:
+                                    segment_list = line_loc[0:i_in_x_index_2]
+                                # print(i, len(segment_list), segment_list)
+
+                                max_y_in_point_data = sorted(segment_list, key=lambda k: k[1])[-1]
+                                max_y_in_point_data[0] = round(max_y_in_point_data[0], 2)
+                                max_y_in_point_data[1] = round(max_y_in_point_data[1], 2)
+
+                                max_value_range_start = sorted(segment_list, key=lambda k: k[0])[0][0]
+                                max_value_range_end = sorted(segment_list, key=lambda k: k[0])[-1][0]
+                                # print(max_y_in_point_data, max_value_range_start, max_value_range_end, segment_list)
+
+                                max_y_in_point_item = {}
+                                max_y_in_point_item["range"] = [round(max_value_range_start, 2), round(max_value_range_end, 2)]
+                                max_y_in_point_item["point"] = max_y_in_point_data
+                                point_max_list.append(max_y_in_point_item)
+
+                            return_items["data"].append({"{}".format(item["channel"]): point_max_list})
+                            return_items["filename"] = filename
+                        result_list.append(return_items)
+
+                        """
+                        # 这是隔点取值
+                            point_max_list = []
+                            for i in range(0, len(line_loc), range_key):
+                                segment = line_loc[i:i + range_key]
+                                print(len(segment))
+                                max_y_in_point_data = sorted(segment, key=lambda k: k[1])[-1]
+                                max_value_range_start = sorted(segment, key=lambda k: k[0])[0][0]
+                                max_value_range_end = sorted(segment, key=lambda k: k[0])[-1][0]
+
+                                max_y_in_point_item = {}
+                                max_y_in_point_item["range"] = [max_value_range_start, max_value_range_end]
+                                max_y_in_point_item["point"] = max_y_in_point_data
+                                point_max_list.append(max_y_in_point_item)
+
+                            return_items["data"].append({"{}".format(item["channel"]): point_max_list})
+                            return_items["filename"] = filename
+                        result_list.append(return_items)
+                        """
+
+                except:
+                    return JsonResponse({"code": 1, "msg": "当前文件计算出错，请检查数据"})
+        return JsonResponse({"code": 0, "result": result_list})
 
     # 算法处理 ==> 处理kp文件分段采集的数据量
     def parse_calculate(self, request):
@@ -205,6 +314,7 @@ class PPTParse(View):
         return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
+        refer_channel = json.loads(body)["refer_channel"]
 
         for file in list(set(file_list)):
             status = Fileinfo.objects.filter(file_name=file)
@@ -256,7 +366,7 @@ class PPTParse(View):
             }
 
             # 将data传入算法，进行计算，获取算法返回值
-            items = ParseTask(data, rpm_type).run()
+            items = ParseTask(data, rpm_type, refer_channel).run()
 
             # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
             if len(items) == 0:
@@ -345,6 +455,7 @@ def manual_report(request):
     body = request.body
     body_str = body.decode()
     body_json = json.loads(body_str)
+    refer_channel = body_json["refer_channel"]
     for children_file in body_json["children"]:  # 前端发送的数据通道不止一条
         # 获取文件信息
         filename = children_file["title"]
@@ -382,7 +493,7 @@ def manual_report(request):
             }
         }
         # 将data传入算法，进行计算，获取算法返回值
-        items = ParseTask(data, rpm_type).run()
+        items = ParseTask(data, rpm_type, refer_channel).user_run()
         # 返回的数据列表为空时，说明文件中的通道信息不在我们定义的channel_list中
         if len(items) == 0:
             return JsonResponse({"code": 0, "msg": "manual_report ==>  line 392 ==> len(items)=0"})
@@ -412,6 +523,17 @@ def manual_report(request):
                 else:
                     line_loc_result = line_loc[0::level_vs_time_step]
                     line_loc_result.append(line_loc[-1])
+
+            if body_json["calculate_name"] == "StartStop":
+                level_vs_time_step = 16
+                if len(line_loc) % level_vs_time_step == 0:
+                    # 当列表是步长的非整数倍时，最后留一个值   ==> 步长为44100
+                    # TODO: 条件：如果取得最后一个值不是列表的最后一个，再添加`列表的最后一个值`
+                    line_loc_result = line_loc[0::level_vs_time_step]
+                else:
+                    line_loc_result = line_loc[0::level_vs_time_step]
+                    line_loc_result.append(line_loc[-1])
+
             item["data"] = line_loc_result
             item["status"] = status
             return_items.append(item)
@@ -437,13 +559,13 @@ def return_file_list(request):
         return JsonResponse({"file_list": file_list})
 
 
-# 数据挖掘页面：url(r'autocalculate/', auto_calculate),
+# 数据挖掘：url(r'calculate/', auto_calculate),
 def auto_calculate(request):
     if request.method == "POST":
         return JsonResponse({"data": "data"})
-    return render(request, 'calculate.html')
+    return render(request, 'calculate/calculate.html')
 
 
 # PDF：url('^test_page/$', test_page)
 def test_page(request):
-    return render(request, 'testpage.html')
+    return render(request, 'calculate/calculate_word.html')

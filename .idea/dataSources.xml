@@ -21,5 +21,11 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/EPGN_TEST</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="MySQL - EPGN_INFO@localhost" uuid="a0df333e-e20f-4d35-b82b-04618140430b">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO</jdbc-url>
+    </data-source>
   </component>
 </project>

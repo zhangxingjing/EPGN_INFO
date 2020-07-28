@@ -1,4 +1,7 @@
 import re
+
+from django.http import JsonResponse
+
 from scripts.readHDF import read_hdf
 from apps.calculate.algorithm.calculate import *
 from multiprocessing import cpu_count, Pool, Manager
@@ -12,9 +15,10 @@ class ParseTask(object):
         2. CPU密集：算法计算（多进程）
     """
 
-    def __init__(self, item, rpm_type):
+    def __init__(self, item, rpm_type, refer_channel):
         self.item = item
         self.rpm_type = rpm_type
+        self.refer_channel = refer_channel
         self.queue = Manager().Queue()
 
     def parse_json(self):
@@ -48,25 +52,30 @@ class ParseTask(object):
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
                 try:
                     # rpm_key
-                    channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
+                    channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("data_EngineRPM")]
                     channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
                 except:
                     channel_rpm_num = 2
 
-                """异步返回 ==> 使用队列接受多进程中的数据返回值"""
-                pool.apply_async(
-                    self.calculate_process, args=(
-                        self.queue,
-                        calculate_class_name,
-                        filename,
-                        channel_data,
-                        self.rpm_type,
-                        channel["title"],
-                        int(channel_time_num) - 1,  # time
-                        int(channel_data_num) - 1,  # data
-                        int(channel_rpm_num) - 1,  # rpm
+                if channel_rpm_num !=channel_data_num:
+                    # print(channel_time_num, "\r\n", channel_data_num, "\r\n",  channel_rpm_num,"\r\n",  channel_file_list)
+                    # print(channel_data)
+                    """异步返回 ==> 使用队列接受多进程中的数据返回值"""
+                    pool.apply_async(
+                        self.calculate_process, args=(
+                            self.queue,
+                            calculate_class_name,
+                            filename,
+                            channel_data,
+                            self.rpm_type,
+                            # "falling",
+                            # "raising",
+                            channel["title"],
+                            int(channel_time_num) - 1,  # time
+                            int(channel_data_num) - 1,  # data
+                            int(channel_rpm_num) - 1,  # rpm
+                        )
                     )
-                )
         pool.close()
         pool.join()
 
@@ -95,38 +104,59 @@ class ParseTask(object):
     def user_run(self):
         """用户从前端页面选择数据信息、通道信息，同时制定使用的算法==>算法直接接受使用参数就可以"""
         items = []
-        for channel_file_list, channel_front_list, calculate_class_name, filename, channel_data in self.parse_json():
+        channel_front_list = []
+        for channel_file_list, old_channel_front_list, calculate_class_name, filename, channel_data in self.parse_json():
+            for channel in old_channel_front_list:
+                if channel['title'] not in ["EngineRPM", "RPM"]:
+                    channel_front_list.append(channel)
+
             for channel in channel_front_list:
-                if channel['title'] in ["EngineRPM"]:
-                    channel_front_list.remove(channel)
-            for channel in channel_front_list:
-                # 针对没有Time参数的情况
+                # time_key
                 try:
-                    # time_key
-                    print(channel_file_list, channel_front_list)
                     channel_time = list(channel_file_list.keys())[list(channel_file_list.values()).index("time")]
                     channel_time_num = re.match(r'.*?(\d+)', channel_time).group(1)
                 except:
                     return []
+
                 # data_key
-                channel_data_key = list(channel_file_list.keys())[
-                    list(channel_file_list.values()).index(channel["title"])]
+                # print(channel_file_list)
+                channel_data_key = list(channel_file_list.keys())[list(channel_file_list.values()).index(channel["title"])]
                 channel_data_num = re.match(r'.*?(\d+)', channel_data_key).group(1)
+
+                # rpm_key
+                # try:
+                #     try:
+                #         channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
+                #         channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                #     except:
+                #         try:
+                #             channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("data_EngineRPM")]
+                #             channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                #         except:
+                #             try:
+                #                 channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("RPM")]
+                #                 channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                #             except:
+                #                 channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("data_RPM")]
+                #                 channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                # except:
+                #     # 没有RPM的情况
+                #     channel_rpm_num = channel_data_num
                 try:
-                    # rpm_key
-                    channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
+                    # print(self.refer_channel[0], channel_file_list)
+                    channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("{}".format(self.refer_channel[0]))]
                     channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
                 except:
-                    # TODO: 当RPM不存在的时候
-                    channel_rpm_num = 2
-                    try:
-                        X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, None).run()
-                        items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
-                    except:
-                        pass
-                try:
-                    X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
-                    items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
-                except:
-                    pass
+                    # return None
+                    if calculate_class_name == "FftCalculate" or \
+                            calculate_class_name == "LevelVsTime" or \
+                            calculate_class_name == "StartStop":
+                        channel_rpm_num = channel_data_num
+                    else:
+                        return None
+
+                # print(calculate_class_name)
+                # X, Y = eval(CalculateNameDict[calculate_class_name])(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
+                X, Y = eval(calculate_class_name)(filename, channel_data, self.rpm_type, channel["title"], int(channel_time_num) - 1, int(channel_data_num) - 1, int(channel_rpm_num) - 1).run()
+                items.append({"filename": filename, "data": {"X": X, "Y": Y}, "channel": channel["title"]})
         return items

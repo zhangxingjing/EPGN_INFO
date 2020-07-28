@@ -12,21 +12,15 @@ urlpatterns = [
 
     # 这是直接访问IP时, 浏览器展示的页面 ==> templates文件夹中的文件
     # url(r'^$', TemplateView.as_view(template_name='index.html'), name='index'),
-    url(r'^$', TemplateView.as_view(template_name='login.html'), name='login'),
+    url(r'^$', TemplateView.as_view(template_name='user/login.html'), name='login'),
 
-    # 用户访问需要登录
-    url(r'^authorizations/$', obtain_jwt_token),
+    url(r'^authorization/$', obtain_jwt_token),
 
-    # TODO: 这里对于不同模块的请求, 我们应该使用不同的API前缀
-    # 用户
-    url(r'', include('users.urls')),
+    url(r'user/', include('users.urls')),
 
-    # 汽车数据
-    url(r'', include('fileinfo.urls')),
+    url(r'test/', include('fileinfo.urls')),
 
-    # 算法
-    url(r'', include('calculate.urls')),
+    url(r'calculate/', include('calculate.urls')),
 
-    # 音频库
-    url(r'', include('audio.urls'))
+    url(r'audio/', include('audio.urls'))
 ]

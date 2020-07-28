@@ -1,41 +1,44 @@
 from .views import *
 from django.conf.urls import url
-from rest_framework.routers import SimpleRouter, DefaultRouter
+from rest_framework.routers import DefaultRouter
 
-router = SimpleRouter()
-router.register(r'parse_file', FileInfoViewSet)
+router = DefaultRouter()
+# router.register(r'parse_file', FileInfoViewSet)
+router.register(r'^channel', ChannelViewSet)
 
 urlpatterns = [
-    # 检索 ==> 表格重载
-    # url(r'^car/$', file),
+    # 访问模板渲染页面
+    url(r'^datainfo/(?P<pk>\d+)/$', DataInfo.as_view()),
 
-    # 文件上传及通道修改
-    # url(r'^upload/$', upload),
-    url(r'^upload/$', ParseFile.as_view()),
+    # 文件检索
+    url(r'^search/$', Search.as_view()),
+
+    # 文件上传
+    url(r'^upload/$', Upload.as_view()),
+
+    # 帮助文档
+    url(r'^help/$', Word.as_view()),
 
     # 文件下载
-    url(r'^download/(?P<pk>\d+)/$', file_down),
-
-    # 用户查看使用文档
-    url(r'^word/$', word),
-
-    # check文件通道信息
-    url(r'channel_check/$', CheckChannel.as_view()),
-
-    # 访问模板渲染页面
-    url(r'^base/(?P<pk>\d+)/$', parse_template),
+    url(r'^download/(?P<pk>\d+)/$', Download.as_view()),
 
     # 修改文件状态
     url(r'^file_status/$', change_file_status),
 
-    # 用户添加对比列表
-    # url(r'^contrast/$', SaveContrastView.as_view()),
+    # 获取变速箱信息
+    url(r'gearbox/$', GearBoxView.as_view({'get': 'get_gearbox'})),
 
-    # 用户撤销文件上传
-    url(r'^delete_file/$', delete_file),
+    # # 修改通道
+    # # url(r'^channel/$', )
+    #
+    # # 获取通道-专业方向
+    # url(r'^channel_direction/$', ChannelView.as_view({'get': 'parts'})),
+    #
+    # # 通过专业方向获取通道
+    # url(r'^channel_direction/(?P<pk>\d+)/$', ChannelView.as_view({'get': 'channel'})),
 
-    # 获取"当前用户"上传的数据信息
-    # url(r'user_file_info/$', user_file_info),
+    # 获取所有其他通道
+    # url(r'^other_channel/(?P<pk>\d+)/$', ChannelView.as_view({'get': 'other_channel'})),
 
     # 获取平台
     url(r'^car_platform/$', PlatformCarModelView.as_view({'get': 'platform'})),
@@ -60,9 +63,6 @@ urlpatterns = [
 
     # 获取零部件和工况
     url(r'^direction_num/(?P<pk>\d+)/$', DirectionView.as_view({'get': 'power'})),
-
-    # 获取变速箱信息
-    url(r'gearbox/$', GearBoxView.as_view({'get': 'get_gearbox'})),
 ]
 
 urlpatterns += router.urls

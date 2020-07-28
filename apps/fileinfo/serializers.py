@@ -88,3 +88,26 @@ class OtherChannelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Channel
         fields = ["id", "name", "subs"]
+
+
+# 添加分类之后的通道信息
+class ChannelCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Channel
+        fields = ["id", "name"]
+
+
+class ChannelNameSerializer(serializers.ModelSerializer):
+    subs = ChannelCategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Channel
+        fields = ["id", "name", "subs"]
+
+
+class OtherChannelNameSerializer(serializers.ModelSerializer):
+    subs = ChannelNameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Channel
+        fields = ["id", "name", "subs"]

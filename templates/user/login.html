@@ -163,7 +163,7 @@
         //定义变量sendData
         var sendData = {"username": $("#id_username").val(), "password": $("#id_password").val()};
         $.ajax({
-            url: '/authorizations/',
+            url: '/authorization/',
             type: 'post',
             dataType: 'json',
             contentType: "application/json",
@@ -177,7 +177,7 @@
                 sessionStorage.username = data.username;
                 sessionStorage.task = data.task;
                 sessionStorage.token = data.token;
-                location.href = '/home/';
+                location.href = '/user/home/';
             },
             //执行失败或错误的回调函数
             error: function (data) {

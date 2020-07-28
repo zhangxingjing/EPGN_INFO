@@ -7,8 +7,10 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}" media="all">
     <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'ele/index.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
     <style>
@@ -29,7 +31,6 @@
 
         .pic-container {
             display: flex;
-            justify-content: space-around;
             flex-wrap: wrap;
             align-content: flex-start;
             width: 100%;
@@ -57,6 +58,15 @@
             width: 500px;
             height: 400px;
 
+        }
+
+        .layui-input-block {
+            padding: 20px;
+        }
+
+        #listblock {
+            display: flex;
+            flex-wrap: wrap;
         }
     </style>
 {% endblock %}
@@ -96,7 +106,7 @@
                     <select lay-verify="required" id="calculate" lay-filter="calculatename">
                         <option value="">直接选择或搜索选择</option>
                         <option value="FftCalculate">FFT</option>
-                        <option value="OctaveFft">Octave</option>
+                        <!--<option value="OctaveFft">Octave</option>-->
                         <option value="StartStop">Start Stop</option>
                         <option value="LevelVsRpm">Level vs rpm</option>
                         <option value="LevelVsTime">Level vs time</option>
@@ -104,30 +114,50 @@
                     </select>
                 </div>
             </div>
-            <form class="layui-form" action="">
+            <div class="layui-form" action="">
                 <div class="layui-form-item" style="margin-top: 10px">
-                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">数据通道:</label>
+                    <label class="layui-form-label"
+                           style="font-size: 18px;font-weight: bold;padding-top: 30px">数据通道:</label>
                     <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
                          id="channelselectList">
 
                     </div>
                 </div>
                 <div class="layui-form-item" style="margin-top: 10px">
-                    <label class="layui-form-label" style="font-size: 18px;font-weight: bold">参考通道:</label>
-                    <div class="layui-input-block" lay-demo="changeTree" lay-submit="" lay-filter="formCheckbox"
+                    <label class="layui-form-label"
+                           style="font-size: 18px;font-weight: bold;padding-top: 30px">参考通道:</label>
+                    <div class="layui-input-block"
                          id="referenceChannel">
 
                     </div>
                 </div>
                 <div class="layui-form-item">
-                    <div class="layui-input-block">
-                        <button class="layui-btn" id="run" lay-submit="" lay-filter="formDemo" lay-demo="pic_data">
-                            Run
-                        </button>
-                        <button type="reset" class="layui-btn layui-btn-normal">Reset</button>
+                    <div style="display: flex">
+                        <div class="layui-input-block" style="border: 1px solid gainsboro">
+                            <button class="layui-btn" id="run" lay-submit="" lay-demo="pic_data">Run</button>
+                            </button>
+                            <button type="reset" class="layui-btn layui-btn-normal">Reset</button>
+                        </div>
+                        <div class="layui-input-block"
+                             style="border: 1px solid gainsboro;display: flex;justify-content: space-around">
+                            <div id="app1" style="width:55%">
+                                <el-cascader
+                                        v-model="value1"
+                                        :options="options"
+                                        :show-all-levels="false" placeholder="请选择步长">
+
+                                </el-cascader>
+                            </div>
+                            <button class="layui-btn" id="run1" lay-submit="" lay-filter="formDemo"
+                                    lay-demo="pic_data2">
+                                Run
+                            </button>
+                            <button class="layui-btn" lay-submit="" lay-filter="formDemo" lay-demo="exportdata()" onclick="exportexcel()">导出数据
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </form>
+            </div>
             <!-- </form> -->
 
             <!-- <ul class="layui-tab-title">
@@ -141,6 +171,7 @@
                         <div id="addsec"></div>
                         <div class="pic1">
                         </div>
+                        <div id="listblock"></div>
                     </div>
                 </div>
             </div>
@@ -154,7 +185,72 @@
 {% block javascript %}
     <script src="{% static 'layui/layui.js' %}"></script>
     <script src="{% static 'js/echart.js' %}"></script>
+
+
     <script>
+        new Vue({
+            el: '#app1',
+            data: function () {
+                return {
+                    value1: [],
+                    options: [{
+                        value: 'frequency',
+                        label: '频率(hz)',
+                        children: [{
+                            value: '50',
+                            label: '50'
+                        }, {
+                            value: '100',
+                            label: '100'
+                        }, {
+                            value: '200',
+                            label: '200'
+                        }, {
+                            value: '500',
+                            label: '500'
+                        }, {
+                            value: '1000',
+                            label: '1000'
+                        }]
+                    }, {
+                        value: 'rpm',
+                        label: '转速(rpm)',
+                        children: [{
+                            value: '100',
+                            label: '100'
+                        }, {
+                            value: '200',
+                            label: '200'
+                        }, {
+                            value: '500',
+                            label: '500'
+                        }, {
+                            value: '1000',
+                            label: '1000'
+                        }]
+                    }, {
+                        value: 'time',
+                        label: '时间(s)',
+                        children: [{
+                            value: '1',
+                            label: '1'
+                        }, {
+                            value: '2',
+                            label: '2'
+                        }, {
+                            value: '5',
+                            label: '5'
+                        }, {
+                            value: '10',
+                            label: '10'
+                        }]
+                    }]
+
+
+                }
+            },
+
+        })
         layui.config({base: '{% static 'home/' %}'}).use('index', function () {
             var $ = layui.jquery,
                 layer = layui.layer,
@@ -163,11 +259,11 @@
                 table = layui.table,
                 form = layui.form;
         });
+
     </script>
 
     <script>
         var channelselect = [];
-        var checkedData1;
         var judge_pic = 0;
         var old_tree = [11];
         var echartArr = [];
@@ -177,12 +273,14 @@
         var series = [];
         var data1 = [];
         var referenceChannel = [];
+        var tree_info;
+
         var sessionType = sessionStorage.getItem("sessionType");
         console.log(sessionType);
         if (sessionType == 1) {
             var uploadfilenewname = JSON.parse(sessionStorage.getItem("uploadnewname"));
             $.ajax({
-                url: /parse_ppt/,
+                url: '/calculate/parse_ppt/',
                 dataType: "json",
                 data: JSON.stringify({"fileList": uploadfilenewname}),
                 type: "put",
@@ -208,7 +306,8 @@
         function getpic() {
             for (let i = 0; i < echartdata.length; i++) {
                 letdata = echartdata[i].data;
-                let filename = echartdata[i].filename;
+                let filename = echartdata[i].channel;
+                let leg = echartdata[i].filename
                 let chartnum = "main" + i;
                 var imgsection = "<div  class='imgstyle' id=" + chartnum + "></div>";
                 $("#addsec").append(imgsection);
@@ -216,7 +315,7 @@
                 var option = {
                     title: {
                         text: filename,
-                        x: 'center',
+                        x: '8%',
                         y: 'top',
                     },
                     xAxis: {
@@ -224,11 +323,13 @@
                         {#name: '横坐标',#}
                         {#fontSize: '25'#}
                     },
+
                     yAxis: {
                         type: 'value',
                         {#name: '纵坐标',#}
                         {#fontSize: '25'#}
                     },
+
                     dataZoom: [
                         {
                             type: 'slider',
@@ -243,22 +344,22 @@
                             end: 100
                         },
                     ],
+                    toolbox: {
+
+                        feature: {
+                            restore: {},
+                            saveAsImage: {},
+                        }
+                    },
+                    legend: {leg},
+
                     series: [
                         {
                             type: 'line',
-                            {#itemStyle: {#}
-                            {#    opacity: 1,#}
-                            {#    normal: {#}
-                            {##}
-                            {#        lineStyle: {#}
-                            {#            width: 1,#}
-                            {#             color: '#FFD700',#}
-                            {#        }#}
-                            {#    }#}
-
                             symbolSize: 0.1,
                             showAllSymbol: false,
-                            data: letdata
+                            data: letdata,
+                            name: leg,
                         }
                     ],
                     animation: false
@@ -305,6 +406,17 @@
                         type: 'value',
                         {#name: '纵坐标',#}
                         {#fontSize: '25'#}
+                    },
+                    toolbox: {
+
+                        feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none',
+                            },
+                            restore: {},
+                            saveAsImage: {},
+                            dataView: {readOnly: false},
+                        }
                     },
                     dataZoom: [
                         {
@@ -362,34 +474,63 @@
             window.open('/test_page/')
         }
 
+        String.prototype.signMix = function () {
+            if (arguments.length === 0) return this;
+            var param = arguments[0], str = this;
+            if (typeof (param) === 'object') {
+                for (var key in param)
+                    str = str.replace(new RegExp("\\{" + key + "\\}", "g"), param[key]);
+                return str;
+            } else {
+                for (var i = 0; i < arguments.length; i++)
+                    str = str.replace(new RegExp("\\{" + i + "\\}", "g"), arguments[i]);
+                return str;
+            }
+        };
+
+        var exportdata=[];
+        function exportexcel() {
+            console.log("111");
+            var table = layui.table;
+            for(let i = 0 ; i<exportdata.length;i++){
+                table.exportFile(listblock, exportdata[i], 'xls')
+            }
+        }
+
         function getTree() {
             var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
             console.log(send_message);
             $.ajax({
-                url: "/channelList/",
+                url: "/calculate/channellist/",
                 dataType: "json",
                 type: "put",
                 data: JSON.stringify({"file_info": send_message}),
                 success: function (result) {
-                    console.log("111"+result);
+                    console.log(result);
+                    tree_info = result.file_info;
                     old_tree = result.file_info;
                     console.log(old_tree);
-                    data1 = old_tree;
+                    data1 = result;
                     var VList = result.channel_list;
                     for (let i = 0; i < VList.length; i++) {
                         $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
-                        $("#referenceChannel").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
+                        $("#referenceChannel").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + ">");
                     }
 
                     layui.use(['tree', 'util', 'form', 'layer'], function () {
-                        var tree = layui.tree
-                            , layer = layui.layer
-                            , form = layui.form
-                        util = layui.util
+                        var tree = layui.tree,
+                            layer = layui.layer,
+                            form = layui.form,
+                            util = layui.util,
+                            layedit = layui.layedit;
+                        laydate = layui.laydate;
+                        $ = layui.jquery;
+                        upload = layui.upload;
+
                         //基本演示
                         tree.render({
                             elem: '#file_tree'
-                            , data: result.file_info
+                            , data: tree_info
                             , showCheckbox: true  //是否显示复选框
                             , id: 'demoId12'
                             , isJump: true //是否允许点击节点时弹出新窗口跳转
@@ -398,6 +539,7 @@
                                 layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
                             }
                         });
+
 
                         form.render();
                         form.on('checkbox(selectChannellist)', function (data) {
@@ -425,24 +567,120 @@
                             getChecked: function (othis) {
                                 var checkedData = tree.getChecked('demoId12'); //获取选中节点的数据
                                 layer.alert(JSON.stringify(checkedData), {shade: 0});
-                                console.log(checkedData);
                             }
                             ,
                             changeTree: function () {
                                 changeTreeView();
                             },
-                            pic_data: function () {
-                                checkedData1 = tree.getChecked('demoId12'); //获取选中节点的数据
-                                checkedData1 = JSON.parse(JSON.stringify(checkedData1));
-                                getchannellist();
-                                console.log(checkedData1);
-
+                            pic_data2: function (othis) {
+                                console.log(old_tree);
+                                document.getElementById("listblock").innerHTML = "";
+                                let ph1 = document.getElementsByClassName("el-input__inner");
+                                let stepvalue = ph1[0].value;
+                                let checkedData2 = tree.getChecked('demoId12'); //获取选中节点的数据
+                                console.log(checkedData2);
+                                let file_channel11 = tree.getChecked('demoId12');//qqq
+                                let checkedData3 = JSON.parse(JSON.stringify(checkedData2));
+                                referenceChannel = [];
                                 $("#referenceChannel input:checkbox:checked").each(function (i) {
                                     referenceChannel.push($(this).val());
                                 });
-                                console.log(referenceChannel);
+                                let channel_number = [];
+                                for (let i = 0; i < checkedData3.length; i++) {
+                                    for (let j = 0; j < checkedData3[i].children.length; j++) {
+                                        for (let k = 0; k < checkedData3[i].children[j].children.length; k++) {
+                                            let channelname = checkedData3[i].children[j].children[k].title;
+                                            channel_number.push(channelname)
+                                        }
+                                    }
+                                }
+                                ;
+                                let calculatename = $("#calculate option:selected").val();
+                                let getdata1 = old_tree;
+                                getdata1[0].children = file_channel11[0].children;
+                                getdata1[0].calculate_name = calculatename;
+                                getdata1[0].refer_channel = referenceChannel;
+                                getdata1[0].step = stepvalue;
+                                $.ajax({
+                                    url: '/calculate/parse_ppt/',
+                                    dataType: "json",
+                                    data: JSON.stringify(getdata1[0]),
+                                    type: "patch",
+                                    success: function (result) {
+                                        console.log(result);
+                                       // if(result.code==0){
+                                         //   alert(result.msg)
+                                        //}
+                                        //test测试代码
+                                        for (let i = 0; i < result.result.length; i++) {
+                                            let result_text = {};
+                                            result_text.data = [];
+                                            result_text.filename = result.result[i].filename;
+                                            for (let j = 0; j < result.result[i].data.length; j++) {
+                                                let k = result.result[i].data[j];
+                                                let keys1 = [];
+                                                for (var p1 in k) {
+                                                    if (k.hasOwnProperty(p1)) {
+                                                        keys1.push(p1)
+                                                    }
+                                                }
+                                                for (let m = 0; m < result.result[i].data[j][keys1[0]].length; m++) {
+                                                    let t = result.result[i].data[j][keys1[0]][m];
+                                                    console.log(t);
+                                                    t.channel = keys1[0];
+                                                    {#console.log(t.point);#}
+                                                    {#t.point.splice(0, 1);#}
+                                                    t.point = "("+t.point[0]+", "+t.point[1]+")";
+                                                    t.range = t.range[0] + "-" + t.range[1];
+                                                    result_text.data.push(t);
+                                                }
+                                            }
+
+                                            $("#listblock").append("<table class='layui-hide table-content' id='test" + i + "'></table>");
+                                            let result_j = result_text.data;
+                                            exportdata.push(result_text.data);
+                                            layui.use('table', function () {
+                                                var table = layui.table;
+                                                table.render({
+                                                    elem: '#test{0}'.signMix(i),
+                                                    data: result_j
+                                                    , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                                                    , limit: 200,
+                                                    cols: [
+                                                        [
+                                                            {title: result_text.filename, colspan: 3, align: "center"}
+                                                        ],
+                                                        [
+                                                            {field: 'channel', width: 180, title: '通道名',}
+                                                            , {field: 'range', width: 180, title: '范围'}
+                                                            , {field: 'point', width: 180, title: '最大值',}
+
+                                                        ]]
+                                                });
+                                            });
+                                        }
+                                    }
+                                });
+                            },
+                            exportdata: function () {
+
+                            },
+
+
+                            pic_data: function () {
+                                document.getElementById("listblock").innerHTML = "";
+                                let checkedData4 = tree.getChecked('demoId12'); //获取选中节点的数据
+                                console.log(checkedData4);
+                                let file_channel = tree.getChecked('demoId12');//qqq
+                                let checkedData1 = JSON.parse(JSON.stringify(checkedData4));
+                                //getchannellist();
+                                referenceChannel = [];
+                                $("#referenceChannel input:checkbox:checked").each(function (i) {
+                                    referenceChannel.push($(this).val());
+                                });
+                                //console.log(referenceChannel);
                                 //
-                                var channel_number = [];
+                                let channel_number = [];
                                 for (let i = 0; i < checkedData1.length; i++) {
                                     for (let j = 0; j < checkedData1[i].children.length; j++) {
                                         for (let k = 0; k < checkedData1[i].children[j].children.length; k++) {
@@ -450,18 +688,17 @@
                                             channel_number.push(channelname)
                                         }
                                     }
-                                };
+                                }
+                                ;
                                 let calculatename = $("#calculate option:selected").val();
-
-                                var getdata  = old_tree;
-
-                                getdata[0].children = checkedData1[0].children;
+                                let getdata = old_tree;
+                                getdata[0].children = file_channel[0].children;
                                 getdata[0].calculate_name = calculatename;
                                 getdata[0].refer_channel = referenceChannel;
                                 console.log(getdata);
 
                                 $.ajax({
-                                    url: /user_calculate/,
+                                    url: '/calculate/user_calculate/',
                                     dataType: "json",
                                     data: JSON.stringify(getdata[0]),
                                     type: "put",
@@ -470,18 +707,16 @@
                                         console.log(result);
                                         getpic();
                                     }
-
                                 });
-
-
                             },
+
+
                             setChecked: function () {
-                                tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+                                tree.setChecked('demoId12', [12, 16]); //勾选指定节点
                             }
                             , reload: function () {
                                 //重载实例
-                                tree.reload('demoId1', {});
-
+                                tree.reload('demoId12', {});
                             }
                         });
                     });
@@ -489,16 +724,17 @@
             });
         };
 
+
         function clickchannel() {
             layui.use(['tree', 'util'], function () {
                 var tree = layui.tree,
                     layer = layui.layer,
                     util = layui.util,
                     form = layui.form,
-                    data = data1
+                    datah = data1
                 tree.render({
                     elem: '#file_tree'
-                    , data: data
+                    , data: tree_info
                     , showCheckbox: true  //是否显示复选框
                     , id: 'demoId12'
                     , isJump: true //是否允许点击节点时弹出新窗口跳转
@@ -533,7 +769,7 @@
                     }
                     tree.render({
                         elem: '#file_tree'
-                        , data: old_tree
+                        , data: tree_info
                         , showCheckbox: true  //是否显示复选框
                         , id: 'demoId12'
                         , isJump: true //是否允许点击节点时弹出新窗口跳转
@@ -555,11 +791,8 @@
                 //监听提交
                 form.on('submit(formDemo)', function (data) {
                     let calculatename = $("#calculate option:selected").val();
-
-
-
                     $.ajax({
-                        url: "/channelList/",
+                        url: "/calculate/channellist/",
                         dataType: "json",
                         type: "post",
                         data: JSON.stringify({"calculate": calculatename, "file_info": checkedData1[0]}),

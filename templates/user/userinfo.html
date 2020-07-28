@@ -125,8 +125,8 @@
         function submitinfo() {
             //定义变量sendData
             $.ajax({
-                url: '/user/' + user_id,
-                type: 'post',
+                url: '/user/user/' + user_id,
+                type: 'PUT',
                 dataType: 'json',
                 async: true,//异步请求
                 data: {

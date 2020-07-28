@@ -1,0 +1,677 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}UPLOAD{% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <style>
+        .layui-form-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .layui-elem-field legend {
+            font-weight: bold;
+        }
+
+        .layui-table td, .layui-table th {
+            font-weight: bold;
+        }
+
+        .list-data {
+            font-size: 18px;
+            padding: 3px;
+            height: 35px;
+            line-height: 35px
+        }
+
+        .list-data img {
+            height: 50%;
+            padding-top: 2px;
+            width: auto
+        }
+    </style>
+    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        #app {
+            margin-top: 30px;
+        }
+
+        h3 {
+            display: flex;
+            flex-direction: row;
+            font-size: 22px;
+        }
+
+        h3:before,
+        h3:after {
+            content: "";
+            flex: 1 1;
+            border-bottom: 1px solid #000;
+            margin: 10px;
+        }
+
+        .item-flex {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        #submit-button {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #app {
+            display: flex;
+        }
+
+        #content1 {
+            width: 30%;
+            margin-left: 20%;
+        }
+
+        #content2 {
+            width: 30%;
+        }
+
+        #content1 div {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        #content1 div span:nth-child(1) {
+            width: 150px;
+            line-height: 45px;
+        }
+
+        .el-input__inner {
+            width: auto;
+        }
+
+        .el-input {
+            width: auto;
+        }
+
+        #content2 {
+            margin-left: 10%;
+        }
+
+        #content2 div {
+            display: flex;
+            margin-bottom: 5px;
+        }
+
+        #content2 div span:nth-child(1) {
+            width: 150px;
+            line-height: 45px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-fluid">
+        <div class="layui-card" style="padding: 10px">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>抱怨信息表</legend>
+            </fieldset>
+
+            <div id="app">
+                <div id="content1">
+                    <div>
+                        <div><span><span style="color: red">*</span>简单描述：</span></div>
+                        <el-select v-model="brief_description" placeholder="请选择">
+                            <el-option v-for="item in car_briefDescription"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>抱怨详细描述：</span></div>
+                        <el-input
+                                type="textarea"
+                                :autosize="{ minRows: 2, maxRows: 4}"
+                                placeholder="请输入内容"
+                                v-model="detailed_description">
+                        </el-input>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>抱怨来源：</span></div>
+                        <el-input v-model="source" placeholder="如：CVF08/2020" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span>抱怨特征：</span></div>
+                        <el-select v-model="complain_features" placeholder="请选择" @change="changefeature">
+                            <el-option label="频率" value="frequency"></el-option>
+                            <el-option label="阶次" value="order"></el-option>
+                        </el-select>
+                    </div>
+                    <div v-show="Frequency_show">
+                        <div><span>频率：</span></div>
+                        <el-input v-model="frequency" placeholder="频率值" clearable></el-input>
+                    </div>
+                    <div v-show="Order_show">
+                        <div><span>阶次：</span></div>
+                        <el-input v-model="order" placeholder="阶次" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>工况：</span></div>
+                        <el-select v-model="condition" placeholder="请选择">
+                            <el-option v-for="item in car_condition"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span>关键零件或因素：</span></div>
+                        <el-input v-model="key_parts" placeholder="" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span>措施：</span></div>
+                        <el-input v-model="measure" placeholder="具体措施" clearable></el-input>
+                    </div>
+                </div>
+
+                <div id="content2">
+                    <div>
+                        <div><span><span style="color: red">*</span>车型：</span></div>
+                        <el-select v-model="car_modal" placeholder="请选择">
+                            <el-option v-for="item in carmodal"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>发动机：</span></div>
+                        <el-select v-model="car_engine" placeholder="请选择">
+                            <el-option v-for="item in engine"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>变速箱：</span></div>
+                        <el-select v-model="car_gearbox" placeholder="请选择">
+                            <el-option v-for="item in gearbox"
+                                       :key="item.value"
+                                       :label="item.label"
+                                       :value="item.value"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>功率：</span></div>
+                        <el-select v-model="power" placeholder="请选择">
+                            <el-option label="区域一1" value="shanghai12"></el-option>
+                            <el-option label="区域二12" value="beijing12"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span>轮胎信息：</span></div>
+                        <el-input v-model="frequency" placeholder="供应商" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span></span></div>
+                        <el-input v-model="frequency" placeholder="轮胎尺寸" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span></span></div>
+                        <el-input v-model="frequency" placeholder="轮胎花纹" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span><span style="color: red">*</span>上传人：</span></div>
+                        <el-input v-model="user_name" clearable placeholder="上传人"></el-input>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>文件上传</legend>
+            </fieldset>
+
+            <div id="app2">
+                <el-form :inline="true" class="demo-form-inline item-flex">
+                    <el-form-item label="抱怨原始数据：">
+                        <el-upload
+                                class="upload-demo"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                multiple
+                                :limit="3"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传hdf文件</div>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="抱怨特征图：">
+                        <el-upload
+                                class="upload-demo"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                multiple
+                                :limit="1"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="抱怨音频：">
+                        <el-upload
+                                class="upload-demo"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                multiple
+                                :limit="1"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="分析报告：">
+                        <el-upload
+                                class="upload-demo"
+                                action="https://jsonplaceholder.typicode.com/posts/"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :before-remove="beforeRemove"
+                                multiple
+                                :limit="1"
+                                :on-exceed="handleExceed"
+                                :file-list="fileList">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
+                    </el-form-item>
+                </el-form>
+                <div id="submit-button">
+                    <el-button type="primary" style="background-color: #009688;">开始上传</el-button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script>
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                $ = layui.jquery,
+                upload = layui.upload;
+        })
+
+        function handleChange() {
+            var ph2 = document.getElementsByClassName("el-input__inner");
+            console.log(ph2[0].value);
+            console.log(ph2[0].text);
+            console.log(zhi1);
+        }
+
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    car_modal: '',
+                    car_engine: '',
+                    car_gearbox: '',
+                    source: '',
+                    power: '',
+                    condition: '',
+                    complain_features: 'frequency',
+                    frequency: '',
+                    order: '',
+                    user_name: '',
+                    key_parts: '',
+                    measure: '',
+                    tire_type: '',
+                    detailed_description: '',
+                    Frequency_show: true,
+                    Order_show: false,
+                    gearbox: [{
+                        value: 'AL551e-8F',
+                        label: 'AL551e-8F'
+                    }, {
+                        value: 'MQ250-5F',
+                        label: 'MQ250-5F'
+                    }, {
+                        value: 'MQ350-6F',
+                        label: 'MQ350-6F'
+                    }, {
+                        value: 'MQ200-5F',
+                        label: 'MQ200-5F'
+                    }, {
+                        value: 'AQ160-6F',
+                        label: 'AQ160-6F'
+                    }, {
+                        value: 'DQ200-7F',
+                        label: 'DQ200-7F'
+                    }, {
+                        value: 'DQ250-6F',
+                        label: 'DQ250-6F'
+                    }, {
+                        value: 'DQ380-7F',
+                        label: 'DQ380-7F'
+                    }, {
+                        value: 'DQ381-7F',
+                        label: 'DQ381-7F'
+                    }, {
+                        value: 'DQ381-7A',
+                        label: 'DQ381-7A'
+                    }, {
+                        value: 'DQ500-7F',
+                        label: 'DQ500-7F'
+                    }, {
+                        value: 'DQ500-7A',
+                        label: 'DQ500-7A'
+                    }, {
+                        value: 'DQ501-7F',
+                        label: 'DQ501-7F'
+                    }, {
+                        value: 'DQ501-7A',
+                        label: 'DQ501-7A'
+                    }, {
+                        value: 'DL501-7A',
+                        label: 'DL501-7A'
+                    }, {
+                        value: 'DL382-7F',
+                        label: 'DL382-7F'
+                    }, {
+                        value: 'DL382-7A',
+                        label: 'DL382-7A'
+                    }, {
+                        value: 'DQ400E-6F',
+                        label: 'DQ400E-6F'
+                    }, {
+                        value: 'EQ270-1F',
+                        label: 'EQ270-1F'
+                    }, {
+                        value: '电驱动减速器',
+                        label: '电驱动减速器'
+                    }],
+                    car_condition: [{
+                        value: '加/减速',
+                        label: '加/减速'
+                    }, {
+                        value: '匀速',
+                        label: '匀速'
+                    }, {
+                        value: '滚动噪声',
+                        label: '滚动噪声'
+                    }, {
+                        value: '怠速',
+                        label: '怠速'
+                    }, {
+                        value: '启停',
+                        label: '启停'
+                    }, {
+                        value: '底盘舒适性',
+                        label: '底盘舒适性'
+                    }, {
+                        value: '手动输入',
+                        label: '手动输入'
+                    }],
+                    carmodal: [{
+                        value: 'T-Cross',
+                        label: 'T-Cross'
+                    }, {
+                        value: 'Polo NF',
+                        label: 'Polo NF'
+                    }, {
+                        value: 'Entry NB',
+                        label: 'Entry NB'
+                    }, {
+                        value: 'Lamando PA',
+                        label: 'Lamando PA'
+                    }, {
+                        value: 'Lavida',
+                        label: 'Lavida'
+                    }, {
+                        value: 'Octavia A7',
+                        label: 'Octavia A7'
+                    }, {
+                        value: 'Gran Lavida',
+                        label: 'Gran Lavida'
+                    }, {
+                        value: 'Tharu',
+                        label: 'Tharu'
+                    }, {
+                        value: 'Karoq',
+                        label: 'Karoq'
+                    }, {
+                        value: 'Lavida BEV',
+                        label: 'Lavida BEV'
+                    }, {
+                        value: 'Tharu BEV',
+                        label: 'Tharu BEV'
+                    }, {
+                        value: 'Lamando NF',
+                        label: 'Lamando NF'
+                    }, {
+                        value: 'Octavia A8',
+                        label: 'Octavia A8'
+                    }, {
+                        value: 'Tiguan L',
+                        label: 'Tiguan L'
+                    }, {
+                        value: 'Kodiaq',
+                        label: 'Kodiaq'
+                    }, {
+                        value: 'Touran L',
+                        label: 'Touran L'
+                    }, {
+                        value: 'Tiguan Coupe',
+                        label: 'Tiguan Coupe'
+                    }, {
+                        value: 'Tiguan L PHEV',
+                        label: 'Tiguan L PHEV'
+                    }, {
+                        value: 'Kodiaq GT',
+                        label: 'Kodiaq GT'
+                    }, {
+                        value: 'B SUV',
+                        label: 'B SUV'
+                    }, {
+                        value: 'B MPV',
+                        label: 'B MPV'
+                    }, {
+                        value: 'B SUV Coupe',
+                        label: 'B SUV Coupe'
+                    }, {
+                        value: 'NMS NF',
+                        label: 'NMS NF'
+                    }, {
+                        value: 'Superb NF',
+                        label: 'Superb NF'
+                    }, {
+                        value: 'NMS NF PHEV',
+                        label: 'NMS NF PHEV'
+                    }, {
+                        value: 'Polo',
+                        label: 'Polo'
+                    }, {
+                        value: 'Santana',
+                        label: 'Santana'
+                    }, {
+                        value: 'Rapid',
+                        label: 'Rapid'
+                    }, {
+                        value: 'Tiguan SR',
+                        label: 'Tiguan SR'
+                    }, {
+                        value: 'NMS',
+                        label: 'NMS'
+                    }, {
+                        value: 'Kamiq',
+                        label: 'Kamiq'
+                    }, {
+                        value: 'Kamiq GT',
+                        label: 'Kamiq GT'
+                    }, {
+                        value: 'Lavida SR',
+                        label: 'Lavida SR'
+                    }, {
+                        value: 'A SUVe',
+                        label: 'A SUVe'
+                    }, {
+                        value: 'Aero A+',
+                        label: 'Aero A+'
+                    }, {
+                        value: 'AerB Neo',
+                        label: 'AerB Neo'
+                    }, {
+                        value: 'Lounge A SUVe',
+                        label: 'Lounge A SUVe'
+                    }, {
+                        value: 'Phideon',
+                        label: 'Phideon'
+                    }, {
+                        value: 'Audi A7L',
+                        label: 'Audi A7L'
+                    }],
+                    engine: [{
+                        value: '1.5L',
+                        label: '1.5L'
+                    }, {
+                        value: '1.4L',
+                        label: '1.4L'
+                    }, {
+                        value: '1.6L',
+                        label: '1.6L'
+                    }, {
+                        value: '1.4T',
+                        label: '1.4T'
+                    }, {
+                        value: '1.2T',
+                        label: '1.2T'
+                    }, {
+                        value: '1.8T',
+                        label: '1.8T'
+                    }, {
+                        value: '2.0T',
+                        label: '2.0T'
+                    }, {
+                        value: '2.5T',
+                        label: '2.5T'
+                    }, {
+                        value: '3.0L',
+                        label: '3.0L'
+                    }, {
+                        value: 'APP310 Base+',
+                        label: 'APP310 Base+'
+                    }, {
+                        value: 'AKA150 Base-',
+                        label: 'AKA150 Base-'
+                    }, {
+                        value: 'APP290',
+                        label: 'APP290'
+                    }, {
+                        value: 'HEM80',
+                        label: 'HEM80'
+                    }],
+                    car_briefDescription: [{
+                        value: 'Brummen',
+                        label: 'Brummen'
+                    }, {
+                        value: 'Pfeifen',
+                        label: 'Pfeifen'
+                    }, {
+                        value: 'Heulen',
+                        label: 'Heulen'
+                    }, {
+                        value: 'Schnarren',
+                        label: 'Schnarren'
+                    }, {
+                        value: 'Rasseln',
+                        label: 'Rasseln'
+                    }, {
+                        value: 'Heckraeusch',
+                        label: 'Heckraeusch'
+                    }, {
+                        value: 'Rollgeraeusch',
+                        label: 'Rollgeraeusch'
+                    }, {
+                        value: 'Torus',
+                        label: 'Torus'
+                    }, {
+                        value: 'Start/stop',
+                        label: 'Start/stop'
+                    }, {
+                        value: 'Motor Rauh/laut/present',
+                        label: 'Motor Rauh/laut/present'
+                    }, {
+                        value: 'Bodyboom',
+                        label: 'Bodyboom'
+                    }, {
+                        value: 'self_input',
+                        label: '自行输入'
+                    }],
+                    brief_description: '',
+
+
+                }
+            },
+            methods: {
+                changefeature() {
+                    if (this.complain_features == "frequency") {
+                        this.Frequency_show = true;
+                        this.Order_show = false
+                    } else {
+                        this.Frequency_show = false;
+                        this.Order_show = true;
+                    }
+                }
+            }
+
+        })
+        new Vue({
+            el: '#app2',
+            data: function () {
+                return {
+
+
+                    fileList: [{
+                        name: 'food.jpeg',
+                        url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
+                    }],
+
+                }
+            },
+            methods: {
+                handleRemove(file, fileList) {
+                    console.log(file, fileList);
+                },
+                handlePreview(file) {
+                    console.log(file);
+                },
+                handleExceed(files, fileList) {
+                    this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                },
+                beforeRemove(file, fileList) {
+                    return this.$confirm(`确定移除 ${file.name}？`);
+                }
+            },
+        })
+    </script>
+{% endblock %}

@@ -313,7 +313,7 @@
     <script>
         function confirmCalculate() {
             sessionStorage.setItem("sessionType", 0);
-            window.location.href ="/calculate/" ;
+            window.location.href ="/calculate/parse/" ;
 
         }
 
@@ -326,7 +326,7 @@
             sessionArray = JSON.parse(judge_sessionValue);
             for (var i = 0; i < sessionArray.length; i++) {
                 $(".data-list").append(
-                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${sessionArray[i].file_name}</div>`
+                    `<div class='list-data'><img class='list-data-close' src="{% static '/image/close.png' %}"/>${sessionArray[i].file_name}</div>`
                 );
             }
             ;
@@ -353,16 +353,15 @@
             });
         }
 
-        // layui.config({
-        //     base: '{% static 'home/' %}' //静态资源所在路径
-        // }).use('index', function () {
-        //     var $ = layui.jquery,
-        //         layer = layui.layer,
-        //         // admin = layui.admin,
-        //         element = layui.element,
-        //         table = layui.table,
-        //         form = layui.form;
-        // });
+
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
+            var form = layui.form;
+                layer = layui.layer;
+                layedit = layui.layedit;
+                laydate = layui.laydate;
+                $ = layui.jquery;
+                upload = layui.upload
+        });
     </script>
 
     <!-- 使用script的方式把这段代码添加到html中 -->
@@ -377,7 +376,7 @@
         function data_download() {
             console.log(sessionArray);
             for (let i = 0; i < sessionArray.length; i++) {
-                download('第' + i + '个文件', "/download/" + sessionArray[i].pk + "/?user_id=" + user_id);
+                download('第' + i + '个文件', "/test/download/" + sessionArray[i].pk + "/?user_id=" + user_id);
             }
             var compare_dataBlock = document.getElementById('dataDownload');
             compare_dataBlock.style.display = "none";
@@ -428,7 +427,7 @@
             }
             cookie_list = cookieChoiceIdArray.splice(-1, 1)
             for (var i in cookieChoiceIdArray) {
-                mp3arr.splice(-1, 0, "/download/" + parseInt(cookieChoiceIdArray[i]))
+                mp3arr.splice(-1, 0, "/test/download/" + parseInt(cookieChoiceIdArray[i]))
             }
             for (let index = 0; index < mp3arr.length; index++) {
                 download('第' + index + '个文件', mp3arr[index]);
@@ -445,9 +444,9 @@
             //方法级渲染
             tableIns = table.render({
                 elem: '#info', // 找到制定的容器
-                url: "/parse_file/", // 表格请求的URL
+                url: "/test/search/", // 表格请求的URL
                 page: true, // 是否分页
-                limit: 20, // 一页显示多少条数据
+                limit: 30, // 一页显示多少条数据
                 height: 'full-130', // 表格的高度
                 // even: true, // 隔行背景
                 // skin: 'line', // 行边框风格
@@ -474,6 +473,11 @@
                         field: 'status',
                         title: '试验工况',
                         width: '20%'
+                    }, {
+                        field: 'file_status',
+                        title: '是否可计算',
+                        width: '5%',
+                        align: 'center'
                     }, {
                         field: 'author',
                         title: '试验员',
@@ -632,7 +636,7 @@
 
                             for (var i = 0; i < add_arrayData.length; i++) {
                                 $(".data-list").append(
-                                    `<div class='list-data'><img class='list-data-close' src='/static/image/close.png'/>${add_arrayData[i].file_name}</div>`
+                                    `<div class='list-data'><img class='list-data-close' src="{% static '/image/close.png' %}"/>${add_arrayData[i].file_name}</div>`
                                 );
                             }
                             ;

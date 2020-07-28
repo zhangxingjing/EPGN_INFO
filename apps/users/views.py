@@ -1,3 +1,4 @@
+import os
 import json
 from .serializers import *
 from django.views import View
@@ -7,20 +8,17 @@ from django.shortcuts import render
 from django.core import serializers
 from django.http import JsonResponse
 from fileinfo.models import Fileinfo
+from django.contrib.auth import logout
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, status
-from django.contrib.auth import authenticate, logout
 from django.core import serializers as dc_serializers
 from django.contrib.auth.hashers import make_password
-from rest_framework.permissions import IsAuthenticated
-from .serializers import AuthUserSerializer, UserFileSerializer
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
+from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
-# Admin创建用户
 class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
-    serializer_class = AuthUserSerializer
+    serializer_class = UserSerializer
     queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):
@@ -32,79 +30,96 @@ class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.List
         return Response(serializers.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-# 获取用户信息： url('^user/$', views.UserDetailView.as_view()),
-class UserDetailView(RetrieveAPIView):
-    serializer_class = UserDetailSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return self.request.user
-
-
-# 获取用户数据： router.register(r'^user_name', UserInfoViewSet)
-class UserInfoViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
-    serializer_class = UserFileSerializer
+    serializer_class = UserSerializer
 
-    # 删："DELETE" /user_name/3
+    def retrieve(self, request, *args, **kwargs):
+        return render(request, 'user/userinfo.html')
+
+    def update(self, request, *args, **kwargs):
+        print("通过UPDATE")
+        # partial = kwargs.pop('partial', False)
+        # instance = self.get_object()
+        # serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        # serializer.is_valid(raise_exception=True)
+        # self.perform_update(serializer)
+        #
+        # if getattr(instance, '_prefetched_objects_cache', None):
+        #     instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+
+class UserFileViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-id')
+    serializer_class = UserSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        """查询用户数据"""
+        # instance = self.get_object()
+        # items = Fileinfo.objects.filter(author=instance)
+        # items = json.loads(dc_serializers.serialize("json", items))  # 序列化
+        # return Response(data=items)
+        page = request.GET.get('page', "1")
+        limit = int(request.GET.get('limit', "20"))
+
+        user = User.objects.get(username=self.get_object())
+        search_dict = {}
+        search_dict["author"] = user.username
+        items = Fileinfo.objects.filter(**search_dict).order_by('-id')
+        paginator = Paginator(items, limit)
+        try:
+            page_item = paginator.page(page)
+        except PageNotAnInteger:
+            page_item = paginator.page(1)
+        except EmptyPage:
+            page_item = paginator.page(paginator.num_pages)
+        items = json.loads(serializers.serialize("json", page_item))
+
+        # 构建数据列表
+        res_list = []
+        for item in items:
+            item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
+            res_list.append(item["fields"])
+        res = {
+            "code": 0,
+            "msg": "OK",
+            "count": paginator.count,  # 数据的条数
+            "data": res_list  # 返回的数据列表
+        }
+        return JsonResponse(res)
+
     def destroy(self, request, *args, **kwargs):
-        items = []
-        file_list = request.PSOT.get("file_list", None)
+        """删除用户数据"""
+        instance = self.get_object()  # username
+        file_list = json.loads(request.body.decode())["file_list"]
         for file_id in file_list:
             file = Fileinfo.objects.get(id=file_id)
-            file.delete()
-
-        return JsonResponse({"items": items})  # 用户删除数据完成之后刷新页面上的显示
-
-    # 改： "PATCH" /user_name/3/
-    def update(self, request, *args, **kwargs):
-        # 获取数据
-        username = request.POST.get("username", None)
-        old_password = request.POST.get("old_password", None)
-        new_password = request.POST.get("new_password", None)
-        re_password = request.POST.get("re_password", None)
-
-        user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
-        if user is None:
-            return JsonResponse({"info": "当前密码输入错误，请重新输入！"})
-        if new_password != re_password:
-            return JsonResponse({"info": "两次密码输入不同，请重新输入！"})
-        if user.is_active:  # 判断当前用户是否登录
-            return JsonResponse({"items": "当前用户未登录，请 登录 后修改密码！"})
-        user = User.objects.get(username=username)
-        with transaction.atomic():  # 数据库回滚
-            try:
-                user.set_password(new_password)
-                user.save()
-                data = {"info": "密码修改成功，请重新登录！"}
-            except Exception as error:
-                user = user
-                data = {"info": "密码修改失败，请联系超管！"}
-        return JsonResponse(data)
-
-    # 查： "GET" /user_name/3/
-    def list(self, request, *args, **kwargs):
-        # 如果返回的是当前用户名，就可以直接根据用户名获取数据
-        job_number = request.GET.get("job_number")
-        user = User.objects.get(job_number=job_number)
-        file_info = Fileinfo.objects.filter(author=user.username)  # 获取当前用户名的数据
-        items = json.loads(dc_serializers.serialize("json", file_info))  # 序列化
-        return JsonResponse({"items": items})
+            with transaction.atomic():
+                try:
+                    file.delete()
+                    head_file_path = os.path.join(FILE_HEAD_PATH, file.file_name)
+                    if os.path.isfile(head_file_path):
+                        os.remove(head_file_path)
+                    read_file_path = os.path.join(FILE_READ_PATH, file.file_name)
+                    if os.path.isfile(read_file_path):
+                        os.remove(read_file_path)
+                except:
+                    return Response(data="删除失败")
+        items = Fileinfo.objects.filter(author=instance)
+        items = json.loads(dc_serializers.serialize("json", items))
+        return Response(data=items, )
 
 
-# 退出登录
 class LogoutView(View):
-    """退出登录'"""
-
     def get(self, request):
         logout(request)
-        return render(request, 'login.html')
+        return render(request, 'user/login.html')
 
 
-# home页面
 def home(request):
     if request.method == "GET":
-        return render(request, 'home.html')
+        return render(request, 'user/home.html')
     user_id = request.POST.get("user_id")  # 当前端直接使用参数请求的时候
     user = User.objects.get(id=user_id)
     user_views = user.views
@@ -129,68 +144,3 @@ def home(request):
         "user_task_info": [task_info.name for task_info in user_task_info],
     }
     return JsonResponse(user_data)
-
-
-# 渲染用户个人数据
-def user_file(request, pk):
-    # 前端传递筛选的额数据, 这里返回符合当前条件的数据 ==> 前端发送请求时候就是这个格式
-
-    page = request.GET.get('page', "1")
-    limit = int(request.GET.get('limit', "20"))
-
-    user = User.objects.get(id=pk)
-    search_dict = {}
-    search_dict["author"] = user.username
-    items = Fileinfo.objects.filter(**search_dict).order_by('-id')
-    paginator = Paginator(items, limit)
-    try:
-        page_item = paginator.page(page)
-    except PageNotAnInteger:
-        page_item = paginator.page(1)
-    except EmptyPage:
-        page_item = paginator.page(paginator.num_pages)
-    items = json.loads(serializers.serialize("json", page_item))
-
-    # 构建数据列表
-    res_list = []
-    for item in items:
-        item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
-        res_list.append(item["fields"])
-    res = {
-        "code": 0,
-        "msg": "OK",
-        "count": paginator.count,  # 数据的条数
-        "data": res_list  # 返回的数据列表
-    }
-    return JsonResponse(res)
-
-
-# 用户信息
-def user_info(request, pk):
-    if request.method == "GET":
-        return render(request, 'userinfo.html')
-
-    user = User.objects.get(id=pk)
-    username = request.POST.get("username", None)
-    old_password = request.POST.get("old_password", None)
-    new_password = request.POST.get("new_password", None)
-    re_password = request.POST.get("re_password", None)
-
-    user = authenticate(username=username, password=old_password)  # 校验用户输入的旧密码是否正确
-    if user is None:
-        return JsonResponse({"info": "当前密码输入错误，请重新输入！"})
-    if new_password is None or re_password is None or new_password != re_password:
-        return JsonResponse({"info": "新密码输入错误，请重新输入！"})
-    if user.is_active is False:  # 判断当前用户是否登录
-        return JsonResponse({"items": "当前用户未登录，请 登录 后修改密码！"})
-    user = User.objects.get(username=username)
-    with transaction.atomic():  # 数据库回滚
-        try:
-            user.set_password(new_password)
-            user.save()
-            data = {"info": "密码修改成功，请重新登录！"}
-            return JsonResponse({"code": 1, "msg": data})
-        except Exception as error:
-            user = user
-            data = {"info": "密码修改失败，请联系超管！"}
-            return JsonResponse({"code": 0, "msg": data})

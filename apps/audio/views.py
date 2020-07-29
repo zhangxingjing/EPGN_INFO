@@ -3,10 +3,11 @@ import re
 import json
 from django.db.models import Q
 from django.db import transaction
+from django.shortcuts import render
 from django.core import serializers
 from rest_framework import viewsets
 from settings.dev import AUDIO_FILE_PATH
-from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from audio.models import Audio, Description, Frequency, Status
@@ -201,7 +202,15 @@ class AudioViewSet(viewsets.ModelViewSet):
         res_list = []
         for item in items:
             item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
-            res_list.append(item["fields"])
+        #     item["fields"]["car_modal"] = item["fields"].pop("car_model")
+        #     item["fields"]["car_engine"] = item["fields"].pop("propulsion")
+        #     item["fields"]["car_gearbox"] = item["fields"].pop("gearbox")
+        #     item["fields"]["detailed_description"] = item["fields"].pop("description")
+        #     item["fields"]["condition"] = item["fields"].pop("status")
+        #     item["fields"]["key_parts"] = item["fields"].pop("reason")
+        #
+        #     res_list.append(item["fields"])
+        #     print(item)
         # return Response(data={
         #     "code": 0,
         #     "msg": "OK",
@@ -212,8 +221,8 @@ class AudioViewSet(viewsets.ModelViewSet):
 
 
 # 返回等待页面的信息
-class Wait(APIView):
-    def get(self, request):
+class Wait(ViewSet):
+    def get_items(self, request):
         # 抱怨描述
         description = Description.objects.all()
         brief_description = DescriptionSerializer(description, many=True)
@@ -251,4 +260,12 @@ class Wait(APIView):
             "power": power.data,
             "condition": condition.data
         }
-        return Response(data=data)
+        return data
+
+    def search(self, request):
+        data = self.get_items(request)
+        return render(request, 'audio/audio_search.html', data)
+
+    def upload(self, request):
+        data = self.get_items(request)
+        return render(request, 'audio/audio_upload.html', data)

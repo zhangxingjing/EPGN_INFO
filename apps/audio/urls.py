@@ -12,7 +12,8 @@ router = DefaultRouter()
 router.register(r'^file', AudioViewSet)  # audio文件
 
 urlpatterns = [
-    url(r'^wait/$', Wait.as_view()),
+    url(r'^search/$', Wait.as_view({"get": "search"})),
+    url(r'^upload/$', Wait.as_view({"get": "upload"})),
 ]
 
 urlpatterns += router.urls

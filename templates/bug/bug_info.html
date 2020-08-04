@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}BUG{% endblock title %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'css/header.css' %}">
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script src="{% static 'js/header.js' %}"></script>
+    <script src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery.cookie.js' %}"></script>
+{% endblock link %}
+
+{% block content %}
+    <div class="layui-fluid">
+        <div class="layui-card" style="padding: 10px">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>需求提交</legend>
+            </fieldset>
+            <table class="layui-hide" id="test" lay-filter="test" lay-data="{id: 'idTest'}"></table>
+        </div>
+    </div>
+{% endblock content %}
+
+<script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+
+{% block javascript %}
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="edit">查看</a>
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="detail">新建</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script>
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element', 'table'], function () {
+            var layer = layui.layer,
+                $ = layui.jquery,
+            table = layui.table;
+
+            table.render({
+                elem: '#test'
+                , limit: 20
+                , page: true
+                , height: 'full-170'
+                , title: '用户数据表'
+                , url: '/bug/info/'
+                , cellMinWidth: 80
+                , cols: [[
+                    {type: 'numbers'}
+                    , {field: 'category', align: 'center', title: 'BUG分类'}
+                    , {field: 'level', align: 'center', title: 'BUG级别', sort: true}
+                    , {field: 'create_time', align: 'center', title: '提交时间', sort: true}
+                    , {field: 'author', align: 'center', title: '提交者'}
+                    , {field: 'developer', align: 'center', title: '修改者'}
+                    , {field: 'status', align: 'center', title: '状态', sort: true}
+                    , {fixed: 'right', align: 'center', title: '操作', toolbar: '#barDemo', width: 200}
+                ]]
+            });
+
+            //监听表格复选框选择
+            table.on('checkbox(test)', function (obj) {
+                console.log(obj)
+            });
+
+            //监听工具条
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'detail') {
+                    layer.open({
+                        type: 2,
+                        title: '提交',
+                        shadeClose: true,
+                        shade: 0.8,
+                        anim: 0,    // 显示动画
+                        area: ['80%', '60%'],
+                        content: '/bug/create/',
+                    });
+                } else if (obj.event === 'del') {
+                    if (obj.data["author"] === username) {
+                        layer.confirm('真的删除这条需求吗？', {
+                            icon: 3,
+                        }, function (index) {
+                            $.ajax({
+                                url: "/bug/info/" + obj.data["pk"],
+                                dataType: "html",
+                                method: "DELETE",
+                                success: layer.msg('删除成功！', {icon: 1})
+                            });
+                            obj.del();
+                        })
+                    } else {
+                        layer.confirm('没有权限！', {
+                            icon: 4,
+                            btn: ['好的', '取消']
+                        }, function () {
+                            layer.msg('强制删除，请联系管理员!', {icon: 6, time: 2000});
+                        });
+                    }
+                } else if (obj.event === 'edit') {
+                    layer.open({
+                        type: 2,
+                        title: '详情',
+                        shadeClose: true,
+                        shade: 0.8,
+                        anim: 0,    // 显示动画
+                        area: ['80%', '60%'],
+                        content: '/bug/info/' + data["pk"],
+                    });
+                }
+            })
+        })
+    </script>
+{% endblock javascript %}

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'fileinfo.apps.FileInfoConfig',
     'calculate.apps.CalculateConfig',
     'audio.apps.AudioConfig',
+    'bug.apps.BugConfig',
 ]
 
 # 中间件

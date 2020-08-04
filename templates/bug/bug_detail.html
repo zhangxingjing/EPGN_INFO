@@ -1,0 +1,50 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>DETAIL</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+</head>
+<body>
+
+<blockquote class="layui-elem-quote layui-text">
+    <h2>
+        需求详情
+    </h2>
+</blockquote>
+
+<form class="layui-form" action="" lay-filter="bug_info">
+    <div class="layui-form-item layui-form-text">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-block" style="width: 90%">
+            <textarea name="content" id="content" placeholder="请输入具体需求" style="width:80%;display: none;"></textarea>
+        </div>
+    </div>
+</form>
+
+<script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+<script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+
+<script>
+    layui.use(['layedit'], function () {
+        var layedit = layui.layedit;
+
+        index = layedit.build('content', {height: 300}); //建立编辑器
+
+        layedit.setContent(index, "{{ data.content }}");
+
+        // 添加html
+        $("#LAY_layedit_1").append("{{ data.content }}")
+    })
+
+</script>
+
+</body>
+</html>

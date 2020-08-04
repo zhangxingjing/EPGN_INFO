@@ -22,5 +22,7 @@ urlpatterns = [
 
     url(r'calculate/', include('calculate.urls')),
 
-    url(r'audio/', include('audio.urls'))
+    url(r'audio/', include('audio.urls')),
+
+    url(r'bug/', include('bug.urls'))
 ]

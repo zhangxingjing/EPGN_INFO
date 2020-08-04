@@ -28,6 +28,9 @@ urlpatterns = [
     # 获取变速箱信息
     url(r'gearbox/$', GearBoxView.as_view({'get': 'get_gearbox'})),
 
+    # 删除文件
+    url(r'delete_file/$', delete_file),
+
     # # 修改通道
     # # url(r'^channel/$', )
     #

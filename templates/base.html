@@ -87,7 +87,7 @@
             <div class="layui-side-scroll">
                 <div class="layui-logo">
                     <a href="/user/home/">
-                        <span>EPGN  3.1</span>
+                        <span>EPGN  3.2</span>
                     </a>
                 </div>
 
@@ -96,50 +96,57 @@
                     <li data-name="get" class="layui-nav-item">
                         <a href="/user/home/" lay-tips="主页" lay-direction="2">
                             <i class="layui-icon layui-icon-home"></i>
-                            <cite>主页</cite>
+                            <cite>&nbsp;&nbsp;&nbsp;主页</cite>
                         </a>
                     </li>
                     <li data-name="get" class="layui-nav-item">
                         <a href="/test/upload/" lay-tips="上传" lay-direction="2">
                             <i class="layui-icon layui-icon-upload-circle"></i>
-                            <cite>上传</cite>
+                            <cite>&nbsp;&nbsp;&nbsp;上传</cite>
                         </a>
                     </li>
                     <li data-name="home" class="layui-nav-item">
                         <a href="javascript:;" lay-tips="检索" lay-direction="2">
                             <i class="layui-icon layui-icon-search"></i>
-                            <cite>检索</cite>
+                            <cite>&nbsp;&nbsp;&nbsp;检索</cite>
                             <span class="layui-nav-more"></span></a>
                         <dl class="layui-nav-child" id="platforms">
                             <dd data-name="console" v-for="platform in platforms">
-                                <a :href="'/test/datainfo/'+ platform.id">[[ platform.name ]]</a>
+                                <a :href="'/test/datainfo/'+ platform.id">&nbsp;&nbsp;&nbsp;[[ platform.name ]]</a>
                             </dd>
                         </dl>
                     </li>
                     <li data-name="get" class="layui-nav-item">
                         <a href="/calculate/parse/" lay-tips="算法" lay-direction="2">
                             <i class="layui-icon layui-icon-template-1"></i>
-                            <cite>分析</cite>
+                            <cite>&nbsp;&nbsp;&nbsp;分析</cite>
                         </a>
                     </li>
                     <li data-name="get" class="layui-nav-item">
                         <a href="/calculate/auto/" lay-tips="算法" lay-direction="2">
                             <i class="layui-icon layui-icon-chart-screen"></i>
-                            <cite>挖掘</cite>
+                            <cite>&nbsp;&nbsp;&nbsp;挖掘</cite>
                         </a>
                     </li>
 
 
                     <li class="layui-nav-item">
                         <a href="javascript:;">
-                            <i class="layui-icon layui-icon-chart-screen"></i>
-                            抱怨库</a>
+                            <i class="layui-icon layui-icon-headset"></i>
+                            &nbsp;&nbsp;&nbsp;抱怨
+                        </a>
                         <dl class="layui-nav-child">
-                            <dd><a href="/audio/upload/">数据上传</a></dd>
-                            <dd><a href="/audio/search/">文件检索</a></dd>
+                            <dd><a href="/audio/upload/">&nbsp;&nbsp;&nbsp;数据上传</a></dd>
+                            <dd><a href="/audio/search/">&nbsp;&nbsp;&nbsp;文件检索</a></dd>
                         </dl>
                     </li>
 
+                    <li data-name="get" class="layui-nav-item">
+                        <a href="/bug/page/" lay-tips="算法" lay-direction="2">
+                            <i class="layui-icon layui-icon-service"></i>
+                            <cite>&nbsp;&nbsp;&nbsp;需求</cite>
+                        </a>
+                    </li>
 
                     <span class="layui-nav-bar" style="top: 308px; height: 0px; opacity: 0;"></span>
                 </ul>

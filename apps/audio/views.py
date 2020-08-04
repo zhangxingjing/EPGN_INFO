@@ -38,7 +38,7 @@ class AudioViewSet(viewsets.ModelViewSet):
         power_id = request.POST.get("power", None)  # 功率
         author = request.POST.get("user_name", None)  # 上传人
         tire = request.POST.get("tire", None)  # 轮胎供应商
-        status_id = request.POST.get("condition", None)  # 工况
+        status = request.POST.get("condition", None)  # 工况
         complain_mp3 = request.FILES.get("conplain_file", None)  # 抱怨原始数据
         img = request.FILES.get("conplain_pic", None)  # 抱怨特征图
         raw_mp3 = request.FILES.get("conplain_audio", None)  # 抱怨音频
@@ -54,16 +54,15 @@ class AudioViewSet(viewsets.ModelViewSet):
         propulsion = PropulsionPower.objects.get(id=propulsion_id).num
         power = PropulsionPower.objects.get(id=power_id).num
         gearbox = GearBox.objects.get(id=gearbox_id).name
-        status = Status.objects.get(id=status_id)
 
         directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "/"
         file_num = difflib.get_close_matches(description.name + "_" + car_model, os.walk(AUDIO_FILE_PATH))
         if len(file_num) > 1:
             print(int(len(file_num) + 1))
 
-        print(description.name, car_model, propulsion, power, gearbox, status.name, directory_path, file_num)
+        # print(description.name, car_model, propulsion, power, gearbox, status, directory_path, file_num)
         # 获取文件之后处理业务逻辑
-        if description_id and car_model and propulsion and power and gearbox and complaint_feature and status_id and frequency and author and tire and measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
+        if description_id and car_model and propulsion and power and gearbox and complaint_feature and status and frequency and author and tire and measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
             # 无--新建文件夹，添加文件
             if not os.path.exists(directory_path):
                 os.mkdir(directory_path)

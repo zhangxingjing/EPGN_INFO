@@ -543,7 +543,6 @@
 
                                     });
                                 }
-
                             }
                             ;
                             break;
@@ -558,7 +557,7 @@
                                     btn: ['确定', '取消'] //按钮
                                 }, function () {
                                     $.ajax({
-                                        url: /delete_file/,
+                                        url: '/test/delete_file/',
                                         dataType: "json",
                                         data: JSON.stringify({"fileList": deleteArr}),
                                         type: "delete",
@@ -574,7 +573,7 @@
                                 });
                             } else {
                                 $.ajax({
-                                    url: /delete_file/,
+                                    url: '/test/delete_file/',
                                     dataType: "json",
                                     data: JSON.stringify({"fileList": deleteArr}),
                                     type: "delete",
@@ -586,7 +585,7 @@
                                         //方法级渲染
                                         tableIns = table.render({
                                             elem: '#file_info', // 找到制定的容器
-                                            url: "/user_file/" + user_id, // 表格请求的URL
+                                            url: "/user/file/" + user_id, // 表格请求的URL
                                             page: true, // 是否分页
                                             limit: 30, // 一页显示多少条数据
                                             height: 'full-130', // 表格的高度
@@ -704,7 +703,7 @@
                 $('#namelist').html("");
                 filenameArr = [];
                 sessionStorage.setItem("sessionType", 1);
-                window.open('/calculate/')
+                window.open('/calculate/parse/')
                 // $.ajax({
                 //     url: /parsefilelist/,
                 //     dataType: "json",

@@ -103,7 +103,7 @@
             <div class="layui-inline layui-form">
                 <label class="layui-form-label" style="font-size: 18px;font-weight: bold">算法选择:</label>
                 <div class="layui-input-inline">
-                    <select lay-verify="required" id="calculate" lay-filter="calculatename">
+                    <select id="calculate" lay-filter="calculatename">
                         <option value="">直接选择或搜索选择</option>
                         <option value="FftCalculate">FFT</option>
                         <!--<option value="OctaveFft">Octave</option>-->
@@ -134,8 +134,7 @@
                 <div class="layui-form-item">
                     <div style="display: flex">
                         <div class="layui-input-block" style="border: 1px solid gainsboro">
-                            <button class="layui-btn" id="run" lay-submit="" lay-demo="pic_data">Run</button>
-                            </button>
+                            <button class="layui-btn" id="run" onclick="pic_data()">Run</button>
                             <button type="reset" class="layui-btn layui-btn-normal">Reset</button>
                         </div>
                         <div class="layui-input-block"
@@ -152,7 +151,8 @@
                                     lay-demo="pic_data2">
                                 Run
                             </button>
-                            <button class="layui-btn" lay-submit="" lay-filter="formDemo" lay-demo="exportdata()" onclick="exportexcel()">导出数据
+                            <button class="layui-btn" lay-submit="" lay-filter="formDemo" lay-demo="exportdata()"
+                                    onclick="exportexcel()">导出数据
                             </button>
                         </div>
                     </div>
@@ -276,7 +276,6 @@
         var tree_info;
 
         var sessionType = sessionStorage.getItem("sessionType");
-        console.log(sessionType);
         if (sessionType == 1) {
             var uploadfilenewname = JSON.parse(sessionStorage.getItem("uploadnewname"));
             $.ajax({
@@ -286,7 +285,6 @@
                 type: "put",
                 success: function (result) {
                     echartdata = result.data;
-                    console.log(result);
                     getpic();
                 }
             });
@@ -488,32 +486,29 @@
             }
         };
 
-        var exportdata=[];
+        var exportdata = [];
+
         function exportexcel() {
-            console.log("111");
             var table = layui.table;
-            for(let i = 0 ; i<exportdata.length;i++){
+            for (let i = 0; i < exportdata.length; i++) {
                 table.exportFile(listblock, exportdata[i], 'xls')
             }
         }
 
         function getTree() {
             var send_message = JSON.parse(sessionStorage.getItem("sessionString"));
-            console.log(send_message);
             $.ajax({
                 url: "/calculate/channellist/",
                 dataType: "json",
                 type: "put",
                 data: JSON.stringify({"file_info": send_message}),
                 success: function (result) {
-                    console.log(result);
                     tree_info = result.file_info;
                     old_tree = result.file_info;
-                    console.log(old_tree);
                     data1 = result;
                     var VList = result.channel_list;
                     for (let i = 0; i < VList.length; i++) {
-                        $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + " lay-filter='selectChannellist'>");
+                        $("#channelselectList").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + ">");
                         $("#referenceChannel").append("<input type='checkbox' name=" + VList[i] + " title=" + VList[i] + " value=" + VList[i] + ">");
                     }
 
@@ -534,10 +529,8 @@
                             , showCheckbox: true  //是否显示复选框
                             , id: 'demoId12'
                             , isJump: true //是否允许点击节点时弹出新窗口跳转
-                            , edit: ['del'], click: function (obj) {
-                                var data = obj.data;  //获取当前点击的节点数据
-                                layer.msg('状态：' + obj.state + '<br>节点数据：' + JSON.stringify(data));
-                            }
+                            ,
+
                         });
 
 
@@ -564,7 +557,7 @@
 
                         //按钮事件
                         util.event('lay-demo', {
-                            getChecked: function (othis) {
+                            getChecked: function () {
                                 var checkedData = tree.getChecked('demoId12'); //获取选中节点的数据
                                 layer.alert(JSON.stringify(checkedData), {shade: 0});
                             }
@@ -572,13 +565,11 @@
                             changeTree: function () {
                                 changeTreeView();
                             },
-                            pic_data2: function (othis) {
-                                console.log(old_tree);
+                            pic_data2: function () {
                                 document.getElementById("listblock").innerHTML = "";
                                 let ph1 = document.getElementsByClassName("el-input__inner");
                                 let stepvalue = ph1[0].value;
                                 let checkedData2 = tree.getChecked('demoId12'); //获取选中节点的数据
-                                console.log(checkedData2);
                                 let file_channel11 = tree.getChecked('demoId12');//qqq
                                 let checkedData3 = JSON.parse(JSON.stringify(checkedData2));
                                 referenceChannel = [];
@@ -597,19 +588,23 @@
                                 ;
                                 let calculatename = $("#calculate option:selected").val();
                                 let getdata1 = old_tree;
-                                getdata1[0].children = file_channel11[0].children;
+                                /*getdata1[0].children = file_channel11[0].children;
                                 getdata1[0].calculate_name = calculatename;
                                 getdata1[0].refer_channel = referenceChannel;
-                                getdata1[0].step = stepvalue;
+                                getdata1[0].step = stepvalue;*/
                                 $.ajax({
                                     url: '/calculate/parse_ppt/',
                                     dataType: "json",
-                                    data: JSON.stringify(getdata1[0]),
+                                    data: JSON.stringify({
+                                        "children": file_channel11[0].children,
+                                        "calculate_name": calculatename,
+                                        "refer_channel": referenceChannel,
+                                        "step":stepvalue
+                                    }),
                                     type: "patch",
                                     success: function (result) {
-                                        console.log(result);
-                                       // if(result.code==0){
-                                         //   alert(result.msg)
+                                        // if(result.code==0){
+                                        //   alert(result.msg)
                                         //}
                                         //test测试代码
                                         for (let i = 0; i < result.result.length; i++) {
@@ -626,11 +621,10 @@
                                                 }
                                                 for (let m = 0; m < result.result[i].data[j][keys1[0]].length; m++) {
                                                     let t = result.result[i].data[j][keys1[0]][m];
-                                                    console.log(t);
                                                     t.channel = keys1[0];
                                                     {#console.log(t.point);#}
                                                     {#t.point.splice(0, 1);#}
-                                                    t.point = "("+t.point[0]+", "+t.point[1]+")";
+                                                    t.point = "(" + t.point[0] + ", " + t.point[1] + ")";
                                                     t.range = t.range[0] + "-" + t.range[1];
                                                     result_text.data.push(t);
                                                 }
@@ -662,19 +656,14 @@
                                     }
                                 });
                             },
-                            exportdata: function () {
-
-                            },
-
-
                             pic_data: function () {
+                                console.log(tree_info);
                                 document.getElementById("listblock").innerHTML = "";
                                 let checkedData4 = tree.getChecked('demoId12'); //获取选中节点的数据
-                                console.log(checkedData4);
                                 let file_channel = tree.getChecked('demoId12');//qqq
                                 let checkedData1 = JSON.parse(JSON.stringify(checkedData4));
                                 //getchannellist();
-                                referenceChannel = [];
+                                let referenceChannel = [];
                                 $("#referenceChannel input:checkbox:checked").each(function (i) {
                                     referenceChannel.push($(this).val());
                                 });
@@ -695,8 +684,8 @@
                                 getdata[0].children = file_channel[0].children;
                                 getdata[0].calculate_name = calculatename;
                                 getdata[0].refer_channel = referenceChannel;
-                                console.log(getdata);
-
+                                console.log("data[0]=" + getdata[0]);
+                                console.log(tree_info);
                                 $.ajax({
                                     url: '/calculate/user_calculate/',
                                     dataType: "json",
@@ -704,17 +693,11 @@
                                     type: "put",
                                     success: function (result) {
                                         echartdata = result.data;
-                                        console.log(result);
                                         getpic();
                                     }
                                 });
                             },
-
-
-                            setChecked: function () {
-                                tree.setChecked('demoId12', [12, 16]); //勾选指定节点
-                            }
-                            , reload: function () {
+                            reload: function () {
                                 //重载实例
                                 tree.reload('demoId12', {});
                             }
@@ -745,6 +728,58 @@
                     }
                 });
             });
+        };
+
+        function pic_data() {
+            layui.use('form', function () {
+                var tree = layui.tree;
+                console.log(tree_info);
+                document.getElementById("listblock").innerHTML = "";
+                let checkedData4 = tree.getChecked('demoId12'); //获取选中节点的数据
+                let file_channel = tree.getChecked('demoId12');//qqq
+                let checkedData1 = JSON.parse(JSON.stringify(checkedData4));
+                //getchannellist();
+                let referenceChannel = [];
+                $("#referenceChannel input:checkbox:checked").each(function (i) {
+                    referenceChannel.push($(this).val());
+                });
+                //console.log(referenceChannel);
+                //
+                let channel_number = [];
+                for (let i = 0; i < checkedData1.length; i++) {
+                    for (let j = 0; j < checkedData1[i].children.length; j++) {
+                        for (let k = 0; k < checkedData1[i].children[j].children.length; k++) {
+                            let channelname = checkedData1[i].children[j].children[k].title;
+                            channel_number.push(channelname)
+                        }
+                    }
+                }
+                ;
+                let calculatename = $("#calculate option:selected").val();
+                let getdata = old_tree;
+                /*getdata[0].children = file_channel[0].children;
+                getdata[0].calculate_name = calculatename;
+                getdata[0].refer_channel = referenceChannel;
+                console.log("data[0]=" + getdata[0]);
+                console.log(tree_info);*/
+                $.ajax({
+                    url: '/calculate/user_calculate/',
+                    dataType: "json",
+                    // data: JSON.stringify(getdata[0]),
+                    data: JSON.stringify({
+                        "children": file_channel[0].children,
+                        "calculate_name": calculatename,
+                        "refer_channel": referenceChannel,
+                    }),
+                    type: "put",
+                    success: function (result) {
+                        echartdata = result.data;
+                        getpic();
+                    }
+                });
+
+
+            })
         }
 
         function changeTreeView() {
@@ -757,13 +792,31 @@
                         channellist.push(data.field[key]);
                     }
                     ;
-                    console.log(channelselect);
-                    for (let i = 0; i < old_tree[0].children.length; i++) {
-                        for (let t = old_tree[0].children[i].children.length - 1; t >= 0; t--) {
-                            if (channellist.includes(old_tree[0].children[i].children[t].title)) {
-                                old_tree[0].children[i].children[t]['checked'] = true;
+                    let tree_info_left = tree.getChecked('demoId12');
+                    for (let i = 0; i < tree_info[0].children.length; i++) {
+                        for (let t = tree_info[0].children[i].children.length - 1; t >= 0; t--) {
+                            if (channellist.includes(tree_info[0].children[i].children[t].title)) {
+                                tree_info[0].children[i].children[t]['checked'] = true;
                             } else {
-                                old_tree[0].children[i].children[t]['checked'] = false;
+                                if (tree_info_left.length == 0) {
+
+                                } else {
+                                    for (let m = 0; m < tree_info_left[0].children.length; m++) {
+                                        if (tree_info[0].children[i].id == tree_info_left[0].children[i].id) {
+                                            for (let n = 0; n < tree_info_left[0].children[m].children.length; n++) {
+                                                if (tree_info_left[0].children[m].children[n].title == tree_info[0].children[i].children[t].title) {
+                                                    tree_info[0].children[i].children[t]['checked'] = true;
+                                                    break;
+                                                } else {
+                                                }
+                                            }
+                                        } else {
+                                            tree_info[0].children[i].children[t]['checked'] = false;
+                                        }
+                                    }
+                                }
+
+
                             }
                         }
                     }
@@ -797,7 +850,6 @@
                         type: "post",
                         data: JSON.stringify({"calculate": calculatename, "file_info": checkedData1[0]}),
                         success: function (result) {
-                            console.log(result.data);
                             for (let i = 0; i < result.data.length; i++) {
                                 if (judge_pic == 0) {
                                     judge_pic = 1;

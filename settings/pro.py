@@ -26,4 +26,5 @@ DATABASES = {
 
 FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
 FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
+AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"   # 抱怨音频文件
 

@@ -275,9 +275,7 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
-# FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
-# FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
-#
+
 FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
 FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
 AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"

@@ -1,3 +1,4 @@
+import difflib
 import os
 import re
 import json
@@ -10,7 +11,7 @@ from settings.dev import AUDIO_FILE_PATH
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from fileinfo.models import Platform, PropulsionPower, GearBox
-from audio.models import Audio, Description, Frequency, Status
+from audio.models import Audio, Description, Status, Frequency
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
 from audio.serializers import AudioSerializer, DescriptionSerializer, FrequencySerializer, AudioStatusSerializer
@@ -27,7 +28,7 @@ class AudioViewSet(viewsets.ModelViewSet):
         details = request.POST.get("detailed_description", None)  # 抱怨详细描述
         detail_from = request.POST.get("source", None)  # 抱怨来源
         complaint_feature = request.POST.get("complain_features", None)  # 抱怨特征
-        frequency_id = request.POST.get("frequency", None)  # 频率
+        frequency = request.POST.get("frequency", None)  # 频率
         order = request.POST.get("order", None)  # 阶次
         reason = request.POST.get("key_parts", None)  # 关键零件或因素
         measures = request.POST.get("measure", None)  # 措施
@@ -54,43 +55,82 @@ class AudioViewSet(viewsets.ModelViewSet):
         power = PropulsionPower.objects.get(id=power_id).num
         gearbox = GearBox.objects.get(id=gearbox_id).name
         status = Status.objects.get(id=status_id)
-        frequency = Frequency.objects.get(id=frequency_id)
 
         directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "/"
+        file_num = difflib.get_close_matches(description.name + "_" + car_model, os.walk(AUDIO_FILE_PATH))
+        if len(file_num) > 1:
+            print(int(len(file_num) + 1))
 
+        print(description.name, car_model, propulsion, power, gearbox, status.name, directory_path, file_num)
         # 获取文件之后处理业务逻辑
-        if raw_mp3_name and img_name and complain_mp3_name and description_id and car_model and propulsion and power and gearbox and complaint_feature and status_id and frequency_id and author and tire and measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
+        if description_id and car_model and propulsion and power and gearbox and complaint_feature and status_id and frequency and author and tire and measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
             # 无--新建文件夹，添加文件
             if not os.path.exists(directory_path):
                 os.mkdir(directory_path)
+            # else:
+            #     file_num = difflib.get_close_matches("Brummen_T-Cross", os.listdir(AUDIO_FILE_PATH), cutoff=0.94) # /0.94
+            #     if len(file_num) > 0:
+            #         print(len(file_num))
+            #         os.mkdir(AUDIO_FILE_PATH + "Brummen_T-Cross" + "_" + str(len(file_num)))
 
             # 有 --添加到之前的文件夹中
             try:
                 with transaction.atomic():  # 数据库回滚
                     try:
-                        # raw_mp3
-                        new_raw_mp3 = open(directory_path + raw_mp3_name, 'wb+')
-                        for chunk in raw_mp3.chunks():
-                            new_raw_mp3.write(chunk)
-                        new_raw_mp3.close()
+                        # audio_list = [raw_mp3_name, img_name, complain_mp3_name, ppt_name]
+                        # audio_dict = {"raw_mp3_name":raw_mp3, "img_name":img, "complain_mp3_name":complain_mp3, "ppt_name": ppt}
+                        # for i in audio_list:
+                        #     if len(i) > 4:  # 存在文件名
+                        #         print(directory_path + i)
+                        #         i_file = open(directory_path + i, 'wb+')
+                        #         for chunk in audio_dict[i].chunks():
+                        #             i_file.write(chunk)
+                        #         i_file.close()
 
-                        # image
-                        image = open(directory_path + img_name, 'wb+')
-                        for chunk in img.chunks():
-                            image.write(chunk)
-                        image.close()
+                        try:
+                            # raw_mp3
+                            new_raw_mp3 = open(directory_path + raw_mp3_name, 'wb+')
+                            for chunk in raw_mp3.chunks():
+                                new_raw_mp3.write(chunk)
+                            new_raw_mp3.close()
+                            new_raw_mp3_info = directory_path + raw_mp3_name
+                        except:
+                            print("new_raw_mp3 is None")
+                            new_raw_mp3_info = None
 
-                        # complain_mp3_name
-                        new_complain_mp3 = open(directory_path + complain_mp3_name, 'wb+')
-                        for chunk in complain_mp3.chunks():
-                            new_complain_mp3.write(chunk)
-                        new_complain_mp3.close()
+                        try:
+                            # image
+                            image = open(directory_path + img_name, 'wb+')
+                            for chunk in img.chunks():
+                                image.write(chunk)
+                            image.close()
+                            image_info = directory_path + img_name
+                        except:
+                            print("new_image is None")
+                            image_info = None
 
-                        # ppt
-                        new_ppt = open(directory_path + ppt_name, 'wb+')
-                        for chunk in ppt.chunks():
-                            new_ppt.write(chunk)
-                        new_ppt.close()
+                        try:
+                            # complain_mp3_name
+                            new_complain_mp3 = open(directory_path + complain_mp3_name, 'wb+')
+                            for chunk in complain_mp3.chunks():
+                                new_complain_mp3.write(chunk)
+                            new_complain_mp3.close()
+                            new_complain_mp3_info = directory_path + complain_mp3_name
+                        except:
+                            print("new_complain_mp3 is None")
+                            new_complain_mp3_info = None
+
+                        try:
+                            # ppt
+                            new_ppt = open(directory_path + ppt_name, 'wb+')
+                            for chunk in ppt.chunks():
+                                new_ppt.write(chunk)
+                            new_ppt.close()
+                            new_ppt_info = directory_path + ppt_name
+                        except:
+                            print("new_ppt is None")
+                            new_ppt_info = None
+
                     except OSError:
                         return Response(data={"code": 0, "msg": "文件不存在！"})
                     # 写入数据库
@@ -110,10 +150,10 @@ class AudioViewSet(viewsets.ModelViewSet):
                           tire_model=tire,
                           author=author,
                           # 这里存放文件的时候，应该保存当前文件的绝对路径
-                          raw_mp3=directory_path + raw_mp3_name,
-                          img=directory_path + img_name,
-                          complain_mp3=directory_path + complain_mp3_name,
-                          ppt=directory_path + ppt_name
+                          raw_mp3=new_raw_mp3_info,
+                          img=image_info,
+                          complain_mp3=new_complain_mp3_info,
+                          ppt=new_ppt_info
                           ).save()
 
                     # 上传成功返回当前上传状态
@@ -202,22 +242,22 @@ class AudioViewSet(viewsets.ModelViewSet):
         res_list = []
         for item in items:
             item["fields"].update(pk=item["pk"])  # 把id添加到列表中,只返回数据字典
-        #     item["fields"]["car_modal"] = item["fields"].pop("car_model")
-        #     item["fields"]["car_engine"] = item["fields"].pop("propulsion")
-        #     item["fields"]["car_gearbox"] = item["fields"].pop("gearbox")
-        #     item["fields"]["detailed_description"] = item["fields"].pop("description")
-        #     item["fields"]["condition"] = item["fields"].pop("status")
-        #     item["fields"]["key_parts"] = item["fields"].pop("reason")
-        #
-        #     res_list.append(item["fields"])
-        #     print(item)
-        # return Response(data={
-        #     "code": 0,
-        #     "msg": "OK",
-        #     "count": paginator.count,  # 数据的条数
-        #     "data": res_list  # 返回的数据列表
-        # })
-        return Response(data=res_list)
+            item["fields"]["car_modal"] = item["fields"].pop("car_model")
+            item["fields"]["car_engine"] = item["fields"].pop("propulsion")
+            item["fields"]["car_gearbox"] = item["fields"].pop("gearbox")
+            item["fields"]["detailed_description"] = item["fields"].pop("description")
+            item["fields"]["condition"] = item["fields"].pop("status")
+            #     item["fields"]["key_parts"] = item["fields"].pop("reason")
+            #
+            res_list.append(item["fields"])
+            # print(item)
+        return Response(data={
+            "code": 0,
+            "msg": "OK",
+            "count": paginator.count,  # 数据的条数
+            "data": res_list  # 返回的数据列表
+        })
+        # return Response(data=res_list)
 
 
 # 返回等待页面的信息
@@ -260,12 +300,10 @@ class Wait(ViewSet):
             "power": power.data,
             "condition": condition.data
         }
-        return data
+        return Response(data=data)
 
     def search(self, request):
-        data = self.get_items(request)
-        return render(request, 'audio/audio_search.html', data)
+        return render(request, 'audio/audio_search.html')
 
     def upload(self, request):
-        data = self.get_items(request)
-        return render(request, 'audio/audio_upload.html', data)
+        return render(request, 'audio/audio_upload.html')

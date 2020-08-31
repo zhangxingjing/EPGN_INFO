@@ -7,6 +7,11 @@
 {% block link %}
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
     <style>
         .layui-form-label {
             font-size: 16px;
@@ -33,13 +38,7 @@
             padding-top: 2px;
             width: auto
         }
-    </style>
-    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
-    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
-    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
-    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
-    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
-    <style>
+
         #app {
             margin-top: 30px;
         }
@@ -117,7 +116,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="layui-fluid" id="complain_upload">
+    <div class="layui-fluid" id="complain_upload" v-loading="loading" element-loading-text="上传中,请稍等...">
         <div class="layui-card" style="padding: 10px">
             <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
                 <legend>抱怨信息表</legend>
@@ -125,7 +124,7 @@
             <div id="app">
                 <div id="content1">
                     <div>
-                        <div><span><span style="color: red">*</span>简单描述：</span></div>
+                        <div><span><span style="color: red">*</span>抱怨简单描述：</span></div>
                         <el-select v-model="brief_description" placeholder="请选择">
                             <el-option v-for="item in car_briefDescription"
                                        :key="item.id"
@@ -193,7 +192,7 @@
                     <div v-show="Uniform_speed">
                         <div><span></span></div>
                         <el-input v-model="uniform_speed" clearable placeholder="填写车速"
-                                  onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"></el-input>
+                        ></el-input>
                     </div>
 
 
@@ -209,7 +208,7 @@
                     <div v-show="Rolling_noise">
                         <div><span></span></div>
                         <el-input v-model="roll_speed" clearable placeholder="填写车速"
-                                  onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"></el-input>
+                        ></el-input>
                     </div>
 
 
@@ -225,7 +224,7 @@
                     <div v-show="Chassis_comfort">
                         <div><span></span></div>
                         <el-input v-model="comfort_speed" clearable placeholder="填写车速"
-                                  onkeyup="this.value = this.value.replace(/[^\d.]/g,'');"></el-input>
+                        ></el-input>
                     </div>
 
 
@@ -318,7 +317,7 @@
 
                         >
                             <el-button size="small" type="primary">选择文件</el-button>
-                            <div slot="tip" class="el-upload__tip">只能上传hdf文件</div>
+                            <div slot="tip" class="el-upload__tip">只能上传hdf/dat文件</div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="抱怨特征图：">
@@ -335,7 +334,7 @@
                                 :auto-upload="false"
                                 :file-list="complain_photo">
                             <el-button size="small" type="primary">选择文件</el-button>
-                            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+                            <div slot="tip" class="el-upload__tip">只能上传jpg/png/bmp文件</div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="抱怨音频：">
@@ -383,6 +382,9 @@
     <script src="{% static 'vue.js' %}"></script>
     <script src="{% static 'ele/index.js' %}"></script>
     <script>
+        {#import {Message} from{% static 'ele/index.js' %};#}
+        {#Vue.use(Message);#}
+        {#Vue.prototype.$message = Message;#}
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
                 layer = layui.layer,
@@ -399,390 +401,405 @@
             console.log(zhi1);
         }
 
-        new Vue({
-            el: '#complain_upload',
-            data: function () {
-                return {
-                    car_modal: '',
-                    car_engine: '',
-                    car_gearbox: '',
-                    source: '',
-                    car_power: '',
-                    condition: '',
-                    complain_features: 'frequency',
-                    frequency: '',
-                    order: '',
-                    user_name: '',
-                    key_parts: '',
-                    measure: '',
-                    tire: '',
-                    tire_supplier: '',
-                    tire_size: '',
-                    tire_pattern: '',
+        new Vue(
+            {
+                el: '#complain_upload',
+                data: function () {
+                    return {
+                        car_modal: '',
+                        car_engine: '',
+                        car_gearbox: '',
+                        source: '',
+                        car_power: '',
+                        condition: '',
+                        complain_features: 'frequency',
+                        frequency: '',
+                        order: '',
+                        user_name: '',
+                        key_parts: '',
+                        measure: '',
+                        tire: '',
+                        tire_supplier: '',
+                        tire_size: '',
+                        tire_pattern: '',
 
-                    detailed_description: '',
-                    Frequency_show: true,
-                    Order_show: false,
-                    gearbox: [],
-                    car_condition: [],
-                    carmodal: [],
-                    engine: [],
-                    power: [],
-                    car_briefDescription: '',
-                    brief_description: '',
-                    Accelerate_show: false,
-                    Uniform_speed: false,
-                    accelerategear: '',
-                    acceleratelist: '',
-                    uniform_speed: '',
-                    Rolling_noise: false,
-                    roll_road_condition: '',
-                    roll_speed: '',
-                    Chassis_comfort: false,
-                    comfort_road_condition: '',
-                    comfort_speed: '',
-                    filelist_hdf: [],
-                    filelist_pic: [],
-                    filelist_audio: [],
-                    filelist_ppt: [],
-
-
-                    accelerate_list: [{
-                        name: "VZ"
-                    }, {
-                        name: "VS"
-                    }, {
-                        name: "TZ"
-                    }, {
-                        name: "TS"
-                    }, {
-                        name: "加减速均有"
-                    }, {
-                        name: "不清楚"
-                    }],
-                    accelerate_gear: [{
-                        name: "1"
-                    }, {
-                        name: "2"
-                    }, {
-                        name: "3"
-                    }, {
-                        name: "4"
-                    }, {
-                        name: "5"
-                    }, {
-                        name: "6"
-                    }, {
-                        name: "7"
-                    }, {
-                        name: "D"
-                    }, {
-                        name: "B"
-                    }, {
-                        name: "档位无关"
-                    }],
-                    roll_condition_list: [{
-                        name: "Stuckern"
-                    }, {
-                        name: "Kleinpflaster"
-                    }, {
-                        name: "Kerben"
-                    }, {
-                        name: "Rauhasphalt"
-                    }, {
-                        name: "Glatteasphalt"
-                    }, {
-                        name: "其他"
-                    }],
-                    comfort_condition_list: [{
-                        name: "减速带"
-                    }, {
-                        name: "Stuckern"
-                    }, {
-                        name: "负坎"
-                    }, {
-                        name: "沟槽路"
-                    }, {
-                        name: "金属横档条"
-                    }, {
-                        name: "随机水泥路面"
-                    }, {
-                        name: "其他"
-                    }],
-                    complain_report: [],
-                    complain_audio: [],
-                    complain_filelist: [],
-                    complain_photo: [],
+                        detailed_description: '',
+                        Frequency_show: true,
+                        Order_show: false,
+                        gearbox: [],
+                        car_condition: [],
+                        carmodal: [],
+                        engine: [],
+                        power: [],
+                        car_briefDescription: '',
+                        brief_description: '',
+                        Accelerate_show: false,
+                        Uniform_speed: false,
+                        accelerategear: '',
+                        acceleratelist: '',
+                        uniform_speed: '',
+                        Rolling_noise: false,
+                        roll_road_condition: '',
+                        roll_speed: '',
+                        Chassis_comfort: false,
+                        comfort_road_condition: '',
+                        comfort_speed: '',
+                        filelist_hdf: [],
+                        filelist_pic: [],
+                        filelist_audio: [],
+                        filelist_ppt: [],
+                        loading: false,
 
 
-                }
-            },
-            methods: {
-                changefeature() {
-                    if (this.complain_features == "frequency") {
-                        this.Frequency_show = true;
-                        this.Order_show = false
-                    } else {
-                        this.Frequency_show = false;
-                        this.Order_show = true;
+                        accelerate_list: [{
+                            name: "VZ"
+                        }, {
+                            name: "VS"
+                        }, {
+                            name: "TZ"
+                        }, {
+                            name: "TS"
+                        }, {
+                            name: "加减速均有"
+                        }, {
+                            name: "不清楚"
+                        }],
+                        accelerate_gear: [{
+                            name: "1"
+                        }, {
+                            name: "2"
+                        }, {
+                            name: "3"
+                        }, {
+                            name: "4"
+                        }, {
+                            name: "5"
+                        }, {
+                            name: "6"
+                        }, {
+                            name: "7"
+                        }, {
+                            name: "D"
+                        }, {
+                            name: "B"
+                        }, {
+                            name: "档位无关"
+                        }],
+                        roll_condition_list: [{
+                            name: "Stuckern"
+                        }, {
+                            name: "Kleinpflaster"
+                        }, {
+                            name: "Kerben"
+                        }, {
+                            name: "Rauhasphalt"
+                        }, {
+                            name: "Glatteasphalt"
+                        }, {
+                            name: "其他"
+                        }],
+                        comfort_condition_list: [{
+                            name: "减速带"
+                        }, {
+                            name: "Stuckern"
+                        }, {
+                            name: "负坎"
+                        }, {
+                            name: "沟槽路"
+                        }, {
+                            name: "金属横档条"
+                        }, {
+                            name: "随机水泥路面"
+                        }, {
+                            name: "其他"
+                        }],
+                        complain_report: [],
+                        complain_audio: [],
+                        complain_filelist: [],
+                        complain_photo: [],
+
+
                     }
                 },
-                changecondition() {
-                    if (this.condition == "加/减速") {
-                        this.Accelerate_show = true;
-                        this.Uniform_speed = false;
-                        this.Rolling_noise = false;
-                        this.Chassis_comfort = false;
-                    } else if (this.condition == "匀速") {
-                        this.Accelerate_show = false;
-                        this.Uniform_speed = true;
-                        this.Rolling_noise = false;
-                        this.Chassis_comfort = false;
-                    } else if (this.condition == "滚动噪声/轮胎噪声") {
-                        this.Accelerate_show = false;
-                        this.Uniform_speed = false;
-                        this.Rolling_noise = true;
-                        this.Chassis_comfort = false;
-                    } else if (this.condition == "底盘舒适性") {
-                        this.Accelerate_show = false;
-                        this.Uniform_speed = false;
-                        this.Rolling_noise = false;
-                        this.Chassis_comfort = true;
-                    } else {
-                        this.Accelerate_show = false;
-                        this.Uniform_speed = false;
-                        this.Rolling_noise = false;
-                        this.Chassis_comfort = false;
-                    }
-                },
-                submitupload() {
-                    if (this.brief_description == '') {
-                        this.$message({
-                            message: '请选择简要描述!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    ;
-                    if (this.detailed_description == '') {
-                        this.$message({
-                            message: '请填写详细描述!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.source == '') {
-                        this.$message({
-                            message: '请填写抱怨来源!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.condition == '') {
-                        this.$message({
-                            message: '请选择工况!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.car_modal == '') {
-                        this.$message({
-                            message: '请选择车型信息!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.car_engine == '') {
-                        this.$message({
-                            message: '请选择发动机信息!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.car_gearbox == '') {
-                        this.$message({
-                            message: '请选择变速箱信息!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.car_gearbox == '') {
-                        this.$message({
-                            message: '请选择变速箱信息!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.car_power == '') {
-                        this.$message({
-                            message: '请选择功率信息!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.filelist_hdf.length == 0) {
-                        this.$message({
-                            message: '请上传抱怨原始数据!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.filelist_pic.length == 0) {
-                        this.$message({
-                            message: '请上传抱怨特征图!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-                    if (this.filelist_audio.length == 0) {
-                        this.$message({
-                            message: '请上传抱怨音频!',
-                            type: 'warning'
-                        })
-                        return false
-                    }
-
-
-                    let formData = new FormData();
-                    formData.append('brief_description', this.brief_description);
-                    formData.append('detailed_description', this.detailed_description);
-                    formData.append('source', this.source);
-                    formData.append('complain_features', this.complain_features);
-                    formData.append('frequency', this.frequency);
-                    formData.append('order', this.order);
-                    formData.append('key_parts', this.key_parts);
-                    formData.append('measure', this.measure);
-                    formData.append('car_modal', this.car_modal);
-                    formData.append('car_engine', this.car_engine);
-                    formData.append('car_gearbox', this.car_gearbox);
-                    formData.append('power', this.car_power);
-                    this.tire = this.tire_supplier + "-" + this.tire_size + "-" + this.tire_pattern;
-                    formData.append('tire', this.tire);
-                    formData.append('user_name', this.user_name);
-
-
-                    /*if (this.condition == "加/减速") {
-                        let condition_combination = this.condition+"-"+this.acceleratelist+"-"+this.accelerategear;
-                        formData.append('condition', condition_combination);
-                    }*/
-                    if (this.condition == "加/减速") {
-                        let condition_list = this.condition + "-" + this.acceleratelist + "-" + this.accelerategear;
-                        formData.append('condition', condition_list);
-                    } else if (this.condition == "匀速") {
-                        let condition_list = this.condition + "-" + this.uniform_speed + "km/h";
-                        formData.append('condition', condition_list);
-                    } else if (this.condition == "滚动噪声/轮胎噪声") {
-                        let condition_list = this.condition + "-" + this.roll_road_condition + "-" + this.roll_speed + "km/h";
-                        formData.append('condition', condition_list);
-                    } else if (this.condition == "底盘舒适性") {
-                        let condition_list = this.condition + "-" + this.comfort_road_condition + "-" + this.comfort_speed + "km/h";
-                        formData.append('condition', condition_list);
-                    } else {
-                        formData.append('condition', this.condition);
-                    }
-                    {#this.complain_filelist[0].forEach((file) => {#}
-                    {#    formData.append('complain_file', file.raw);});#}
-                    formData.append('conplain_file', this.filelist_hdf);
-                    formData.append('conplain_pic', this.filelist_pic);
-                    formData.append('conplain_report', this.filelist_ppt);
-                    formData.append('conplain_audio', this.filelist_audio);
-                    axios({
-                        url: "/audio/file/",
-                        method: 'post',
-                        headers: {
-                            "Content-Type": "multipart/form-data"
-                        },
-                        data: formData,
-                    })
-                        .then(function (response) {
-                            console.log(response);
+                methods: {
+                    changefeature() {
+                        if (this.complain_features == "frequency") {
+                            this.Frequency_show = true;
+                            this.Order_show = false
+                        } else {
+                            this.Frequency_show = false;
+                            this.Order_show = true;
+                        }
+                    },
+                    changecondition() {
+                        if (this.condition == "加/减速") {
+                            this.Accelerate_show = true;
+                            this.Uniform_speed = false;
+                            this.Rolling_noise = false;
+                            this.Chassis_comfort = false;
+                        } else if (this.condition == "匀速") {
+                            this.Accelerate_show = false;
+                            this.Uniform_speed = true;
+                            this.Rolling_noise = false;
+                            this.Chassis_comfort = false;
+                        } else if (this.condition == "滚动噪声/轮胎噪声") {
+                            this.Accelerate_show = false;
+                            this.Uniform_speed = false;
+                            this.Rolling_noise = true;
+                            this.Chassis_comfort = false;
+                        } else if (this.condition == "底盘舒适性") {
+                            this.Accelerate_show = false;
+                            this.Uniform_speed = false;
+                            this.Rolling_noise = false;
+                            this.Chassis_comfort = true;
+                        } else {
+                            this.Accelerate_show = false;
+                            this.Uniform_speed = false;
+                            this.Rolling_noise = false;
+                            this.Chassis_comfort = false;
+                        }
+                    },
+                    submitupload() {
+                        if (this.brief_description == '') {
                             this.$message({
-                                message: '上传成功!',
-                                type: 'success'
+                                message: '请选择简要描述!',
+                                type: 'warning'
                             })
+                            return false
+                        }
+                        ;
+                        if (this.detailed_description == '') {
+                            this.$message({
+                                message: '请填写详细描述!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.source == '') {
+                            this.$message({
+                                message: '请填写抱怨来源!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.condition == '') {
+                            this.$message({
+                                message: '请选择工况!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.car_modal == '') {
+                            this.$message({
+                                message: '请选择车型信息!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.car_engine == '') {
+                            this.$message({
+                                message: '请选择发动机信息!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.car_gearbox == '') {
+                            this.$message({
+                                message: '请选择变速箱信息!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.car_gearbox == '') {
+                            this.$message({
+                                message: '请选择变速箱信息!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.car_power == '') {
+                            this.$message({
+                                message: '请选择功率信息!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        /*if (this.filelist_hdf.length == 0) {
+                            this.$message({
+                                message: '请上传抱怨原始数据!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.filelist_pic.length == 0) {
+                            this.$message({
+                                message: '请上传抱怨特征图!',
+                                type: 'warning'
+                            })
+                            return false
+                        }
+                        if (this.filelist_audio.length == 0) {
+                            this.$message({
+                                message: '请上传抱怨音频!',
+                                type: 'warning'
+                            })
+                            return false
+                        }*/
+
+                        this.loading = true;
+                        let formData = new FormData();
+                        formData.append('brief_description', this.brief_description);
+                        formData.append('detailed_description', this.detailed_description);
+                        formData.append('source', this.source);
+                        formData.append('complain_features', this.complain_features);
+                        formData.append('frequency', this.frequency);
+                        formData.append('order', this.order);
+                        formData.append('key_parts', this.key_parts);
+                        formData.append('measure', this.measure);
+                        formData.append('car_modal', this.car_modal);
+                        formData.append('car_engine', this.car_engine);
+                        formData.append('car_gearbox', this.car_gearbox);
+                        formData.append('power', this.car_power);
+                        this.tire = this.tire_supplier + "-" + this.tire_size + "-" + this.tire_pattern;
+                        formData.append('tire', this.tire);
+                        formData.append('user_name', this.user_name);
+                        if (this.condition == "加/减速") {
+                            let condition_list = this.condition + "-" + this.acceleratelist + "-" + this.accelerategear;
+                            formData.append('condition', condition_list);
+                        } else if (this.condition == "匀速") {
+                            let condition_list = this.condition + "-" + this.uniform_speed + "km/h";
+                            formData.append('condition', condition_list);
+                        } else if (this.condition == "滚动噪声/轮胎噪声") {
+                            let condition_list = this.condition + "-" + this.roll_road_condition + "-" + this.roll_speed + "km/h";
+                            formData.append('condition', condition_list);
+                        } else if (this.condition == "底盘舒适性") {
+                            let condition_list = this.condition + "-" + this.comfort_road_condition + "-" + this.comfort_speed + "km/h";
+                            formData.append('condition', condition_list);
+                        } else {
+                            formData.append('condition', this.condition);
+                        }
+                        {#this.complain_filelist[0].forEach((file) => {#}
+                        {#    formData.append('complain_file', file.raw);});#}
+                        formData.append('conplain_file', this.filelist_hdf);
+                        formData.append('conplain_pic', this.filelist_pic);
+                        formData.append('conplain_report', this.filelist_ppt);
+                        formData.append('conplain_audio', this.filelist_audio);
+                        {#let token = sessionStorage.token || localStorage.token;#}
+                        {#formData.append('X-CSRFToken', token);#}
+
+                        axios({
+                            url: "/audio/file/",
+                            method: 'post',
+                            headers: {
+                                "Content-Type": "multipart/form-data"
+                            },
+                            data: formData,
+                        }).then((response) => {
+                            if (response.data.code == 1) {
+                                console.log(this.loading);
+                                this.loading = false;
+                                {#window.Vue.$message({#}
+                                {#    message: '文件上传成功!',#}
+                                {#    type: 'success'#}
+                                //需要用message的地方
+                                Vue.prototype.$message({
+                                    message: '文件上传成功!',
+                                    type: 'success'
+                                });
+                            } else {
+                                this.loading = false;
+                                Vue.prototype.$message({
+                                    message: '文件上传失败,请联系管理员!',
+                                    type: 'error'
+                                });
+                            }
+
+                        }).catch((error) => {
+                            this.loading = false;
+                            //需要用message的地方
+                            Vue.prototype.$message({
+                                message: '文件上传失败,请联系管理员!',
+                                type: 'error'
+                            });
                         })
-                        .catch(function (error) {
-                            console.log(error);
-                            this.$message.error(error);
-                        })
+                    },
 
-                    {#fetch(url: '/audio/file/',{#}
-                    {#     method:'post',#}
-                    {#     headers:{#}
-                    {#         credentials:'same-origin'#}
-                    {#     },#}
-                    {#     body:formData#}
-                    {# })#}
+                    handleRemove(file, fileList) {
+                        console.log(file, fileList);
+                        /*if (fileList[0].name.toLowerCase().indexOf('.hdf') != -1) {
+                            this.filelist_hdf = []
+                        } else if (fileList[0].name.toLowerCase().indexOf('.jpg') != -1) {
+                            this.filelist_pic = []
+                        } else if (fileList[0].name.toLowerCase().indexOf('.png') != -1) {
+                            this.filelist_pic = []
+                        } else if (fileList[0].name.toLowerCase().indexOf('.mp3') != -1) {
+                            this.filelist_audio = []
+                        } else if (fileList[0].name.toLowerCase().indexOf('.wav') != -1) {
+                            this.filelist_audio = []
+                        } else if (fileList[0].name.toLowerCase().indexOf('.ppt') != -1) {
+                            this.filelist_ppt = []
+                        } else {
+                        }*/
+                    },
+                    hanlesuccess(file) {
+                        console.log("success" + file);
+                    },
+                    changefile(file, filelist) {
+                        if (filelist[0].name.toLowerCase().indexOf('.hdf') != -1) {
+                            this.filelist_hdf = filelist[0].raw;
+                            {#this.filelist_hdf = filelist#}
+                        } else if (filelist[0].name.toLowerCase().indexOf('.dat') != -1) {
+                            this.filelist_hdf = filelist[0].raw;
+                        }  else if (filelist[0].name.toLowerCase().indexOf('.jpg') != -1) {
+                            this.filelist_pic = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.jpeg') != -1) {
+                            this.filelist_pic = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.png') != -1) {
+                            this.filelist_pic = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.bmp') != -1) {
+                            this.filelist_pic = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.mp3') != -1) {
+                            this.filelist_audio = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.wav') != -1) {
+                            this.filelist_audio = filelist[0].raw
+                        } else if (filelist[0].name.toLowerCase().indexOf('.ppt') != -1) {
+                            this.filelist_ppt = filelist[0].raw
+                        } else {
+                        }
 
 
+                    },
+                    handlePreview(file) {
+                        console.log(file);
+                    },
+                    handleExceed(files, fileList) {
+                        this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+                    },
+                    beforeRemove(file, fileList) {
+                        return this.$confirm(`确定移除 ${file.name}？`);
+                    },
                 },
-                handleRemove(file, fileList) {
-                    console.log(file, fileList);
-                    if (fileList[0].name.toLowerCase().indexOf('.hdf') != -1) {
-                        this.filelist_hdf = []
-                    } else if (fileList[0].name.toLowerCase().indexOf('.jpg') != -1) {
-                        this.filelist_pic = []
-                    } else if (fileList[0].name.toLowerCase().indexOf('.png') != -1) {
-                        this.filelist_pic = []
-                    } else if (fileList[0].name.toLowerCase().indexOf('.mp3') != -1) {
-                        this.filelist_audio = []
-                    } else if (fileList[0].name.toLowerCase().indexOf('.ppt') != -1) {
-                        this.filelist_ppt = []
-                    } else {
-                    }
-                },
-                hanlesuccess(file) {
-                    console.log("success" + file);
-                },
-                changefile(file, filelist) {
-                    if (filelist[0].name.toLowerCase().indexOf('.hdf') != -1) {
-                        this.filelist_hdf = filelist[0].raw;
-                        {#this.filelist_hdf = filelist#}
-                    } else if (filelist[0].name.toLowerCase().indexOf('.jpg') != -1) {
-                        this.filelist_pic = filelist[0].raw
-                    } else if (filelist[0].name.toLowerCase().indexOf('.png') != -1) {
-                        console.log(filelist);
-                        this.filelist_pic = filelist[0].raw
-                    } else if (filelist[0].name.toLowerCase().indexOf('.mp3') != -1) {
-                        this.filelist_audio = filelist[0].raw
-                    } else if (filelist[0].name.toLowerCase().indexOf('.ppt') != -1) {
-                        this.filelist_ppt = filelist[0].raw
-                    } else {
-                    }
 
+                created: function () {
+                    var self = this;
+                    self.user_name = sessionStorage.username;
+                    $.ajax({
+                        url: '/audio/wait/',
+                        dataType: "json",
+                        type: "get",
+                        success: function (result) {
+                            console.log(result);
+                            self.car_briefDescription = result.brief_description;
+                            self.car_condition = result.condition;
+                            self.carmodal = result.car_modal;
+                            self.engine = result.car_engine;
+                            self.gearbox = result.car_gearbox;
+                            self.power = result.power;
+                            console.log(self.car_briefDescription)
+                        }
+                    });
+                }
 
-                },
-                handlePreview(file) {
-                    console.log(file);
-                },
-                handleExceed(files, fileList) {
-                    this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-                },
-                beforeRemove(file, fileList) {
-                    return this.$confirm(`确定移除 ${file.name}？`);
-                },
-            },
-
-            created: function () {
-                var self = this;
-                $.ajax({
-                    url: '/audio/wait/',
-                    dataType: "json",
-                    type: "get",
-                    success: function (result) {
-                        console.log(result);
-                        self.car_briefDescription = result.brief_description;
-                        self.car_condition = result.condition;
-                        self.carmodal = result.car_modal;
-                        self.engine = result.car_engine;
-                        self.gearbox = result.car_gearbox;
-                        self.power = result.power;
-                        console.log(self.car_briefDescription)
-                    }
-                });
-            }
-
-        })
-
+            })
     </script>
 {% endblock %}

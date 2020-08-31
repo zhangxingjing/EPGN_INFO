@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # 注册DRF子应用
     'rest_framework',
-    'rest_framework.authtoken', # 设置Token
+    'rest_framework.authtoken',  # 设置Token
 
     # 注册CORS
     'corsheaders',
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # 关闭csrf自动校验
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -223,6 +223,7 @@ REST_FRAMEWORK = {
     # 认证方式
     # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
@@ -246,7 +247,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'    # Nginx
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'  # Nginx
 # DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'  # manage.py
 
 # 静态文件目录
@@ -254,6 +255,20 @@ STATIC_URL = '/static/'
 # STATIC_ROOT = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'static'), ]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = (os.path.join(
+    os.path.dirname(
+        os.path.dirname(
+            os.path.dirname(
+                os.path.dirname(
+                    os.path.dirname(
+                        os.path.dirname(BASE_DIR)
+                    )
+                )
+            )
+        )
+    ), 'media/sf_Y_DRIVE/Database/Audio/'))
+print(MEDIA_ROOT)
 # 用户认证 ==> JWT
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
@@ -276,9 +291,13 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 
-FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
-FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
-AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
+FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"  # 文件上传的路径
+FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"  # 可读HDF文件路径
+AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"  # 抱怨音频文件
+
+# FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
+# FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+# AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

@@ -2,6 +2,7 @@ import os
 import re
 import json
 import threading
+import datetime
 from .serializers import *
 from .models import Fileinfo
 from django.views import View
@@ -153,7 +154,7 @@ class Search(View):
         else:
             # 如果用户搜索了，先获取上面几个的查询结 ==> 有没有key_word
             if car_model:
-                search_dict["car_model"] = car_model
+                search_dict["carmodel"] = car_model
             if propulsion:
                 search_dict["propulsion"] = propulsion
             if power:
@@ -231,9 +232,20 @@ class Upload(View):
         :param request: 数据携带的参数信息
         :return: 文件和文件信息存储的状态
         """
-        # 从前端获取的数据
+        # 从前端获取的数据l
         files = request.FILES.get("file")  # 文件
-        filename = str(files)
+
+        # 調整filename命名方式
+        try:
+            luan_filename = str(files).replace('%', '')
+            x= re.findall(r'(.*)\.(.*.hdf)', luan_filename)
+            try:
+                filename = (x[0][0] + x[0][1]).replace("?", "")
+            except:
+                filename = x[0][0].replace("?", "")
+        except:
+            filename = str(files)
+
         author = request.POST.get("author", None)  # 用户名
         part_id = request.POST.get("parts", None)  # 零部件
         power_id = request.POST.get("power", None)  # 功率
@@ -268,7 +280,7 @@ class Upload(View):
 
         if car_model and direction and parts and status and author and car_num and propulsion and power and create_date and produce and platform and gearbox:
             # new_name = create_date + "_" + filename  # 用户名 + 文件名
-            new_name = create_date + "_" + car_model + "_" + car_num + "_" + status.replace('/', '／') + "_" + filename  # 用户名 + 文件名
+            new_name = (create_date + "_" + car_model + "_" + car_num + "_" + status.replace('/', '／') + "_" + filename).replace('?', '')  # 用户名 + 文件名
             print(new_name)
             # 在这里判断下文件格式 ==> 分开保存
             try:
@@ -343,15 +355,32 @@ class Upload(View):
 
 # 文档查看: url(r'^help/$', Word.as_view()),
 class Word(View):
-    def get(self, request):
-        file_path = BASE_DIR + "/static/word/使用说明文档.docx"
-        file = open(file_path, 'rb')
+    @staticmethod
+    def get(request):
+        # file_path = BASE_DIR + "/static/word/.车辆信息查询表.xlsx"
+        file_path = "/media/sf_E_DRIVE/Temp_Data/车辆信息查询表/车辆信息查询表.xlsx"
+        # file = open(file_path, 'rb')
+        # response = FileResponse(file)
+        # response['Content-Type'] = 'application/octet-stream'
+        file_name = "{}_车辆信息查询表.xlsx".format(str(datetime.date.today()))
+        # response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+        # return response
 
-        print(file_path)
+        def file_iterator(file_path, chunk_size=512):
+            with open(file_path, mode='rb') as f:
+                while True:
+                    count = f.read(chunk_size)
+                    if count:
+                        yield count
+                    else:
+                        break
 
-        response = FileResponse(file)
-        response['Content-Type'] = 'application/octet-stream'
-        response['Content-Disposition'] = 'attachment;filename="EPGN_INFO.docx"'
+        try:
+            response = StreamingHttpResponse(file_iterator(file_path))
+            response['Content-Type'] = 'application/octet-stream'
+            response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+        except:
+            return HttpResponse("Sorry but Not Found the File")
         return response
 
 
@@ -360,7 +389,7 @@ class Download(View):
     def get(self, request, pk):
         user_id = request.GET.get("user_id")
         file_name = Fileinfo.objects.get(id=pk).file_name
-        file_path = FILE_READ_PATH + file_name
+        file_path = FILE_HEAD_PATH + file_name
 
         def file_iterator(file_path, chunk_size=512):
             with open(file_path, mode='rb') as f:

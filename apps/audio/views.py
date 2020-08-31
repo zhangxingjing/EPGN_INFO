@@ -1,18 +1,22 @@
-import difflib
 import os
 import re
 import json
+import difflib
+import shutil
+from scripts import zip_file
 from django.db.models import Q
 from django.db import transaction
 from django.shortcuts import render
 from django.core import serializers
 from rest_framework import viewsets
+from django.utils.http import urlquote
 from settings.dev import AUDIO_FILE_PATH
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from audio.models import Audio, Description, Status, Frequency
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.http import JsonResponse, StreamingHttpResponse, HttpResponse
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
 from audio.serializers import AudioSerializer, DescriptionSerializer, FrequencySerializer, AudioStatusSerializer
 
@@ -185,6 +189,20 @@ class AudioViewSet(viewsets.ModelViewSet):
         # 这里是分页查询的page和limit
         page = request.GET.get('page', "1")
         limit = int(request.GET.get('limit', "20"))
+
+
+        print("key_word::::::::",key_word)
+        print("description::::::::",description)
+        print("status::::::::",status)
+        print("car_model::::::::",car_model)
+        print("propulsion::::::::",propulsion)
+        print("gearbox::::::::",gearbox)
+        print("power::::::::",power)
+        print("frequency::::::::",frequency)
+        print("tire::::::::",tire)
+        print("page::::::::",page)
+        print("limit", limit)
+
         search_dict = {}
         if key_word == "":
             key_word = None
@@ -194,37 +212,63 @@ class AudioViewSet(viewsets.ModelViewSet):
         else:
             # 如果用户搜索了，先获取上面几个的查询集 ==> 有没有key_word
             if description:
-                search_dict["description__name"] = description
-            if status:
-                search_dict["status_name"] = status
+                search_dict["description"] = description
+            # if status:
+            #     search_dict["status"] = Status.objects.get(name=)
             if car_model:
-                search_dict["car_model"] = car_model
+                search_dict["car_model"] = Platform.objects.get(id=car_model).name
             if propulsion:
-                search_dict["propulsion"] = propulsion
+                search_dict["propulsion"] = PropulsionPower.objects.get(id=propulsion)
             if gearbox:
-                search_dict["gearbox"] = gearbox
+                search_dict["gearbox"] =  GearBox.objects.get(id=gearbox).name
             if power:
-                search_dict["power"] = power
+                search_dict["power"] = PropulsionPower.objects.get(id=power)
             if frequency:
                 search_dict["frequency__name"] = frequency
-            if tire:
-                search_dict["tire_model"] = tire
+            # if tire:
+            #     search_dict["tire_model"] = tire
 
             # 如果没有key_word， items就是这个值
             # items = Audio.objects.filter(**search_dict).frequency_by('-id')
-            items = Audio.objects.filter(**search_dict).order_by('-id')
+            # items = Audio.objects.filter(**search_dict).order_by('-id')
+            result_items = Audio.objects.filter(**search_dict).order_by('-id')
+            items = []
+            print(len(result_items), tire)
+            if tire:
+                for tire_file in result_items:
+                    if tire in tire_file.tire_model:
+                        print("---------1111111111111------------", tire_file.tire_model, tire)
+
+                        items.append(tire_file)
+                # result_items = items
+            else:
+                items = result_items
+
+            if status:
+                for status_file in result_items:
+                    # print("status:", status, "status_file.status:", status_file.status)
+                    if status in status_file.status:
+                        items.append(status_file)
+                    else:
+                        continue
+            # else:
+                # items = result_items
+
+                # print(status_file.status)
+
+            print("len(items):-----------------------------------", len(items))
 
             print(key_word)
 
             if key_word:
                 key_word = key_word.replace(' ', '')
                 items = items.filter(Q(description__name__icontains=key_word) |
-                                     Q(status__name__icontains=key_word) |
+                                     Q(status__icontains=key_word) |
                                      Q(car_model__icontains=key_word) |
                                      Q(propulsion__icontains=key_word) |
                                      Q(gearbox__icontains=key_word) |
                                      Q(power__icontains=key_word) |
-                                     Q(frequency__name__icontains=key_word) |
+                                     # Q(frequency__icontains=key_word) |
                                      Q(tire_model__icontains=key_word)).order_by('-id')
 
         # 这里是使用什么方法分页查询数据的
@@ -259,9 +303,23 @@ class AudioViewSet(viewsets.ModelViewSet):
         # return Response(data=res_list)
 
 
+    # 删除
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            folder_path = re.findall(r'(.*/).*', instance.raw_mp3)[0]
+            if os.path.isdir(folder_path):
+                shutil.rmtree(folder_path)  # 删除磁盘文件
+            self.perform_destroy(instance)  # 删除数据库中的数据
+            return JsonResponse({"status": True})
+        except:
+            return JsonResponse({"status": False, "msg": "文件删除失败"})
+
+
 # 返回等待页面的信息
 class Wait(ViewSet):
-    def get_items(self, request):
+    @staticmethod
+    def get_items(request):
         # 抱怨描述
         description = Description.objects.all()
         brief_description = DescriptionSerializer(description, many=True)
@@ -301,8 +359,60 @@ class Wait(ViewSet):
         }
         return Response(data=data)
 
-    def search(self, request):
+    @staticmethod
+    def search(request):
         return render(request, 'audio/audio_search.html')
 
-    def upload(self, request):
+    @staticmethod
+    def upload(request):
         return render(request, 'audio/audio_upload.html')
+
+    @staticmethod
+    def audio_detail(request):
+        return render(request, 'audio/audio_detail.html')
+
+
+def download(request):
+    """
+    从前端接受请求
+    ==> 使用内存读取的方式
+    ==> 完成单个数据下载，或者是多个文件打包下载
+    """
+    file_id = request.GET.get("id", None)
+    download_type = request.GET.get("type", None)
+    file = Audio.objects.filter(id=file_id).first()
+
+    if file:
+        if download_type == "all":
+            # 通过内存的方式打包下载文件
+            utilities = zip_file.ZipUtilities()
+            folder_path = re.findall(r'(.*/).*', file.img)[0]
+            folder_name = re.findall(r'.*/Audio/(.*)/.*', file.img)[0]
+            utilities.add_folder_to_zip(folder_path, folder_name)
+
+            # utilities.close() # TODO: 这里关闭内存的话，数据没法返回
+            response = StreamingHttpResponse(utilities.zip_file, content_type='application/zip')
+            response['Content-Disposition'] = 'attachment;filename="{0}.zip"'.format(folder_name)
+            return response
+        else:
+            file_path = getattr(file, download_type)
+            file_name = re.findall(r'.*/(.*)', file_path)[0]
+
+            def file_iterator(file_path, chunk_size=512):
+                with open(file_path, mode='rb') as f:
+                    while True:
+                        count = f.read(chunk_size)
+                        if count:
+                            yield count
+                        else:
+                            break
+
+            try:
+                response = StreamingHttpResponse(file_iterator(file_path))
+                response['Content-Type'] = 'application/octet-stream'
+                response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+            except:
+                return HttpResponse("Sorry but Not Found the File")
+            return response
+    return HttpResponse("文件下载失败")
+

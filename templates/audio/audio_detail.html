@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
     <link rel="stylesheet" href="{% static 'ele/index.css' %}">
-    {#    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>#}
     <style>
         #app {
             margin-top: 10px;
@@ -115,7 +114,7 @@
                     </div>
                     <div id="content2" style="display: flex;margin-left: 8%;font-size: 19px">
                         <div>抱怨特征图：</div>
-                        <div><img id="audio_img" src="/audio/detail/img/?id=12" style="width: 70%"></div>
+                        <div><img id="audio_img" src="/audio/img/?id=20" style="width: 70%"></div>
                     </div>
                 </div>
             </div>
@@ -128,7 +127,7 @@
                     <div>
                         <div>抱怨音频：</div>
                         <div>
-                            <audio src="/audio/detail/mp3/?id=69" controls="controls">
+                            <audio src="/audio/mp3/?id=20" controls="controls">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
@@ -137,7 +136,7 @@
                     <div>
                         <div>抱怨原始数据：</div>
                         <div style="padding-left: 180px">
-                            <a href="/audio/download/?id=69&type=complain_mp3">
+                            <a href="/audio/download/?id=20&type=mp3">
                                 <button href="" style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                     下载
                                 </button>
@@ -148,9 +147,11 @@
                     <div>
                         <div>分析报告：</div>
                         <div style="padding-left: 180px">
+                            <a href="/audio/download/?id=20&type=ppt">
                             <button style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                 下载
                             </button>
+                            </a>
                         </div>
                     </div>
                 </div>

@@ -1,10 +1,13 @@
+import json
 import os
 import re
-import json
-import difflib
 import shutil
-from scripts import zip_file
+import difflib
+
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
+
+from audio.serializers import *
 from django.db import transaction
 from django.shortcuts import render
 from django.core import serializers
@@ -13,12 +16,13 @@ from django.utils.http import urlquote
 from settings.dev import AUDIO_FILE_PATH
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
+from haystack.generic_views import SearchView
+from scripts import zip_file, judge_frequency
+from scripts.elastic_search import ElasticSearchReturn
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from audio.models import Audio, Description, Status, Frequency
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import JsonResponse, StreamingHttpResponse, HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
-from audio.serializers import AudioSerializer, DescriptionSerializer, FrequencySerializer, AudioStatusSerializer
 
 
 # 音频文件
@@ -28,6 +32,8 @@ class AudioViewSet(viewsets.ModelViewSet):
 
     # 上传
     def create(self, request, *args, **kwargs):
+        # 不再验证前端发送的数据
+
         description_id = request.POST.get("brief_description", None)  # 简单描述
         details = request.POST.get("detailed_description", None)  # 抱怨详细描述
         detail_from = request.POST.get("source", None)  # 抱怨来源
@@ -53,10 +59,37 @@ class AudioViewSet(viewsets.ModelViewSet):
         complain_mp3_name = str(complain_mp3)  # 文件名
         ppt_name = str(ppt)  # 文件名
 
+        print("#" * 100)
+        print("description_id:  ", description_id)
+        print("details:  ", details)
+        print("detail_from:  ", detail_from)
+        print("complaint_feature:  ", complaint_feature)
+        print("frequency:  ", frequency)
+        print("order:  ", order)
+        print("reason:  ", reason)
+        print("measures:  ", measures)
+        print("car_model_id:  ", car_model_id)
+        print("propulsion_id:  ", propulsion_id)
+        print("gearbox_id:  ", gearbox_id)
+        print("power_id:  ", power_id)
+        print("author:  ", author)
+        print("tire:  ", tire)
+        print("status:  ", status)
+        print("complain_mp3:  ", complain_mp3)
+        print("img:  ", img)
+        print("raw_mp3:  ", raw_mp3)
+        print("ppt:  ", ppt)
+        print("raw_mp3_name:  ", raw_mp3_name)
+        print("img_name:  ", img_name)
+        print("complain_mp3_name:  ", complain_mp3_name)
+        print("ppt_name:  ", ppt_name)
+        print("#" * 100)
+
         description = Description.objects.get(id=description_id)
         car_model = Platform.objects.get(id=car_model_id).name
         propulsion = PropulsionPower.objects.get(id=propulsion_id).num
-        power = PropulsionPower.objects.get(id=power_id).num
+        self.num = PropulsionPower.objects.get(id=power_id).num
+        power = self.num
         gearbox = GearBox.objects.get(id=gearbox_id).name
 
         directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "/"
@@ -65,109 +98,123 @@ class AudioViewSet(viewsets.ModelViewSet):
             print(int(len(file_num) + 1))
 
         # print(description.name, car_model, propulsion, power, gearbox, status, directory_path, file_num)
+
+        # TODO: 不再限制前端的数据
+
         # 获取文件之后处理业务逻辑
-        if description_id and car_model and propulsion and power and gearbox and complaint_feature and status and frequency and author and tire and measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
-            # 无--新建文件夹，添加文件
-            if not os.path.exists(directory_path):
-                os.mkdir(directory_path)
-            # else:
-            #     file_num = difflib.get_close_matches("Brummen_T-Cross", os.listdir(AUDIO_FILE_PATH), cutoff=0.94) # /0.94
-            #     if len(file_num) > 0:
-            #         print(len(file_num))
-            #         os.mkdir(AUDIO_FILE_PATH + "Brummen_T-Cross" + "_" + str(len(file_num)))
+        # if description_id and car_model and propulsion and power and gearbox and \
+        #         complaint_feature and status and frequency and author and tire and \
+        #         measures and reason and details:  # 对于同一个文件的抱怨数据，先看有没有这个抱怨
 
-            # 有 --添加到之前的文件夹中
-            try:
-                with transaction.atomic():  # 数据库回滚
+        # 无--新建文件夹，添加文件 -->> 保存文件的时候，文件名+1
+        if not os.path.exists(directory_path):
+            os.mkdir(directory_path)
+        else:
+            file_num = difflib.get_close_matches(
+                details + "_" + car_model,
+                os.listdir(AUDIO_FILE_PATH),
+                cutoff=0.94
+            )  # /0.94
+            if len(file_num) > 0:
+                print(len(file_num))
+                os.mkdir(AUDIO_FILE_PATH + details + "_" + car_model + "_" + str(len(file_num)))
+
+        # 有 --添加到之前的文件夹中
+        try:
+            with transaction.atomic():  # 数据库回滚
+                try:
                     try:
-                        # audio_list = [raw_mp3_name, img_name, complain_mp3_name, ppt_name]
-                        # audio_dict = {"raw_mp3_name":raw_mp3, "img_name":img, "complain_mp3_name":complain_mp3, "ppt_name": ppt}
-                        # for i in audio_list:
-                        #     if len(i) > 4:  # 存在文件名
-                        #         print(directory_path + i)
-                        #         i_file = open(directory_path + i, 'wb+')
-                        #         for chunk in audio_dict[i].chunks():
-                        #             i_file.write(chunk)
-                        #         i_file.close()
+                        # raw_mp3
+                        new_raw_mp3 = open(directory_path + raw_mp3_name, 'wb+')
+                        for chunk in raw_mp3.chunks():
+                            new_raw_mp3.write(chunk)
+                        new_raw_mp3.close()
+                        new_raw_mp3_info = directory_path + raw_mp3_name
+                        # new_raw_mp3_info = raw_mp3_name
+                    except Exception as e:
+                        print("new_raw_mp3 is Non: e", e)
+                        new_raw_mp3_info = None
 
-                        try:
-                            # raw_mp3
-                            new_raw_mp3 = open(directory_path + raw_mp3_name, 'wb+')
-                            for chunk in raw_mp3.chunks():
-                                new_raw_mp3.write(chunk)
-                            new_raw_mp3.close()
-                            new_raw_mp3_info = directory_path + raw_mp3_name
-                        except:
-                            print("new_raw_mp3 is None")
-                            new_raw_mp3_info = None
+                    try:
+                        # image
+                        image = open(directory_path + img_name, 'wb+')
+                        for chunk in img.chunks():
+                            image.write(chunk)
+                        image.close()
+                        image_info = directory_path + img_name
+                        # image_info = img_name
+                    except Exception as e:
+                        print("new_image is None: ", e)
+                        image_info = None
 
-                        try:
-                            # image
-                            image = open(directory_path + img_name, 'wb+')
-                            for chunk in img.chunks():
-                                image.write(chunk)
-                            image.close()
-                            image_info = directory_path + img_name
-                        except:
-                            print("new_image is None")
-                            image_info = None
+                    try:
+                        # complain_mp3_name
+                        new_complain_mp3 = open(directory_path + complain_mp3_name, 'wb+')
+                        for chunk in complain_mp3.chunks():
+                            new_complain_mp3.write(chunk)
+                        new_complain_mp3.close()
+                        new_complain_mp3_info = directory_path + complain_mp3_name
+                        # new_complain_mp3_info = complain_mp3_name
+                    except Exception as e:
+                        print("new_complain_mp3 is Non: ", e)
+                        new_complain_mp3_info = None
 
-                        try:
-                            # complain_mp3_name
-                            new_complain_mp3 = open(directory_path + complain_mp3_name, 'wb+')
-                            for chunk in complain_mp3.chunks():
-                                new_complain_mp3.write(chunk)
-                            new_complain_mp3.close()
-                            new_complain_mp3_info = directory_path + complain_mp3_name
-                        except:
-                            print("new_complain_mp3 is None")
-                            new_complain_mp3_info = None
+                    try:
+                        # ppt
+                        new_ppt = open(directory_path + ppt_name, 'wb+')
+                        for chunk in ppt.chunks():
+                            new_ppt.write(chunk)
+                        new_ppt.close()
+                        new_ppt_info = directory_path + ppt_name
+                        # new_ppt_info = ppt_name
+                    except Exception as e:
+                        print("new_ppt is None: ", e)
+                        new_ppt_info = None
 
-                        try:
-                            # ppt
-                            new_ppt = open(directory_path + ppt_name, 'wb+')
-                            for chunk in ppt.chunks():
-                                new_ppt.write(chunk)
-                            new_ppt.close()
-                            new_ppt_info = directory_path + ppt_name
-                        except:
-                            print("new_ppt is None")
-                            new_ppt_info = None
+                except OSError:
+                    return Response(data={"code": 0, "msg": "文件不存在！"})
 
-                    except OSError:
-                        return Response(data={"code": 0, "msg": "文件不存在！"})
-                    # 写入数据库
-                    Audio(description=description,
-                          details=details,
-                          detail_from=detail_from,
-                          complaint_feature=complaint_feature,
-                          frequency=frequency,
-                          order=order,
-                          status=status,
-                          reason=reason,
-                          measures=measures,
-                          car_model=car_model,
-                          propulsion=propulsion,
-                          gearbox=gearbox,
-                          power=power,
-                          tire_model=tire,
-                          author=author,
-                          # 这里存放文件的时候，应该保存当前文件的绝对路径
-                          raw_mp3=new_raw_mp3_info,
-                          img=image_info,
-                          complain_mp3=new_complain_mp3_info,
-                          ppt=new_ppt_info
-                          ).save()
+                # 这里返回的frequency_id是一个列表，多对多
+                if frequency:
+                    frequency_id_list = judge_frequency.judge(None, frequency)
+                else:
+                    frequency_id_list = None
+                audio_obj = Audio(description=description,
+                                  details=details,
+                                  detail_from=detail_from,
+                                  # complaint_feature=complaint_feature,
+                                  frequency=frequency,
+                                  order=order,
+                                  status=status,
+                                  reason=reason,
+                                  measures=measures,
+                                  car_model=car_model,
+                                  propulsion=propulsion,
+                                  gearbox=gearbox,
+                                  power=power,
+                                  tire_model=tire,
+                                  author=author,
+                                  # 这里存放文件的时候，应该保存当前文件的绝对路径
+                                  hdf=new_raw_mp3_info,
+                                  img=image_info,
+                                  mp3=new_complain_mp3_info,
+                                  ppt=new_ppt_info
+                                  )
+                audio_obj.save()
 
-                    # 上传成功返回当前上传状态
-                    return Response(data={"code": 1, "msg": "文件上传成功！"})
-            except FileExistsError as error:  # 文件操作失败是, 数据库回滚, 同时删除网盘中已上传的原始HDF文件
-                os.remove(directory_path + raw_mp3_name)
-                os.remove(directory_path + complain_mp3_name)
-                os.remove(directory_path + img_name)
-                os.remove(directory_path + ppt_name)
-                return Response(data={"code": 0, "msg": error})
-        return Response(data={"code": 0, "msg": "文件上传失败。"})
+                if frequency_id_list:
+                    for frequency_id in frequency_id_list:
+                        frequency_obj = Frequency.objects.get(id=frequency_id)
+                        audio_obj.frequency_range.add(frequency_obj)
+                # 上传成功返回当前上传状态
+                return Response(data={"code": 1, "msg": "文件上传成功！"})
+        except FileExistsError as error:  # 文件操作失败是, 数据库回滚, 同时删除网盘中已上传的原始HDF文件
+            os.remove(directory_path + raw_mp3_name)
+            os.remove(directory_path + complain_mp3_name)
+            os.remove(directory_path + img_name)
+            os.remove(directory_path + ppt_name)
+            return Response(data={"code": 0, "msg": error})
+        # return Response(data={"code": 0, "msg": "文件上传失败。"})
 
     # 检索
     def list(self, request, *args, **kwargs):
@@ -190,17 +237,16 @@ class AudioViewSet(viewsets.ModelViewSet):
         page = request.GET.get('page', "1")
         limit = int(request.GET.get('limit', "20"))
 
-
-        print("key_word::::::::",key_word)
-        print("description::::::::",description)
-        print("status::::::::",status)
-        print("car_model::::::::",car_model)
-        print("propulsion::::::::",propulsion)
-        print("gearbox::::::::",gearbox)
-        print("power::::::::",power)
-        print("frequency::::::::",frequency)
-        print("tire::::::::",tire)
-        print("page::::::::",page)
+        print("key_word::::::::", key_word)
+        print("description::::::::", description)
+        print("status::::::::", status)
+        print("car_model::::::::", car_model)
+        print("propulsion::::::::", propulsion)
+        print("gearbox::::::::", gearbox)
+        print("power::::::::", power)
+        print("frequency::::::::", frequency)
+        print("tire::::::::", tire)
+        print("page::::::::", page)
         print("limit", limit)
 
         search_dict = {}
@@ -220,7 +266,7 @@ class AudioViewSet(viewsets.ModelViewSet):
             if propulsion:
                 search_dict["propulsion"] = PropulsionPower.objects.get(id=propulsion)
             if gearbox:
-                search_dict["gearbox"] =  GearBox.objects.get(id=gearbox).name
+                search_dict["gearbox"] = GearBox.objects.get(id=gearbox).name
             if power:
                 search_dict["power"] = PropulsionPower.objects.get(id=power)
             if frequency:
@@ -252,9 +298,9 @@ class AudioViewSet(viewsets.ModelViewSet):
                     else:
                         continue
             # else:
-                # items = result_items
+            # items = result_items
 
-                # print(status_file.status)
+            # print(status_file.status)
 
             print("len(items):-----------------------------------", len(items))
 
@@ -302,7 +348,6 @@ class AudioViewSet(viewsets.ModelViewSet):
         })
         # return Response(data=res_list)
 
-
     # 删除
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -314,6 +359,33 @@ class AudioViewSet(viewsets.ModelViewSet):
             return JsonResponse({"status": True})
         except:
             return JsonResponse({"status": False, "msg": "文件删除失败"})
+
+    # 详情
+    # def retrieve(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     ...
+
+
+class Detail(ViewSet):
+    """
+    向用户返回数据的详细信息
+    """
+
+    def img(self, request):
+        id = request.GET.get("id")
+        img_path = Audio.objects.get(id=id).img
+
+        with open(img_path, 'rb') as r:
+            img = r.read()
+        return HttpResponse(img, content_type='image/png')
+
+    def mp3(self, request):
+        id = request.GET.get("id")
+        mp3_path = Audio.objects.get(id=id).hdf
+
+        with open(mp3_path, 'rb') as r:
+            mp3 = r.read()
+        return HttpResponse(mp3, content_type='audio/mp3')
 
 
 # 返回等待页面的信息
@@ -396,23 +468,85 @@ def download(request):
             return response
         else:
             file_path = getattr(file, download_type)
-            file_name = re.findall(r'.*/(.*)', file_path)[0]
+            if file_path:
+                file_name = re.findall(r'.*/(.*)', file_path)[0]
 
-            def file_iterator(file_path, chunk_size=512):
-                with open(file_path, mode='rb') as f:
-                    while True:
-                        count = f.read(chunk_size)
-                        if count:
-                            yield count
-                        else:
-                            break
+                def file_iterator(file_path, chunk_size=512):
+                    with open(file_path, mode='rb') as f:
+                        while True:
+                            count = f.read(chunk_size)
+                            if count:
+                                yield count
+                            else:
+                                break
 
-            try:
-                response = StreamingHttpResponse(file_iterator(file_path))
-                response['Content-Type'] = 'application/octet-stream'
-                response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
-            except:
-                return HttpResponse("Sorry but Not Found the File")
-            return response
-    return HttpResponse("文件下载失败")
+                try:
+                    response = StreamingHttpResponse(file_iterator(file_path))
+                    response['Content-Type'] = 'application/octet-stream'
+                    response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+                except Exception as e:
+                    return JsonResponse({"status": False, "msg": "Sorry but Not Found the File"})
+                return response
+            return JsonResponse({"status": False, "msg": "当前音频的{}文件不存在！".format(download_type)})
+    return JsonResponse({"status": False, "msg": "文件下载失败"})
 
+
+"""搜索引擎"""
+
+class AudioSearchViewSet(ElasticSearchReturn):
+    """测量测试数据的搜索"""
+
+    index_models = [Audio]
+    serializer_class = AudioIndexSerializer
+
+
+class AllAudioSearchViewSer(ElasticSearchReturn):
+    """elasticsearch 和 全局搜索"""
+
+    def list(self, request, *args, **kwargs):
+        """重写list查询方法，封装数据格式，使用Django自带的分页器"""
+        limit = int(request.GET.get('limit', "20"))
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+
+    index_models = [Audio]
+    serializer_class = AudioIndexSerializer
+
+
+class ProviderSearchView(SearchView):
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(ProviderSearchView, self).get_context_data(**kwargs)
+
+        print(self.queryset)
+        for i in context['object_list']:
+            print(i.author)
+
+        return context
+
+    def get_queryset(self):
+        # haystack自己的queryset, 这里是所有数据
+        # queryset = super(ProviderSearchView, self).get_queryset()
+
+        # 使用字段查询返回的queryset
+        queryset = ElasticSearchReturn().get_queryset()
+        return queryset.filter(is_active=True)
+
+    # def form_valid(self, form):
+    #     self.queryset = form.search()
+    #     context = self.get_context_data(**{
+    #         self.form_name: form,
+    #         'query': form.cleaned_data.get(self.search_field),
+    #         'object_list': self.queryset
+    #     })
+    #     # return context
+    #
+    #     result = {"code": 200, "msg": 'Search successfully！', "data": context}
+    #     return HttpResponse(json.dumps(result), content_type="application/json")
+
+    def get(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        print(form)
+        return self.form_valid(form)

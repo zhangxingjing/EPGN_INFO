@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<br xmlns="http://www.w3.org/1999/html">
+<head>
+    <title></title>
+</head>
+<br>
+<form method='get' action="/test/car/search/two/" target="blank">
+    <input type="text" name="q">
+    <input type="submit" value="查询">
+</form>
+{% if query %}
+    <h3>搜索结果如下：</h3>
+    {% for result in page.object_list %}
+        {{ result.object.id }} - {{ result.object.carmodel }} - {{ result.object.author }} - {{ result.object.file_name }} - {{ result.object.platform }} - {{ result.object.produce }} - {{ result.object.parts }} - {{ result.object.status }} - {{ result.object.car_num }} - {{ result.object.propulsion }} - {{ result.object.power }} - {{ result.object.other_need }} </br>
+        {#        {{ result.object.id }} — {{ result.object.file_name }}<br/>#}
+        {% empty %}
+        <p>啥也没找到</p>
+    {% endfor %}
+
+    {% if page.has_previous or page.has_next %}
+        <div>
+            {% if page.has_previous %}<a href="?q={{ query }}&page={{ page.previous_page_number }}">{% endif %}« 上一页
+            {% if page.has_previous %}</a>{% endif %}
+            |
+            {% if page.has_next %}<a href="?q={{ query }}&page={{ page.next_page_number }}">{% endif %}下一页 »
+            {% if page.has_next %}</a>{% endif %}
+        </div>
+    {% endif %}
+{% endif %}
+</body>
+</html>

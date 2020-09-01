@@ -24,6 +24,16 @@ DATABASES = {
     }
 }
 
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'INDEX_NAME': 'epgn',
+        'URL': 'http://172.26.209.199:9200/',
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        "PATH": os.path.join(BASE_DIR, 'whoosh'),
+    },
+}
+
 FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
 FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
 AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"   # 抱怨音频文件

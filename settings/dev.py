@@ -9,7 +9,6 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 ALLOWED_HOSTS = ['*', 'localhost']
 
 # 子应用
@@ -28,7 +27,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # 注册全文检索
-    # 'haystack',
+    'haystack',
+    'jieba',
 
     # 使用xadmin
     'xadmin',
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # 关闭csrf自动校验
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -55,7 +55,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'epgn.urls'  # 使用Nginx
-# ROOT_URLCONF = 'epgn.urls'  # 使用manage.py
 
 # 模板文件
 TEMPLATES = [
@@ -87,7 +86,10 @@ DATABASES = {
         'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER'",
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,"
+                            "NO_ZERO_IN_DATE,NO_ZERO_DATE,"
+                            "ERROR_FOR_DIVISION_BY_ZERO,"
+                            "NO_AUTO_CREATE_USER'",
         },
     }
 }
@@ -206,9 +208,11 @@ LOGGING = {
 # Haystack 对接elasticsearch搜索引擎
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
-        'INDEX_NAME': 'epgn',  # 指定elasticsearch建立的索引库的名称
+        'INDEX_NAME': 'epgn',
+        'URL': 'http://192.168.43.230:9200/',
+        "PATH": os.path.join(BASE_DIR, 'whoosh'),
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        # 'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
     },
 }
 
@@ -218,19 +222,14 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    'EXCEPTION_HANDLER': 'scripts.exceptions.exception_handler',  # 使用Nginx
-    # 'EXCEPTION_HANDLER': 'utils.exceptions.exception_handler',  # 使用manage.py
-    # 认证方式
-    # rest_framework.request.WrappedAttributeError: 'CSRFCheck' object has no attribute 'process_request'
+    'EXCEPTION_HANDLER': 'scripts.exceptions.exception_handler',
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
     # 分页
-    'DEFAULT_PAGINATION_CLASS': 'scripts.pagination.StandardResultsSetPagination',  # 使用Nginx
-    # 'DEFAULT_PAGINATION_CLASS': 'scripts.utils.pagination.StandardResultsSetPagination',  # 使用manage.py
+    'DEFAULT_PAGINATION_CLASS': 'scripts.pagination.StandardResultsSetPagination',
 }
 
 # CORS
@@ -247,28 +246,28 @@ REST_FRAMEWORK_EXTENSIONS = {
 }
 
 # django文件存储
-DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'  # Nginx
-# DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'  # manage.py
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # 静态文件目录
 STATIC_URL = '/static/'
-# STATIC_ROOT = [os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'static'), ]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = (os.path.join(
-    os.path.dirname(
-        os.path.dirname(
-            os.path.dirname(
-                os.path.dirname(
-                    os.path.dirname(
-                        os.path.dirname(BASE_DIR)
-                    )
-                )
-            )
-        )
-    ), 'media/sf_Y_DRIVE/Database/Audio/'))
-print(MEDIA_ROOT)
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = (os.path.join(
+#     os.path.dirname(
+#         os.path.dirname(
+#             os.path.dirname(
+#                 os.path.dirname(
+#                     os.path.dirname(
+#                         os.path.dirname(BASE_DIR)
+#                     )
+#                 )
+#             )
+#         )
+#     ), 'media/sf_Y_DRIVE/Database/Audio/'))
+# print(MEDIA_ROOT)
+
+
 # 用户认证 ==> JWT
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
@@ -291,13 +290,9 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 
-FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"  # 文件上传的路径
-FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"  # 可读HDF文件路径
-AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"  # 抱怨音频文件
-
-# FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
-# FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
-# AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
+FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
+FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

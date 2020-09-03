@@ -14,8 +14,6 @@ def judge(frequency, key: str):
     frequency_id_list = []
     key_number = re.findall(r'\d+', key)
 
-    print(key_number)
-
     if len(key_number) == 1:
         number = int(key_number[0])
         # key 为值的时候

@@ -54,4 +54,4 @@ class AudioIndexSerializer(HaystackSerializer):
 
     class Meta:
         index_classes = [AudioIndex]
-        fields = ('id', "status", "frequency", "details", "detail_from", "complaint_feature", "order", "reason", "measures", "car_model", "propulsion", "gearbox", "power", "tire_model", "author", "raw_mp3", "img", "complain_mp3", "ppt", "description_name")
+        fields = ('id', "status", "frequency", "details", "detail_from", "complaint_feature", "order", "reason", "measures", "car_model", "propulsion", "gearbox", "power", "tire_model", "author", "hdf", "img", "mp3", "ppt", "description_name")

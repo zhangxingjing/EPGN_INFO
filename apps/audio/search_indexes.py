@@ -30,9 +30,9 @@ class AudioIndex(indexes.SearchIndex, indexes.Indexable):
     power = indexes.CharField(model_attr="power")
     tire_model = indexes.CharField(model_attr="tire_model")
     author = indexes.CharField(model_attr="author")
-    hdf = indexes.CharField(model_attr="hdf")
-    img = indexes.CharField(model_attr="img")
-    mp3 = indexes.CharField(model_attr="mp3")
+    hdf = indexes.CharField(model_attr="hdf", default=None)
+    img = indexes.CharField(model_attr="img", default=None)
+    mp3 = indexes.CharField(model_attr="mp3", default=None)
     ppt = indexes.CharField(model_attr="ppt", default=None)
     description_name = indexes.CharField(model_attr="description_name")
 

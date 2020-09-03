@@ -1,3 +1,11 @@
 from django.db import models
 
-# Create your models here.
+
+class WorkTime(models.Model):
+    """工时模型"""
+    ...
+
+
+class Laboratory(models.Model):
+    """实验室模型"""
+    ...

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$PROJECT_DIR$/sql/tb_channel.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/sql/tb_direction.sql" dialect="GenericSQL" />
-    <file url="file://$PROJECT_DIR$/sql/tb_userinfo.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/insert/mysql/tb_channel.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/insert/mysql/tb_direction.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/insert/mysql/tb_userinfo.sql" dialect="GenericSQL" />
   </component>
 </project>

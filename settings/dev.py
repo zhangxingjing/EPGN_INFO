@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'calculate.apps.CalculateConfig',
     'audio.apps.AudioConfig',
     'bug.apps.BugConfig',
+    'worktime.apps.WorktimeConfig',
 ]
 
 # 中间件
@@ -126,6 +127,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/0",  # 修改redis数据库配置
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "root"  # redis密码
         }
     },
     "session": {
@@ -133,6 +135,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "root"  # redis密码
         }
     },
     'verifications': {
@@ -140,6 +143,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/2",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "root"  # redis密码
         }
     },
     "history": {
@@ -147,6 +151,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/3",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "root"  # redis密码
         }
     },
     'contrast': {
@@ -154,6 +159,7 @@ CACHES = {
         "LOCATION": "redis://127.0.0.1:6379/5",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": "root"  # redis密码
         }
     },
 }
@@ -223,11 +229,12 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'scripts.exceptions.exception_handler',
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-    ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    #     'rest_framework.authentication.SessionAuthentication',
+    #     'rest_framework.authentication.BasicAuthentication',
+    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
     # 分页
     'DEFAULT_PAGINATION_CLASS': 'scripts.pagination.StandardResultsSetPagination',
 }
@@ -290,13 +297,13 @@ XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 # 配置全局`文件`路径
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 
-# FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
-# FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
-# AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
+FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
+FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
+AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
 
-FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
-FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
-AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"   # 抱怨音频文件
+# FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
+# FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
+# AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"   # 抱怨音频文件
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
@@ -324,3 +331,25 @@ CALCULATE_RULE = {
 }
 REFERENCE_CHANNEL = ["time", "EngineRPM", "EngineCoolantTemp", "VehicleSpeed"]
 FALLING_LIST = ['(N)G3 VS', '(N)G5 VS', ]
+
+DEVELOPER_CHOICE = (
+    (1, "郑兴涛"),
+    (2, "吴斌")
+)
+
+ROLE_CHOICE = (
+    (1, "R"),
+    (2, "S"),
+    (3, "M"),
+)
+
+CHECK_WORK_INFO = (
+    (1, '未审核'),
+    (2, '审核中'),
+    (3, '已审核')
+)
+
+TEST_CATEGORY = (
+    (1, '测试'),
+    (2, '管理')
+)

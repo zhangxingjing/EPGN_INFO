@@ -127,7 +127,7 @@ class ParseTask(object):
                 # try:
                 #     try:
                 #         channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("EngineRPM")]
-                #         channel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
+                #         yieldchannel_rpm_num = re.match(r'.*?(\d+)', channel_rpm).group(1)
                 #     except:
                 #         try:
                 #             channel_rpm = list(channel_file_list.keys())[list(channel_file_list.values()).index("data_EngineRPM")]

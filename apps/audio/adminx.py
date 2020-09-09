@@ -25,8 +25,8 @@ class StatusAdmin():
 
 @xadmin.sites.register(Audio)
 class AudioAdmin():
-    list_display = ['id', 'description', 'frequency', 'status', 'details', 'detail_from', 'complaint_feature', 'order',
-                    'reason', 'measures', 'car_model', 'propulsion', 'gearbox', 'power', 'tire_model', 'author',]
-                    # 'raw_mp3', 'img', 'complain_mp3', 'ppt']
+    list_display = ['id', 'description', 'frequency', 'status', 'details', 'detail_from', 'order',
+                    'reason', 'measures', 'car_model', 'propulsion', 'gearbox', 'power', 'tire_model',
+                    'author', 'mp3', 'img', 'mp3', 'ppt']
     search_fields = ['name', ]
     list_display_links = ['name', ]

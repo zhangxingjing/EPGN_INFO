@@ -4,8 +4,8 @@
     <facet type="django" name="Django">
       <configuration>
         <option name="rootFolder" value="$MODULE_DIR$" />
-        <option name="settingsModule" value="epgn_info/epgn_info/settings/dev.py" />
-        <option name="manageScript" value="" />
+        <option name="settingsModule" value="settings/dev.py" />
+        <option name="manageScript" value="manage.py" />
         <option name="environment" value="&lt;map/&gt;" />
         <option name="doNotUseTestRunner" value="false" />
         <option name="trackFilePattern" value="" />
@@ -21,8 +21,9 @@
       <sourceFolder url="file://$MODULE_DIR$/epgn" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/utils" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/static" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/insert/python_file" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.6 (Working)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5 (EPGN)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

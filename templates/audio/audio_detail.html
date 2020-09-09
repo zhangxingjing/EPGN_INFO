@@ -97,7 +97,7 @@
                         </div>
                         <div>
                             <div style="width: 50%">抱怨频率：</div>
-                            <div id="frequency"></div>
+                            <div id="frequency">400-500Hz</div>
                         </div>
                         <div>
                             <div>关键零件或因素：</div>
@@ -114,7 +114,7 @@
                     </div>
                     <div id="content2" style="display: flex;margin-left: 8%;font-size: 19px">
                         <div>抱怨特征图：</div>
-                        <div><img id="audio_img" src="/audio/img/?id=20" style="width: 70%"></div>
+                        <div><img id="audio_img" style="width: 70%"></div>
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@
                     <div>
                         <div>抱怨音频：</div>
                         <div>
-                            <audio src="/audio/mp3/?id=20" controls="controls">
+                            <audio  id="audio_mp3" controls="controls">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
@@ -136,7 +136,7 @@
                     <div>
                         <div>抱怨原始数据：</div>
                         <div style="padding-left: 180px">
-                            <a href="/audio/download/?id=20&type=mp3">
+                            <a  id="audio_hdf" >
                                 <button href="" style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                     下载
                                 </button>
@@ -147,7 +147,7 @@
                     <div>
                         <div>分析报告：</div>
                         <div style="padding-left: 180px">
-                            <a href="/audio/download/?id=20&type=ppt">
+                            <a id="audio_report" >
                             <button style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                 下载
                             </button>
@@ -156,7 +156,7 @@
                     </div>
                 </div>
                 <div id="download-right">
-                    <a href="/audio/download/?id=20&type=all">
+                    <a id="audio_all">
                     <button style="background:#3a8ee6;color: white;width: 120px;text-align: center;line-height: 60px;height: 60px;border: 0px;font-size: 20px;border-radius: 2px">
                         打包下载
                     </button>
@@ -204,7 +204,12 @@
                 document.getElementById("condition").innerHTML = file_info.condition;
                 document.getElementById("measure").innerHTML = file_info.measures;
                 document.getElementById("key_part").innerHTML = file_info.reason;
-                console.log(this.complain_source)
+                console.log(this.complain_source);
+                document.getElementById("audio_img").src = "/audio/img/?id="+file_info.pk;
+                document.getElementById("audio_mp3").src = "/audio/mp3/?id="+file_info.pk;
+                document.getElementById("audio_hdf").href = "/audio/download/?id="+file_info.pk+"&type=hdf";
+                document.getElementById("audio_report").href = "/audio/download/?id="+file_info.pk+"&type=ppt";
+                document.getElementById("audio_all").href = "/audio/download/?id="+file_info.pk+"&type=all";
             },
         })
     </script>

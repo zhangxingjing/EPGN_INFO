@@ -2,6 +2,7 @@ from django.db import models
 
 
 class Description(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, verbose_name='抱怨描述')
 
     class Meta:
@@ -14,6 +15,7 @@ class Description(models.Model):
 
 
 class Frequency(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, verbose_name='频率范围')
 
     class Meta:
@@ -23,6 +25,7 @@ class Frequency(models.Model):
 
 
 class Status(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, verbose_name='工况')
 
     class Meta:
@@ -35,6 +38,7 @@ class Audio(models.Model):
     """
     按照需求，这里所有的数据都可以为空，当获取的数据中为None时，也发布购入
     """
+    id = models.AutoField(primary_key=True)
     description = models.ForeignKey(Description, verbose_name="抱怨描述", null=True, blank=True, default=None)
     details = models.CharField(verbose_name='抱怨详细描述', max_length=255, null=True, blank=True, default=None)
     detail_from = models.CharField(verbose_name="抱怨来源", max_length=255, null=True, blank=True, default=None)

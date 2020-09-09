@@ -506,10 +506,10 @@
                 },
                 search_complain() {
                     console.log(this.brief_description);
-                    if (this.brief_description !== '') {
+                    if (this.brief_description !== ''&& this.brief_description !== 9999) {
                         this.Paramas['brief_description'] = this.brief_description;
                     }
-                    if (this.frequency !== '') {
+                    if (this.frequency !== '' && this.frequency !== 9999) {
                         this.Paramas['frequency_range'] = this.frequency;
                     }
                     if (this.order !== '') {
@@ -518,19 +518,19 @@
                     if (this.key_parts !== '') {
                         this.Paramas['key_parts'] = this.key_parts
                     }
-                    if (this.car_modal !== '') {
+                    if (this.car_modal !== '' && this.car_modal !== 9999) {
                         this.Paramas['car_modal'] = this.car_modal
                     }
-                    if (this.car_engine !== '') {
+                    if (this.car_engine !== '' && this.car_engine !== 9999) {
                         this.Paramas['car_engine'] = this.car_engine
                     }
-                    if (this.car_gearbox !== '') {
+                    if (this.car_gearbox !== '' && this.car_engine !== 9999) {
                         this.Paramas['car_gearbox'] = this.car_gearbox
                     }
-                    if (this.car_power !== '') {
+                    if (this.car_power !== '' && this.car_power !== 9999) {
                         this.Paramas['power'] = this.car_power
                     }
-                    if (this.car_condition !== '') {
+                    if (this.car_condition !== ''&& this.car_condition !== 9999) {
                         this.Paramas['condition'] = this.car_condition
                     }
                     if (this.fuzzy_word !== '') {
@@ -564,12 +564,19 @@
                     success: function (result) {
                         console.log(result);
                         self.car_briefDescription = result.brief_description;
+                        self.car_briefDescription.unshift({name:'请选择',id:9999});
                         self.frequency_range = result.frequency_range;
+                        self.frequency_range.unshift({name:'请选择',id:9999});
                         self.condition = result.condition;
+                        self.condition.unshift({name:'请选择',id:9999});
                         self.carmodal = result.car_modal;
+                        self.carmodal.unshift({name:'请选择',id:9999});
                         self.engine = result.car_engine;
+                        self.engine.unshift({num:'请选择',id:9999});
                         self.gearbox = result.car_gearbox;
+                        self.gearbox.unshift({name:'请选择',id:9999});
                         self.power = result.power;
+                        self.power.unshift({num:'请选择',id:9999});
                     }
                 });
             }

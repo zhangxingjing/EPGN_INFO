@@ -24,5 +24,7 @@ urlpatterns = [
 
     url(r'audio/', include('audio.urls')),
 
-    url(r'bug/', include('bug.urls'))
+    url(r'bug/', include('bug.urls')),
+
+    url(r'time/', include('worktime.urls'))
 ]

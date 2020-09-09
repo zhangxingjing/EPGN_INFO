@@ -34,7 +34,7 @@ class PropulsionPower(models.Model):
                                verbose_name='动力总成')
 
     class Meta:
-        db_table = 'tb_power'
+        db_table = 'tb_car_power'
         verbose_name = verbose_name_plural = '动力总成-功率'
 
     def __str__(self):
@@ -47,7 +47,7 @@ class Platform(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='平台')
 
     class Meta:
-        db_table = 'tb_platform'
+        db_table = 'tb_car_platform'
         verbose_name = verbose_name_plural = '平台-车型'
 
     def __str__(self):
@@ -60,7 +60,7 @@ class Direction(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='专业方向')
 
     class Meta:
-        db_table = 'tb_direction'
+        db_table = 'tb_car_direction'
         verbose_name = verbose_name_plural = '专业方向-工况'
 
     def __str__(self):
@@ -72,7 +72,7 @@ class GearBox(models.Model):
     name = models.CharField(max_length=40, verbose_name="变速箱")
 
     class Meta:
-        db_table = 'tb_gearbox'  # corresponding data table name
+        db_table = 'tb_car_gearbox'  # corresponding data table name
         verbose_name_plural = verbose_name = '变速箱信息'
 
 
@@ -82,7 +82,7 @@ class Channel(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='通道')
 
     class Meta:
-        db_table = 'tb_channel'
+        db_table = 'tb_car_channel'
         verbose_name = verbose_name_plural = '通道-其他写法'
 
     def __str__(self):

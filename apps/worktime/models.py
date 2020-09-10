@@ -85,9 +85,9 @@ class WorkTime(models.Model):
     task_user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name='task_user',
+        # null=True,
+        # blank=True,
+        related_name='tester',
         verbose_name="试验员"
     )
     create_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")  # 这里使用用户提交的时间
@@ -96,7 +96,7 @@ class WorkTime(models.Model):
         Platform,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
+        # blank=True,
         related_name='car_model',
         verbose_name="车型"
     )
@@ -106,11 +106,18 @@ class WorkTime(models.Model):
     task_content = models.ForeignKey(
         TestContent,
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        default=None,
+        # null=True,
+        # blank=True,
+        # default=None,
         related_name='worktime_content',
         verbose_name="任务详细内容"
+    )
+    task_manager = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='manager',
+        verbose_name="管理员"
+
     )
 
     check_task = models.SmallIntegerField(default=1, choices=CHECK_WORK_INFO, verbose_name="确认任务内容")

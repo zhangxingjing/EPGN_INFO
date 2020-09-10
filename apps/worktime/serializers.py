@@ -57,6 +57,19 @@ class TestContentSerializer(serializers.ModelSerializer):
 
 
 class WorkTimeSerializer(serializers.ModelSerializer):
+    task_user = serializers.CharField(source='task_user.username', read_only=True)
+    car_model = serializers.CharField(source='car_model.name', read_only=True)
+    check_task = serializers.SerializerMethodField()
+    task_content = serializers.CharField(source='worktime_content.name', read_only=True)
+
     class Meta:
         model = WorkTime
         fields = "__all__"
+
+    def get_check_task(self, data):
+        if data.check_task == 1:
+            return '未审核'
+        elif data.check_task == 2:
+            return '审核中'
+        elif data.check_task == 3:
+            return '已审核'

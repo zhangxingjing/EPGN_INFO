@@ -17,6 +17,9 @@ urlpatterns = [
     url(r'^room/$', LaboratoryInfo.as_view({"get": "room"})),
     url(r'^room/(?P<id>\d+)/$', LaboratoryInfo.as_view({"get": "test_"})),
 
+    url(r'^check/$', CheckWorkTime.as_view()),
+
+    url(r'^save/$', save_xls_download),
 ]
 
 urlpatterns += router.urls

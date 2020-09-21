@@ -8,18 +8,20 @@ from .views import *
 from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
+app_name = "time"
+
 router = DefaultRouter()
-router.register(r'^file', AudioViewSet)  # audio文件
+router.register(r'^file', AudioViewSet, basename="file")  # audio文件
 
 urlpatterns = [
     url(r'^download/$', download),
-    url(r'^wait/$', Wait.as_view({"get": "get_items"})),
-    url(r'^search/$', Wait.as_view({"get": "search"})),
-    url(r'^upload/$', Wait.as_view({"get": "upload"})),
-    url(r'^detail/$', Wait.as_view({"get": "audio_detail"})),
+    url(r'^wait/$', Wait.as_view({"get": "get_items"}), name="wait"),
+    url(r'^search/$', Wait.as_view({"get": "search"}), name="search"),
+    url(r'^upload/$', Wait.as_view({"get": "upload"}), name="upload"),
+    url(r'^detail/$', Wait.as_view({"get": "audio_detail"}), name="detail"),
 
-    url(r'^img/$', Detail.as_view({"get": "img"})),
-    url(r'^mp3/$', Detail.as_view({"get": "mp3"})),
+    url(r'^img/$', Detail.as_view({"get": "img"}), name="img"),
+    url(r'^mp3/$', Detail.as_view({"get": "mp3"}), name="mp3"),
 
     # url(r'^search/$', search),
     # url(r'^upload/$', upload),

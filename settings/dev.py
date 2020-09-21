@@ -345,8 +345,8 @@ ROLE_CHOICE = (
 
 CHECK_WORK_INFO = (
     (1, '未审核'),
-    (2, '审核中'),
-    (3, '已审核')
+    (2, '已通过'),
+    (3, '未通过')
 )
 
 TEST_CATEGORY = (

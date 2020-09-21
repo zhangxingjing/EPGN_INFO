@@ -10,14 +10,18 @@ from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register(r'^work', WorkTimeInfo)
+router.register(r'^work', WorkTaskViewSet)
+router.register(r'^task', TaskDetailView)
+router.register(r'^check', CheckWorkTime)
 
 urlpatterns = [
 
-    url(r'^room/$', LaboratoryInfo.as_view({"get": "room"})),
-    url(r'^room/(?P<id>\d+)/$', LaboratoryInfo.as_view({"get": "test_"})),
+    url(r'^room/$', LaboratoryViewSet.as_view({"get": "room"})),
+    url(r'^room/(?P<id>\d+)/$', LaboratoryViewSet.as_view({"get": "info"})),
 
-    url(r'^check/$', CheckWorkTime.as_view()),
+    url(r'^submit/$', WaitViewSet.as_view({"get": "submit"})),
+    url(r'^search/$', WaitViewSet.as_view({"get": "search"})),
+    url(r'^item/$', WaitViewSet.as_view({"get": "get_items"})),
 
     url(r'^save/$', save_xls_download),
 ]

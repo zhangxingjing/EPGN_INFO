@@ -200,9 +200,9 @@
                         <div><span style="width: 70px">发动机：</span></div>
                         <el-select v-model="car_engine" placeholder="请选择">
                             <el-option v-for="item in engine"
-                                       :key="item.id"
-                                       :label="item.num"
-                                       :value="item.id"></el-option>
+                                       :key="item"
+                                       :label="item"
+                                       :value="item"></el-option>
                         </el-select>
                     </div>
                     <div style="margin-right: 0px">
@@ -218,9 +218,9 @@
                         <div><span style="width: 112px">功率：</span></div>
                         <el-select v-model="car_power" placeholder="请选择">
                             <el-option v-for="item in power"
-                                       :key="item.id"
-                                       :label="item.num"
-                                       :value="item.id"></el-option>
+                                       :key="item"
+                                       :label="item"
+                                       :value="item"></el-option>
                         </el-select>
                     </div>
 
@@ -353,11 +353,27 @@
                         if (obj.data.author == user_name) {
                             obj.del();
                             layer.close(index);
-                        }
-                        else{
+                            $.ajax({
+                                url: '/audio/file/'+obj.data.pk,
+                                dataType: "json",
+                                type: "delete",
+
+                                success: function (result) {
+                                    console.log(result);
+                                    if(result.status==true){
+                                        layer.msg('删除成功!', {icon: 6, time: 2000})
+                                    }
+                                    else{
+                                         layer.msg('删除失败,请联系管理员!', {icon: 6, time: 2000})
+                                    }
+
+                                }
+                            });
+
+
+                        } else {
                             layer.msg('非本人数据，无删除权限!', {icon: 6, time: 2000})
                         }
-
                     });
                 } else if (obj.event === 'edit') {
                     let file_info = JSON.stringify(obj.data);
@@ -396,15 +412,13 @@
                     }]
                     , title: '用户数据表'
                     , cols: [[
-                        {field: 'car_modal', title: '车型', width: 150, fixed: 'left', unresize: true, sort: true}
-                        , {field: 'car_engine', title: '发动机', width: 80, edit: 'text'}
-                        , {
-                            field: 'car_gearbox', title: '变速箱', width: 120, edit: 'text'
-                        }
-                        , {field: 'power', title: '功率', width: 80, edit: 'text', sort: true}
+                        {field: 'car_modal', title: '车型', width: 160, fixed: 'left', unresize: true, sort: true}
+                        , {field: 'car_engine', title: '发动机', width: 80}
+                        , {field: 'car_gearbox', title: '变速箱', width: 115}
+                        , {field: 'power', title: '功率', width: 90, sort: true}
                         , {field: 'tire_model', title: '轮胎', width: 100}
                         , {field: 'details', title: '抱怨详细描述'}
-                        , {field: 'frequency', title: '频率', width: 80}
+                        , {field: 'frequency', title: '频率', width: 75}
                         , {field: 'order', title: '阶次', width: 80}
                         , {field: 'condition', title: '工况', width: 220}
                         , {field: 'reason', title: '关键零件或因素', width: 150}
@@ -521,13 +535,13 @@
                     if (this.car_modal !== '' && this.car_modal !== 9999) {
                         this.Paramas['car_modal'] = this.car_modal
                     }
-                    if (this.car_engine !== '' && this.car_engine !== 9999) {
+                    if (this.car_engine !== '' && this.car_engine !== "请选择") {
                         this.Paramas['car_engine'] = this.car_engine
                     }
                     if (this.car_gearbox !== '' && this.car_engine !== 9999) {
                         this.Paramas['car_gearbox'] = this.car_gearbox
                     }
-                    if (this.car_power !== '' && this.car_power !== 9999) {
+                    if (this.car_power !== '' && this.car_power !== "请选择") {
                         this.Paramas['power'] = this.car_power
                     }
                     if (this.car_condition !== ''&& this.car_condition !== 9999) {
@@ -572,11 +586,11 @@
                         self.carmodal = result.car_modal;
                         self.carmodal.unshift({name:'请选择',id:9999});
                         self.engine = result.car_engine;
-                        self.engine.unshift({num:'请选择',id:9999});
+                        self.engine.unshift("请选择");
                         self.gearbox = result.car_gearbox;
                         self.gearbox.unshift({name:'请选择',id:9999});
                         self.power = result.power;
-                        self.power.unshift({num:'请选择',id:9999});
+                        self.power.unshift("请选择");
                     }
                 });
             }

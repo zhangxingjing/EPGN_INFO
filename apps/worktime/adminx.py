@@ -2,23 +2,49 @@ import xadmin
 from .models import *
 
 
-@xadmin.sites.register(LaboratoryTime)
-class LaboratoryTimeAdmin(object):
-    list_display = ['time']
-
-
-@xadmin.sites.register(TestContent)
-class LaboratoryTestContentAdmin(object):
-    list_display = ['name', 'category', 'default_role', 'title', 'time', 'task_manage']
-
-
 @xadmin.sites.register(Laboratory)
 class LaboratoryAdmin(object):
-    list_display = ['name', 'manage_user']
-    search_fields = ['name', 'manage_user']
+    list_display = [
+        "id",
+        "name",
+        "manager"
+    ]
+    search_fields = [
+        'name',
+        'manager'
+    ]
+    list_display_links = [
+        'name'
+    ]
 
 
-@xadmin.sites.register(WorkTime)
+@xadmin.sites.register(WorkTask)
 class WorkTimeAdmin(object):
-    list_display = ['task_user', 'create_time', 'car_model', 'car_number', 'vin', 'task_title', 'task_content',
-                    'check_task', 'check_data', 'check_report']
+    list_display = [
+        "vin",
+        "hours",
+        "car_number",
+        "task_title",
+        "create_time",
+        "task_manager",
+        "task_user",
+        "car_model",
+        "check_data",
+        "check_report",
+        "check_task",
+    ]
+
+
+@xadmin.sites.register(TaskDetail)
+class DetailInfoAdmin(object):
+    list_display = [
+        "hour",
+        "name",
+        "color",
+        "role",
+        "detail",
+        "category",
+        "laboratory",
+        "parent",
+        "task_manager"
+    ]

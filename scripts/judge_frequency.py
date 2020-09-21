@@ -32,7 +32,7 @@ def judge(frequency, key: str):
         elif 1000 <= number <= 3000:
             frequency_id_list.append(5)
 
-        elif 3000 <= number <= 10000:
+        elif 3000 <= number <= 20000:
             frequency_id_list.append(6)
 
     else:
@@ -42,7 +42,8 @@ def judge(frequency, key: str):
             [50, 100],
             [100, 500],
             [500, 1000],
-            [1000, 3000]
+            [1000, 3000],
+            [3000, 20000]
         ]
         for interval in all_list:
             number_1 = int(key_number[0])

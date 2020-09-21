@@ -1,4 +1,4 @@
-{% load static %}
+ {% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -177,6 +177,7 @@
                 sessionStorage.username = data.username;
                 sessionStorage.task = data.task;
                 sessionStorage.token = data.token;
+                sessionStorage.worktime = data.worktime;
                 location.href = '/user/home/';
             },
             //执行失败或错误的回调函数

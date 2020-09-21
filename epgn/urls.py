@@ -26,5 +26,5 @@ urlpatterns = [
 
     url(r'bug/', include('bug.urls')),
 
-    url(r'time/', include('worktime.urls'))
+    url(r'time/', include('worktime.urls'), name="time")
 ]

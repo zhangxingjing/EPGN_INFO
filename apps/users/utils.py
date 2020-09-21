@@ -1,6 +1,7 @@
 import re
 import datetime
 from .models import User, Task
+from worktime.models import Laboratory
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth.backends import ModelBackend
@@ -39,11 +40,20 @@ def jwt_response_payload_handler(token, user=None, request=None):
     user.is_staff = True  # 修改用户登录状态
     user.last_login = str(datetime.datetime.today())  # 修改用户最后登录时间
     user.save()
+
+    # 用户查看工时系统
+    try:
+        Laboratory.objects.get(manage_user__id=user.id)
+        worktime = True
+    except:
+        worktime = False
+
     return {
         'id': user.id,
         'token': token,
         'username': user.username,
         "job_number": user.job_number,
+        "worktime": worktime
     }
 
 

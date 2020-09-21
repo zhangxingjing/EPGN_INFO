@@ -1,12 +1,9 @@
-import json
 import os
 import re
+import json
 import shutil
 import difflib
-
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
-
 from audio.serializers import *
 from django.db import transaction
 from django.shortcuts import render
@@ -19,6 +16,7 @@ from rest_framework.response import Response
 from scripts import zip_file, judge_frequency
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from audio.models import Audio, Description, Status, Frequency
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
 
@@ -39,9 +37,9 @@ class AudioViewSet(viewsets.ModelViewSet):
         reason = request.POST.get("key_parts", None)  # 关键零件或因素
         measures = request.POST.get("measure", None)  # 措施
         car_model_id = request.POST.get("car_modal", None)  # 车型
-        propulsion_id = request.POST.get("car_engine", None)  # 发动机
+        propulsion = request.POST.get("car_engine", None)  # 发动机
         gearbox_id = request.POST.get("car_gearbox", None)  # 变速箱
-        power_id = request.POST.get("power", None)  # 功率
+        power = request.POST.get("power", None)  # 功率
         author = request.POST.get("user_name", None)  # 上传人
         tire = request.POST.get("tire", None)  # 轮胎供应商
         status = request.POST.get("condition", None)  # 工况
@@ -57,10 +55,11 @@ class AudioViewSet(viewsets.ModelViewSet):
 
         description = Description.objects.get(id=description_id)
         car_model = Platform.objects.get(id=car_model_id).name
-        propulsion = PropulsionPower.objects.get(id=propulsion_id).num
-        power_num = PropulsionPower.objects.get(id=power_id).num
-        power = power_num
         gearbox = GearBox.objects.get(id=gearbox_id).name
+
+        # 处理抱怨描述中出现的/
+        if "/" in description.name:
+            description.name = description.name.replace('/', '／')
 
         directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "/"
         file_num = difflib.get_close_matches(description.name + "_" + car_model, os.walk(AUDIO_FILE_PATH))
@@ -91,7 +90,6 @@ class AudioViewSet(viewsets.ModelViewSet):
                         new_hdf.close()
                         new_hdf_info = directory_path + hdf_name
                     except Exception as e:
-                        print(e)
                         new_hdf_info = None
 
                     try:
@@ -102,7 +100,6 @@ class AudioViewSet(viewsets.ModelViewSet):
                         new_img.close()
                         new_img_info = directory_path + img_name
                     except Exception as e:
-                        print(e)
                         new_img_info = None
 
                     try:
@@ -113,7 +110,6 @@ class AudioViewSet(viewsets.ModelViewSet):
                         new_mp3.close()
                         new_mp3_info = directory_path + mp3_name
                     except Exception as e:
-                        print(e)
                         new_mp3_info = None
 
                     try:
@@ -124,7 +120,6 @@ class AudioViewSet(viewsets.ModelViewSet):
                         new_ppt.close()
                         new_ppt_info = directory_path + ppt_name
                     except Exception as e:
-                        print(e)
                         new_ppt_info = None
 
                 except OSError:
@@ -211,11 +206,11 @@ class AudioViewSet(viewsets.ModelViewSet):
             if car_model:
                 search_dict["car_model"] = Platform.objects.get(id=car_model).name
             if propulsion:
-                search_dict["propulsion"] = PropulsionPower.objects.get(id=propulsion)
+                search_dict["propulsion"] = propulsion
             if gearbox:
                 search_dict["gearbox"] = GearBox.objects.get(id=gearbox).name
             if power:
-                search_dict["power"] = PropulsionPower.objects.get(id=power)
+                search_dict["power"] = power
             result_items = items.filter(**search_dict).order_by('-id')
             if order:
                 result_items = result_items.filter(order=order)
@@ -273,13 +268,12 @@ class AudioViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         try:
-            folder_path = re.findall(r'(.*/).*', instance.raw_mp3)[0]
+            folder_path = AUDIO_FILE_PATH + instance.description_name + "_" + instance.car_model
             if os.path.isdir(folder_path):
                 shutil.rmtree(folder_path)  # 删除磁盘文件
             self.perform_destroy(instance)  # 删除数据库中的数据
             return JsonResponse({"status": True})
         except Exception as e:
-            print(e)
             return JsonResponse({"status": False, "msg": "文件删除失败"})
 
 
@@ -338,14 +332,30 @@ class Wait(ViewSet):
         audio_status = Status.objects.all()
         condition = AudioStatusSerializer(audio_status, many=True)
 
+        # 功率排序
+        power_list = sorted(power.data, key=lambda i: int(re.search(r'\d+', i["num"]).group()))
+        sort_power_list = sorted(list(set([int(re.search(r'\d+', pd["num"]).group()) for pd in power_list])))
+        new_sort_power_list = [str(i) + " KW" for i in sort_power_list]
+
+        # 发动机排序
+        int_list = []
+        str_list = []
+        for ce in car_engine.data:
+            if "." in ce["num"]:
+                int_list.append(ce["num"])
+            else:
+                str_list.append(ce["num"])
+        sort_car_engine_list = sorted(int_list, key=lambda i: float(re.search(r'\d(\.\d+)?', i).group())) + sorted(
+            str_list)
+
         data = {
-            "brief_description": brief_description.data,
+            "brief_description": sorted(brief_description.data, key=lambda i: i["name"][0]),
             "frequency_range": frequency_range.data,
-            "car_modal": car_model.data,
-            "car_engine": car_engine.data,
-            "car_gearbox": car_gearbox.data,
-            "power": power.data,
-            "condition": condition.data
+            "car_modal": sorted(car_model.data, key=lambda i: i["name"][0]),
+            "car_engine": sort_car_engine_list,
+            "car_gearbox": sorted(car_gearbox.data, key=lambda i: i["name"][0]),
+            "power": new_sort_power_list,
+            "condition": condition.data,
         }
         return Response(data=data)
 
@@ -403,7 +413,6 @@ def download(request):
                     response['Content-Type'] = 'application/octet-stream'
                     response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
                 except Exception as e:
-                    print(e)
                     return JsonResponse({"status": False, "msg": "Sorry but Not Found the File"})
                 return response
             return JsonResponse({"status": False, "msg": "当前音频的{}文件不存在！".format(download_type)})

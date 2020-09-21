@@ -7,10 +7,10 @@
 from insert_base import *
 from audio.models import Status
 
-Status.objects.create(name='加/减速')
-Status.objects.create(name='匀速')
-Status.objects.create(name='滚动噪声/轮胎噪声')
-Status.objects.create(name='怠速')
-Status.objects.create(name='启停')
-Status.objects.create(name='底盘舒适性')
-Status.objects.create(name='静态(附件噪声)')
+Status.objects.create(id=1, name='加/减速')
+Status.objects.create(id=2, name='匀速')
+Status.objects.create(id=3, name='滚动噪声/轮胎噪声')
+Status.objects.create(id=4, name='怠速')
+Status.objects.create(id=5, name='启停')
+Status.objects.create(id=6, name='底盘舒适性')
+Status.objects.create(id=7, name='静态(附件噪声)')

@@ -1,0 +1,507 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} WORKTIME {% endblock %}
+
+
+{% block link %}
+    <style>
+        #app1_top {
+            display: flex;
+            font-size: 22px;
+            border-bottom: 1px solid #b2b2b2;
+        }
+
+        .content_left {
+            width: 30%;
+            height: 220px;
+        }
+
+        .content_right {
+            padding: 0 20px;
+            width: 70%;
+            {#border-left: 1px solid #b2b2b2;#}
+            line-height: 40px;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover, .layui-table-click {
+            background-color: rgba(255, 255, 255, 0) !important;
+        }
+
+        .layui-table-hover {
+            background-color: rgba(255, 255, 255, 0);
+        }
+
+        .el-input--prefix .el-input__inner {
+            font-size: 21px;
+        }
+
+        #qua_standard_table {
+            width: 90%;
+            margin-left: 5%;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+    <link rel="stylesheet" href="{% static "ele/index.css" %}">
+{% endblock %}
+
+
+{% block content %}
+    <div id="app1" class="layui-fluid">
+        <div id="qua_standard_table" class="layui-card" lay-filter="qua_standard_table"></div>
+        <script type="text/html" id="barDemo">
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+        </script>
+    </div>
+{% endblock %}
+
+
+{% block javascript %}
+    <script src="{% static "ele/index.js" %}"></script>
+    <script>
+        new Vue(
+            {
+                el: '#app1',
+                data() {
+                    return {
+                        options: [],
+                        date_value: '',
+                        car_modal: [],
+                        carModal: '',
+                        carNum: '',
+                        carVin: '',
+                        testName: '',
+                        testContent: '',
+                        role: '',
+                        num: [{
+                            value: ''
+                        }],
+                        total_hour: 0,
+                        timeHour: '',
+                        test_item: [{
+                            value: '车辆准备（上转鼓）'
+                        }, {
+                            value: '轮胎认可测试'
+                        }, {
+                            value: '测试准备'
+                        }],
+                        role_item: [{value: 'R'}, {value: 'S'}, {value: 'M'},],
+                        task_type: [{value: 1, label: "测试任务"}, {value: 2, label: "管理任务"}],
+                        taskType: 1,
+                    }
+                },
+
+                methods: {
+                    addTask() {
+                        this.num.push({
+                                value: ''
+                            }
+                        )
+                    },
+                    delTask(val) {
+                        this.num.splice(val, 1);
+                        const that = this;
+                        this.$options.methods.calculateHours(that);
+                    },
+                    submit1() {
+
+                        console.log(this.num);
+
+                    },
+                    changeTestItem(val, index) {
+                        if (val == '测试准备') {
+                            this.num[index].workHours = 0.5;
+                            console.log(this.num)
+                        } else if (val == '轮胎认可测试') {
+                            this.num[index].workHours = 2;
+                        } else {
+                            this.num[index].workHours = 1;
+                        }
+                        const that = this;
+                        this.$options.methods.calculateHours(that);
+                    },
+                    calculateHours(that) {
+                        let nums = that.num;
+                        let hours = 0;
+                        for (let i = 0; i < nums.length; i++) {
+                            if (nums[i].hasOwnProperty('workHours') == true) {
+                                hours = hours + nums[i].workHours;
+                            } else {
+                            }
+
+                        }
+                        that.total_hour = hours
+                    }
+                },
+
+                computed: {
+                    timeDefault() {
+                        var date = new Date();
+                        var s1 = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate());
+                        return s1;
+                    }
+                },
+
+                mounted() {
+                    // 初始化查询，默认为前一天
+                    this.date_value = this.timeDefault;
+                }
+            });
+        layui.use(['element', 'table'], function () {
+            var element = layui.element,
+                table = layui.table;
+            var res = [{
+                idNumber: "1",
+                laboratory: "四驱转鼓",
+                date: "2020-08-20",
+                carModal: "Lavida",
+                carNum: 'LN6-R12',
+                carVin: 'LSVUZ5B25KN073473',
+                task: '冷启动舒适性测试',
+                taskContent: '车辆准备(不上转鼓)',
+                hours: 0.5,
+                role: 'R',
+                personCharge: '杨飞',
+                totalHour: '3.5',
+                taskStatus: '未审核'
+            },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R12',
+                    carVin: 'LSVUZ5B25KN073473',
+                    task: '冷启动舒适性测试',
+                    taskContent: '测试准备',
+                    hours: 1,
+                    role: 'S',
+                    personCharge: '杨飞',
+                    totalHour: '3.5',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R12',
+                    carVin: 'LSVUZ5B25KN073473',
+                    task: '冷启动舒适性测试',
+                    taskContent: '怠速测试',
+                    hours: 2,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '3.5',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R12',
+                    carVin: 'LSVUZ5B25KN073473',
+                    task: '管理任务11',
+                    taskContent: '测试准备',
+                    hours: 1,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '3',
+                    taskStatus: '已审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R12',
+                    carVin: 'LSVUZ5B25KN073473',
+                    task: '管理任务11',
+                    taskContent: '怠速测试222',
+                    hours: 2,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '3',
+                    taskStatus: '已审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Octovia",
+                    carNum: 'LN6-R13',
+                    carVin: 'xxxx2',
+                    task: '冷启动舒适性测试',
+                    taskContent: '怠速测试准备',
+                    hours: 1,
+                    role: 'M',
+                    personCharge: '吴春军',
+                    totalHour: '4',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Octovia",
+                    carNum: 'LN6-R13',
+                    carVin: 'xxxx2',
+                    task: '冷启动舒适性测试',
+                    taskContent: '怠速测试',
+                    hours: 2,
+                    role: 'M',
+                    personCharge: '吴春军',
+                    totalHour: '4',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-20",
+                    carModal: "Octovia",
+                    carNum: 'LN6-R13',
+                    carVin: 'xxxx2',
+                    task: '冷启动舒适性测试',
+                    taskContent: '测试总结',
+                    hours: 1,
+                    role: 'M',
+                    personCharge: '吴春军',
+                    totalHour: '4',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-21",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R15',
+                    carVin: 'xxxx4',
+                    task: '舒适性测试',
+                    taskContent: '混合动力驱动台架准备',
+                    hours: 1,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '5',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-21",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R15',
+                    carVin: 'xxxx4',
+                    task: '舒适性测试',
+                    taskContent: '轮胎噪声认可',
+                    hours: 2,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '5',
+                    taskStatus: '未审核'
+                },
+                {
+                    idNumber: "1",
+                    laboratory: "四驱转鼓",
+                    date: "2020-08-21",
+                    carModal: "Lavida",
+                    carNum: 'LN6-R15',
+                    carVin: 'xxxx4',
+                    task: '舒适性测试',
+                    taskContent: '内部噪声',
+                    hours: 2,
+                    role: 'M',
+                    personCharge: '杨飞',
+                    totalHour: '5',
+                    taskStatus: '未审核'
+                },
+            ];
+
+            table.render({// 数据表格生成
+                elem: '#qua_standard_table',
+                height: "full-250",
+                data: res,
+                page: {
+                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                },
+                limit: 20,
+                limits: [10, 20],
+                cols: [
+                    [{
+                        field: 'idNumber',
+                        title: 'Id',
+                        width: 50,
+                        align: 'center'
+                    }, {
+                        field: 'laboratory',
+                        title: '实验室',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'date',
+                        title: '日期',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'carModal',
+                        title: '车型',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'carNum',
+                        title: '车号',
+                        width: 120,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'carVin',
+                        title: 'Vin',
+                        width: 240,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'task',
+                        title: '任务',
+                        width: 250,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'taskContent',
+                        title: '任务详细内容',
+                        width: 320,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'hours',
+                        title: '工时',
+                        width: 60,
+                        align: 'center'
+                    }, {
+                        field: 'role',
+                        title: '角色',
+                        width: 60,
+                        align: 'center'
+                    }, {
+                        field: 'personCharge',
+                        title: '负责人',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'totalHour',
+                        title: '总工时',
+                        width: 100,
+                        align: 'center'
+                    }, {
+                        field: 'taskStatus',
+                        title: '任务状态',
+                        width: 150,
+                        align: 'center',
+                        templet: setState,
+                    },
+                        {
+                            align: 'center',
+                            rowspan: 2,
+                            width: 100,
+                            field: 'operation',
+                            title: '操作',
+                            templet: function (d) {
+                                return '<span class="layui-breadcrumb" lay-separator="|">' +
+                                    '<a href="javascript:;" lay-event="qua_standard_del">删除</a>' +
+                                    '</span>';
+                            },
+                            fixed: 'right'
+                        }
+                    ],
+                ],
+                done: function (res, curr, count) {
+                    element.init();
+                    $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
+                    merge(res);//合并单元格
+                },
+            });
+            table.on('tool(qua_standard_table)', function (obj) {
+                if (obj.event === 'qua_standard_edit') {
+                    layer.msg('添加')
+                } else if (obj.event === 'qua_standard_del') {
+                    layer.msg('删除')
+                }
+            });
+        });
+
+        function setState(data) {
+            let status = data.taskStatus;
+            console.log(status);
+            if (status == "未审核") {
+                return "<span style='color: red'>未审核</span>"
+            } else {
+                return "<span style='color: green'>已审核</span>"
+            }
+        }
+
+        function merge(res) {
+            var data = res.data;
+            var mergeIndex = 0;
+            var mark = 1;
+            var _number = 1;
+            var columsName = ['idNumber', 'laboratory', 'date', 'carModal', 'carNum', 'carVin', 'task', 'personCharge', 'totalHour', 'taskStatus', 'operation'];//需要合并的列名称
+            var columsIndex = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13,];
+            var mergeCondition = 'id';
+
+            var tdArrR = $('.layui-table-fixed-r > .layui-table-body').find("tr");
+
+            for (var k = 0; k < columsName.length; k++) {
+                var trArr = $(".layui-table-main>.layui-table").find("tr");
+                for (var i = 1; i < res.data.length; i++) {
+
+                    if (data[i][mergeCondition] === data[i - 1][mergeCondition]) {
+                        var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);
+                        var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);
+
+                        if (data[i][columsName[k]] === data[i - 1][columsName[k]]) {
+                            mark += 1;
+                            tdPreArr.each(function () {
+                                $(this).attr("rowspan", mark);
+                            });
+                            tdCurArr.each(function () {
+                                $(this).css("display", "none");
+                            });
+                        } else {
+                            mergeIndex = i;
+                            mark = 1;
+                        }
+                    } else {
+                        mergeIndex = i;
+                        mark = 1;
+                    }
+                }
+                mergeIndex = 0;
+                mark = 1;
+            }
+
+            $.each($("#qua_standard_table").siblings('.layui-table-view').find('.layui-table-main>.layui-table').find("tr"), function (i, v) {
+                if ($(v).find('td').eq(6).css('display') === 'none') {
+                    // tdArrL.eq(i).find('td').css('display','none');
+                    tdArrR.eq(i).find('td').css('display', 'none');
+                } else {
+                    // tdArrL.eq(i).find('td').find('.laytable-cell-numbers').html(_number++);
+                    // tdArrL.eq(i).find('td').css('height',$(v).find('td').eq(2)[0].clientHeight);
+                    tdArrR.eq(i).find('td').css('height', $(v).find('td').eq(6)[0].clientHeight);
+
+                }
+            })
+
+
+        }
+    </script>
+{% endblock %}
+
+
+
+

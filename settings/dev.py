@@ -1,6 +1,7 @@
 import os
 import sys
 import datetime
+from utils import log_theme
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -9,7 +10,7 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-ALLOWED_HOSTS = ['*', 'localhost']
+ALLOWED_HOSTS = ['*', 'localhost','192.168.43.230']
 
 # 子应用
 INSTALLED_APPS = [
@@ -178,7 +179,7 @@ LOGGING = {
             'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
         },
         'simple': {
-            'format': '%(levelname)s %(module)s %(lineno)d %(message)s'
+            'format': '[%(levelname)s] %(message)s'
         },
     },
     'filters': {  # 对日志进行过滤
@@ -239,10 +240,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'scripts.pagination.StandardResultsSetPagination',
 }
 
-# CORS
+# CORS允许访问的域名
 CORS_ORIGIN_WHITELIST = (
     'https://127.0.0.1:8000',
     'https://localhost:8000',
+    'https://127.0.0.1:8899',
+    'http://localhost:8899',
+    'http://192.168.43.230:8899'
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 

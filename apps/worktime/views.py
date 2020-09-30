@@ -1,3 +1,5 @@
+import json
+
 import xlwt
 from django.shortcuts import render
 from users.models import User, Task
@@ -38,7 +40,7 @@ class WaitViewSet(ViewSet):
                 })
                 test_manager = test["task_manager"]
 
-            manager_obj = TaskDetail.objects.filter(category=2, parent__id=None)
+            manager_obj = TaskDetail.objects.filter(category=2, laboratory=laboratory_obj, parent__id=None)
             managers = TaskDetailSerializer(manager_obj, many=True)
             manager_data = []
             manage_manager = []
@@ -147,7 +149,7 @@ class TaskDetailView(ModelViewSet):
                 work_obj.save()
 
                 # 需要将任务类别关联到详细信息中
-                for task in request.data["content"]:
+                for task in json.loads(request.data["content"]):
                     task_obj = TaskDetail(
                         # id=(TaskDetail.objects.all().order_by('-id')[:1][0].id + 1    # 使用id最后一个
                         hour=task["taskHour"],  #
@@ -156,7 +158,7 @@ class TaskDetailView(ModelViewSet):
                         role=task["taskRole"],  #
                         detail=task["taskDetail"],  #
                         category=1,
-                        laboratory=Laboratory.objects.get(id=request.data["laboratoryId"]),
+                        laboratory=Laboratory.objects.get(name=request.data["laboratoryId"]),
                         parent=work_obj,
                         # task_manager=[User.objects.get(username=request.data["manager"])]
                     )
@@ -212,9 +214,10 @@ class TaskDetailView(ModelViewSet):
                 task_serializer = WorkTaskSerializer(work).data
                 result.append({
                     "id": task_serializer["id"],
-                    "room": item["name"],
+                    "room": item["laboratory"], # 试验室
                     "creatTime": task_serializer["create_time"],
                     "carModal": task_serializer["car_model"],
+                    "carNumber": task_serializer["car_number"],
                     "carVin": task_serializer["vin"],
                     "taskName": task_serializer["task_title"],
                     "taskDetail_1": item["name"],
@@ -353,9 +356,7 @@ def save_xls_download(request):
         data.update({
             num: [
                 item["id"], item["task_user"], item["试验室"], item["日期"],
-                item["车型"], item["车号"], item["Vin"], item["任务名称"], item["任务详细内容"], item["角色"], item["工时"],
-                item["任务负责人"],
-                item["总工时"],
+                item["车型"], item["车号"], item["Vin"], item["任务名称"], item["任务详细内容"], item["角色"], item["工时"], item["任务负责人"], item["总工时"],
                 item["是否确认任务内容"], item["是否上传数据"], item["是否有报告"]
             ]
         })

@@ -4,9 +4,9 @@
 # File     : insert_user.py
 # Datetime : 2020/9/7 下午1:16
 
-from insert_base import *
-from users.models import User, Section
 from django.contrib.auth.hashers import make_password
+
+from users.models import User, Section
 
 ########## K2
 User.objects.create(
@@ -54,15 +54,6 @@ User.objects.create(
     job_number="15723",
     section=Section.objects.get(id=2)
 )
-
-# User.objects.create(
-#     id=6,
-#     username="刘志强",
-#     password=make_password("66813"),
-#     phone="19997195386",
-#     job_number="66813",
-#     section=Section.objects.get(id=2)
-# )
 
 User.objects.create(
     id=6,
@@ -127,14 +118,6 @@ User.objects.create(
     job_number="59917",
     section=Section.objects.get(id=3)
 )
-
-# User.objects.create(
-#     username="严小俊",
-#     password=make_password("68183"),
-#     phone="53844",
-#     job_number="68183",
-#     section=Section.objects.get(id=3)
-# )
 
 User.objects.create(
     id=13,
@@ -217,15 +200,6 @@ User.objects.create(
     section=Section.objects.get(id=3)
 )
 
-# User.objects.create(
-#     id=23,
-#     username="韩晓东",
-#     password=make_password("202635"),
-#     phone="13166883373",
-#     job_number="202635",
-#     section=Section.objects.get(id=3)
-# )
-
 User.objects.create(
     id=22,
     username="苏东弘",
@@ -290,15 +264,6 @@ User.objects.create(
     section=Section.objects.get(id=4)
 )
 
-# User.objects.create(
-#     id=31,
-#     username="徐齐",
-#     password=make_password("13665"),
-#     phone="53295",
-#     job_number="13665",
-#     section=Section.objects.get(id=4)
-# )
-
 User.objects.create(
     id=29,
     username="曾少波",
@@ -362,14 +327,6 @@ User.objects.create(
     job_number="67124",
     section=Section.objects.get(id=5)
 )
-
-# User.objects.create(
-#     username="何毅",
-#     password=make_password("14563"),
-#     phone="53334",
-#     job_number="14563",
-#     section=Section.objects.get(id=5)
-# )
 
 User.objects.create(
     id=36,
@@ -523,7 +480,3 @@ User.objects.create(
     job_number="201644",
     section=Section.objects.get(id=7)
 )
-
-
-
-

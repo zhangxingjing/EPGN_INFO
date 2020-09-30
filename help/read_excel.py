@@ -8,11 +8,12 @@
 import os
 import xlrd
 
-# XLS文件 所在的文件夹 绝对路径
-file_path = "/home/zheng/Documents/WorkFile/"
+home_path = "/home/zheng/Documents/WorkFile/TEST"  # XLS文件 所在的文件夹 绝对路径
+file_init = "asphaltConstant60km8192"  # 单个XLS文件名
+hz = 300  # 获取到多少行的数据
 
-# 单个XLS文件名
-file_name = "rollgeraeusch8192.xls"
+file_path = home_path + "/"
+file_name = file_init + ".xls"
 
 
 class ReadXls(object):
@@ -34,7 +35,7 @@ class ReadXls(object):
             value = self.sheet.row_values(row)[0]
             if value == "":
                 self.row_start = row
-                self.row_end = self.row_start + 500 + 1  # 索引特性
+                self.row_end = self.row_start + hz + 1  # 索引特性
 
         column_list = []
         for column in range(1, self.sheet.ncols):
@@ -72,14 +73,14 @@ class ReadXls(object):
             try:
                 os.makedirs(result_path)
             except:
-                print("文件夹创建失败！")
+                print("文件夹创建失败，请检查文件夹权限！")
         try:
             with open(result_path + "/" + result_name, 'w') as f:
                 for num in item[1:]:
                     f.write(num)
                     f.write("\r\n")
         except:
-            print("数据写入失败，请确认文件存储路径")
+            print("数据写入失败，请确认文件存储路径！")
 
     def run(self):
         """

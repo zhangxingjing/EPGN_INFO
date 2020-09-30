@@ -232,7 +232,12 @@ class AudioViewSet(viewsets.ModelViewSet):
                     Q(gearbox__icontains=key_word) |
                     Q(power__icontains=key_word) |
                     Q(frequency_range__in=key_word) |  # TODO: 这里应该是外键的包含关系
-                    Q(tire_model__icontains=key_word)
+                    Q(tire_model__icontains=key_word) |
+                    Q(details__icontains=key_word) |
+                    Q(detail_from__icontains=key_word) |
+                    Q(reason__icontains=key_word) |
+                    Q(measures__icontains=key_word) |
+                    Q(author__icontains=key_word)
                 ).order_by('-id')
             else:
                 items = result_items

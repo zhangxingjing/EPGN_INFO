@@ -12,6 +12,7 @@ insert into `tb_car_platform` values ('0205', 'Tharu', '0200');
 insert into `tb_car_platform` values ('0206', 'Karoq', '0200');
 insert into `tb_car_platform` values ('0207', 'Lavida BEV', '0200');
 insert into `tb_car_platform` values ('0208', 'Tharu BEV', '0200');
+insert into `tb_car_platform` values ('0209', 'Octavia A7 PA', '0200');
 
 insert into `tb_car_platform` values ('0300', 'MQB 37W', NULL);
 insert into `tb_car_platform` values ('0301', 'Lamando NF', '0300');
@@ -29,16 +30,20 @@ insert into `tb_car_platform` values ('0500', 'MQB 41B', NULL);
 insert into `tb_car_platform` values ('0501', 'B SUV', '0500');
 insert into `tb_car_platform` values ('0502', 'B MPV', '0500');
 insert into `tb_car_platform` values ('0503', 'B SUV Coupe', '0500');
+insert into `tb_car_platform` values ('0504', 'B SUV PA', '0500');
 
 insert into `tb_car_platform` values ('0600', 'MQB 48', NULL);
 insert into `tb_car_platform` values ('0601', 'NMS NF', '0600');
 insert into `tb_car_platform` values ('0602', 'Superb NF', '0600');
 insert into `tb_car_platform` values ('0603', 'NMS NF PHEV', '0600');
+insert into `tb_car_platform` values ('0604', 'Superb PA', '0600');
+insert into `tb_car_platform` values ('0605', 'NMS NF PA', '0600');
 
 insert into `tb_car_platform` values ('0700', 'PQ 25', NULL);
 insert into `tb_car_platform` values ('0701', 'Polo', '0700');
 insert into `tb_car_platform` values ('0702', 'Rapid', '0700');
 insert into `tb_car_platform` values ('0703', 'Santana', '0700');
+insert into `tb_car_platform` values ('0704', 'Fabia NF', '0700');
 
 insert into `tb_car_platform` values ('0800', 'PQ 35', NULL);
 insert into `tb_car_platform` values ('0801', 'Tiguan SR', '0800');

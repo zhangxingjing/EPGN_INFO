@@ -40,6 +40,7 @@
         }
     </style>
 
+
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
     <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
@@ -53,119 +54,121 @@
 
 {% block content %}
     <div id="app1" class="layui-fluid">
-        <div id="app1_top" class="layui-card" style="padding: 20px">
-            <div class="content_right">
-                <div style="font-size: 26px;font-weight: bold;text-align: center;letter-spacing: 5px;line-height: 80px">
-                    试验信息
+        <div id="app1_top" class="layui-card" lay-filter="qua_standard_table"></div>
+        <script src="{% static "ele/index.js" %}"></script>
+        le="padding: 20px">
+        <div class="content_right">
+            <div style="font-size: 26px;font-weight: bold;text-align: center;letter-spacing: 5px;line-height: 80px">
+                试验信息
+            </div>
+            <div style="display: flex;justify-content: left;margin-bottom: 20px" id="testinfo_list1">
+                <div style="display: flex;width: 360px;margin-right: 10px">
+                    <div style="width: 150px">车型:</div>
+                    <el-select v-model="carModal" placeholder="请选择" style="width: 100%">
+                        <el-option
+                                v-for="item in car_modal"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
                 </div>
-                <div style="display: flex;justify-content: left;margin-bottom: 20px" id="testinfo_list1">
-                    <div style="display: flex;width: 360px;margin-right: 10px">
-                        <div style="width: 150px">车型:</div>
-                        <el-select v-model="carModal" placeholder="请选择" style="width: 100%">
+                <div style="display: flex;width: 340px;">
+                    <div style="width: 120px">车号:</div>
+                    <el-input v-model="carNum" placeholder="请输入车号"></el-input>
+                </div>
+                <div style="display: flex">
+                    <div style="width: 100px">Vin:</div>
+                    <el-input v-model="carVin" placeholder="请输入Vin"></el-input>
+                </div>
+                <div style="display: flex">
+                    <div style="width: 130px">任务类型:</div>
+                    <el-select v-model="taskType" placeholder="请选择">
+                        <el-option
+                                v-for="item in task_type"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+            </div>
+            <div style="display: flex;justify-content: left" id="testinfo_list2">
+                <div style="display: flex;width: 360px;margin-right: 10px">
+                    <div style="width: 150px">任务名称:</div>
+                    <el-input v-model="carVin" placeholder="请输入名称" style="width: 100%"></el-input>
+                </div>
+                <div style="display: flex;width: 340px">
+                    <div style="width: 120px">负责人:</div>
+                    <el-select v-model="role" placeholder="请选择" style="width: 100%">
+                        <el-option
+                                v-for="item in car_modal"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
+                </div>
+                <div style="display: flex;margin-left: 6.1%">
+                    <div style="width: 100px">总工时:</div>
+                    <div>{{ total_hour }}</div>
+                </div>
+            </div>
+            <div style="display: flex;flex-wrap: wrap; font-size: 20px;margin-top: 20px">
+                <div style="width: 18%;font-size: 22px;height: 100%">
+                    <div>试验详细内容列表:</div>
+                </div>
+                <div style="width: 70%;">
+                    <div style="display: flex;margin-bottom: 10px" v-for="(swi,index) in num" :key="index"
+                         :value="swi">
+                        <div style="width: 100px">任务{{ index }}:</div>
+                        <el-select v-model=" swi.value " placeholder="请选择"
+                                   @change="changeTestItem(swi.value,index)">
                             <el-option
-                                    v-for="item in car_modal"
+                                    v-for="item in test_item"
                                     :key="item.value"
-                                    :label="item.label"
+                                    :label="item.value"
                                     :value="item.value">
                             </el-option>
                         </el-select>
-                    </div>
-                    <div style="display: flex;width: 340px;">
-                        <div style="width: 120px">车号:</div>
-                        <el-input v-model="carNum" placeholder="请输入车号"></el-input>
-                    </div>
-                    <div style="display: flex">
-                        <div style="width: 100px">Vin:</div>
-                        <el-input v-model="carVin" placeholder="请输入Vin"></el-input>
-                    </div>
-                    <div style="display: flex">
-                        <div style="width: 130px">任务类型:</div>
-                        <el-select v-model="taskType" placeholder="请选择">
-                            <el-option
-                                    v-for="item in task_type"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                </div>
-                <div style="display: flex;justify-content: left" id="testinfo_list2">
-                    <div style="display: flex;width: 360px;margin-right: 10px">
-                        <div style="width: 150px">任务名称:</div>
-                        <el-input v-model="carVin" placeholder="请输入名称" style="width: 100%"></el-input>
-                    </div>
-                    <div style="display: flex;width: 340px">
-                        <div style="width: 120px">负责人:</div>
-                        <el-select v-model="role" placeholder="请选择" style="width: 100%">
-                            <el-option
-                                    v-for="item in car_modal"
-                                    :key="item.value"
-                                    :label="item.label"
-                                    :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <div style="display: flex;margin-left: 6.1%">
-                        <div style="width: 100px">总工时:</div>
-                        <div>{{ total_hour }}</div>
-                    </div>
-                </div>
-                <div style="display: flex;flex-wrap: wrap; font-size: 20px;margin-top: 20px">
-                    <div style="width: 18%;font-size: 22px;height: 100%">
-                        <div>试验详细内容列表:</div>
-                    </div>
-                    <div style="width: 70%;">
-                        <div style="display: flex;margin-bottom: 10px" v-for="(swi,index) in num" :key="index"
-                             :value="swi">
-                            <div style="width: 100px">任务{{ index }}:</div>
-                            <el-select v-model=" swi.value " placeholder="请选择"
-                                       @change="changeTestItem(swi.value,index)">
+                        <div style="padding-left: 10%;margin-bottom: 20px">
+                            <span class="demonstration" style="">日期：</span>
+                            <el-date-picker
+                                    v-model="date_value"
+                                    type="date"
+                                    placeholder="选择日期">
+                            </el-date-picker>
+                        </div>
+                        <div style="display: flex">
+                            <div style="width: 100px">工时:</div>
+                            <el-input v-model="swi.workHours" placeholder="请输入工时"></el-input>
+                        </div>
+                        <div style="display: flex">
+                            <div style="width: 100px">角色:</div>
+                            <el-select v-model=" swi.role " placeholder="请选择角色">
                                 <el-option
-                                        v-for="item in test_item"
+                                        v-for="item in role_item"
                                         :key="item.value"
                                         :label="item.value"
                                         :value="item.value">
                                 </el-option>
                             </el-select>
-                            <div style="padding-left: 10%;margin-bottom: 20px">
-                                <span class="demonstration" style="">日期：</span>
-                                <el-date-picker
-                                        v-model="date_value"
-                                        type="date"
-                                        placeholder="选择日期">
-                                </el-date-picker>
-                            </div>
-                            <div style="display: flex">
-                                <div style="width: 100px">工时:</div>
-                                <el-input v-model="swi.workHours" placeholder="请输入工时"></el-input>
-                            </div>
-                            <div style="display: flex">
-                                <div style="width: 100px">角色:</div>
-                                <el-select v-model=" swi.role " placeholder="请选择角色">
-                                    <el-option
-                                            v-for="item in role_item"
-                                            :key="item.value"
-                                            :label="item.value"
-                                            :value="item.value">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                            <el-button type="danger" @click="delTask(index)">删除</el-button>
                         </div>
+                        <el-button type="danger" @click="delTask(index)">删除</el-button>
                     </div>
                 </div>
-                <div style="margin-left: 18%;display: flex;justify-content: center;border: 1px dashed #C0C0C0;margin-bottom: 20px;padding: 5px;width: 64%;margin-top: 20px">
-                    <el-button type="primary" @click="addTask">+ 添加任务</el-button>
-                </div>
-                <div style="margin-left: 18%;display: flex;justify-content: center;margin-top: 20px;padding: 5px;width: 64%;margin-top: 20px">
-                    <el-button type="success" @click="submit1" round
-                               style="width: 130px;line-height: 25px;font-size: 20px">
-                        提交任务
-                    </el-button>
-                </div>
+            </div>
+            <div style="margin-left: 18%;display: flex;justify-content: center;border: 1px dashed #C0C0C0;margin-bottom: 20px;padding: 5px;width: 64%;margin-top: 20px">
+                <el-button type="primary" @click="addTask">+ 添加任务</el-button>
+            </div>
+            <div style="margin-left: 18%;display: flex;justify-content: center;margin-top: 20px;padding: 5px;width: 64%;margin-top: 20px">
+                <el-button type="success" @click="submit1" round
+                           style="width: 130px;line-height: 25px;font-size: 20px">
+                    提交任务
+                </el-button>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
 

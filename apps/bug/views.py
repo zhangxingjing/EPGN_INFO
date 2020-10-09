@@ -59,8 +59,7 @@ class BugViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        return render(request, 'bug/bug_detail.html', {"data": serializer.data})
+        return render(request, 'bug/bug_detail.html', {"data": instance})
 
 
 def page(request):

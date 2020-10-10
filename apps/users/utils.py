@@ -1,5 +1,9 @@
 import re
 import datetime
+
+from django.http import JsonResponse
+from rest_framework.response import Response
+
 from .models import User, Task
 from worktime.models import Laboratory
 from django.dispatch import receiver
@@ -43,7 +47,8 @@ def jwt_response_payload_handler(token, user=None, request=None):
 
     # 用户查看工时系统
     try:
-        Laboratory.objects.get(manage_user__id=user.id)
+        # Laboratory.objects.get(manage_user__id=user.id)
+        Laboratory.objects.get(manager__id=user.id)
         worktime = True
     except:
         worktime = False

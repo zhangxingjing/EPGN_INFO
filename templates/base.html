@@ -26,7 +26,7 @@
     <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
     <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
-{#    <link rel="stylesheet" href="{% static user_id = request.GET.get("user_id")# user_name = User.objects.get(id=user_id).username# room_name = Laboratory.objects.get(manage_user__id=user_id).name 'ele/index.css' %}">#}
+    {#    <link rel="stylesheet" href="{% static user_id = request.GET.get("user_id")# user_name = User.objects.get(id=user_id).username# room_name = Laboratory.objects.get(manage_user__id=user_id).name 'ele/index.css' %}">#}
     <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
     <link rel="stylesheet" href="{% static "ele/index.css" %}">
 
@@ -165,7 +165,14 @@
                     </li>
 
                     <!-- 只有指定用户可以查看到 -->
-                    <li class="layui-nav-item">
+                    <li data-name="get" class="layui-nav-item" id="workTime" style="display: none">
+                        <a href="/time/submit/" lay-tips="工时" lay-direction="2">
+                            <i class="layui-icon layui-icon-table"></i>
+                            <cite>&nbsp;&nbsp;&nbsp;工时</cite>
+                        </a>
+                    </li>
+
+                    <!--<li class="layui-nav-item">
                         <a href="javascript:;">
                             <i class="layui-icon layui-icon-table"></i>
                             &nbsp;&nbsp;&nbsp;工时
@@ -174,12 +181,19 @@
                             <dd><a href="/time/submit/">&nbsp;&nbsp;&nbsp;提交</a></dd>
                             <dd><a href="/time/search/">&nbsp;&nbsp;&nbsp;查看</a></dd>
                         </dl>
-                    </li>
+                    </li>-->
 
                     <li data-name="get" class="layui-nav-item">
                         <a href="/bug/page/" lay-tips="算法" lay-direction="2">
                             <i class="layui-icon layui-icon-service"></i>
                             <cite>&nbsp;&nbsp;&nbsp;需求</cite>
+                        </a>
+                    </li>
+
+                    <li class="layui-nav-item" id="script">
+                        <a href="/script/info/">
+                            <i class="layui-icon layui-icon-engine"></i>
+                            &nbsp;&nbsp;&nbsp;脚本
                         </a>
                     </li>
 
@@ -225,6 +239,21 @@
             })
                 .then(response => {
                     this.platforms = response.data;
+
+                    var get_workTime = document.getElementById("workTime");
+                    var worktime_status = sessionStorage.getItem("worktime");
+                    if (worktime_status == "true") {
+                        get_workTime.style.display = "block";
+                    } else {
+                    }
+
+                    var get_script = document.getElementById("script");
+                    var script_status = sessionStorage.getItem("username");
+                    if (script_status == "root") {
+                        get_script.style.display = "block";
+                    } else {
+                    }
+
                 })
                 .catch(error => {
                     console.log("获取车型请求失败")

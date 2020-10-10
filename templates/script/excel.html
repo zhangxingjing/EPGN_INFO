@@ -1,0 +1,96 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+</head>
+<body>
+<form class="layui-form" style="padding: 20px;">
+    <div class="layui-form-item" style="width: 420px;padding-left: 20px">
+        <input type="text" name="name" required lay-verify="required" placeholder="请输入获取数据行数, 如：300" class="layui-input" id="hz">
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-upload" style="padding: 20px">
+            <div style="width: auto; margin: 0;">
+                <button type="button" class="layui-btn layui-btn-danger layui-btn-fluid" id="upload">选择文件</button>
+            </div>
+        </div>
+
+        <div class="layui-upload" style="padding: 20px">
+            <div style="width: auto; margin: 0;">
+                <button type="button" class="layui-btn layui-btn-fluid" id="commit">确定</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'upload'], function () {
+        var layer = layui.layer;
+        var upload = layui.upload;
+        var $ = layui.jquery;
+
+        upload.render({
+            elem: '#upload',
+            url: '/script/read_exce/',
+            accept: 'file',
+            auto: false,
+            bindAction: '#commit',
+            //上传前的回调
+            before: function () {
+                this.data = {
+                    hz: $('#hz').val()
+                }
+            },
+            //选择文件后的回调
+            // choose: function (obj) {
+            //     obj.preview(function (index, file, result) {
+            //         $('#preview').attr('src', result);
+            //     })
+            // },
+            //操作成功的回调
+            done: function (res, index, upload) {
+                // var code = res.code === 0 ? 1 : 2;
+                // layer.alert(res.msg, {icon: code}, function () {
+                //     parent.window.location.reload();
+                // })
+                layer.confirm('文件已解析，是否下载', {
+                    btn: ['下载', '算了'] //按钮
+                }, function () {
+                    // 下载文件
+                    /*
+                    $.ajax({
+                        url: "/script/download/?file=" +res.file,
+                        type: "GET",
+                        success: function (data) {
+                            // data = jQuery.parseJSON(data);  //dataType指明了返回数据为json类型，故不需要再反序列化
+                            layer.msg('TXT文件已保存', {
+                                icon: 1,
+                                time: 1000
+                            });
+                        }
+                    });
+                     */
+                    layer.msg('TXT文件已保存', {
+                        icon: 1,
+                        time: 1000
+                    });
+                    window.location.href = "/script/download/?file=" + res.file
+                });
+            },
+            //上传错误回调
+            error: function (index, upload) {
+                layer.alert('上传失败！' + index);
+            }
+        });
+    })
+</script>
+
+</body>
+</html>

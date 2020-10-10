@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'audio.apps.AudioConfig',
     'bug.apps.BugConfig',
     'worktime.apps.WorktimeConfig',
+    'script.apps.ScriptConfig',
 ]
 
 # 中间件

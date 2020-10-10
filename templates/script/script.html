@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %} SCRIPT {% endblock title %}
+
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+{% endblock %}
+
+
+{% block content %}
+    <div class="layui-fluid">
+        <div class="layui-card" style="padding: 20px">
+            <blockquote class="layui-elem-quote">
+                EPGN脚本执行平台
+            </blockquote>
+            <a class="layui-btn layui-btn-normal" href="/bug/page/" target="_blank">新增脚本文件</a>
+
+            <fieldset class="layui-elem-field layui-field-title site-demo-button" style="margin-top: 30px;">
+                <legend>仿真</legend>
+            </fieldset>
+
+            <div class="site-demo-button" id="layerDemo" style="margin-bottom: 0;">
+                <button data-method="setTop" class="layui-btn">读取Excel文件，转存TXT</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascript %}
+    <script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+    <script>
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element', 'table', 'layer'], function () {
+            var layer = layui.layer,
+                $ = layui.jquery;
+            var active = {
+                setTop: function () {
+                    var that = this;
+                    //多窗口模式，层叠置顶
+                    layer.open({
+                        title: ['解析Excel文件', 'font-size:18px;'],
+                        type: 2,
+                        area: ['500px', '400px'],
+                        fixed: false, //不固定
+                        maxmin: true,
+                        content: '/script/read_exce/'
+                    });
+                }
+            }
+
+            $('#layerDemo .layui-btn').on('click', function () {
+                var othis = $(this), method = othis.data('method');
+                active[method] ? active[method].call(this, othis) : '';
+            });
+        });
+    </script>
+{% endblock %}

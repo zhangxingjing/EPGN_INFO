@@ -2,6 +2,7 @@ import xadmin
 from django.conf.urls import url, include
 from rest_framework_jwt.views import obtain_jwt_token
 from django.views.generic.base import TemplateView, RedirectView
+from users.utils import jwt_response_payload_handler
 
 urlpatterns = [
     # 站点管理
@@ -15,6 +16,7 @@ urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='user/login.html'), name='login'),
 
     url(r'^authorization/$', obtain_jwt_token),
+    # url(r'^authorization/$', jwt_response_payload_handler),
 
     url(r'user/', include('users.urls')),
 
@@ -26,5 +28,7 @@ urlpatterns = [
 
     url(r'bug/', include('bug.urls')),
 
-    url(r'time/', include('worktime.urls'), name="time")
+    url(r'time/', include('worktime.urls'), name="time"),
+
+    url(r'script/', include('script.urls'), name="script"),
 ]

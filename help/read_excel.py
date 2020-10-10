@@ -8,8 +8,8 @@
 import os
 import xlrd
 
-home_path = "/home/zheng/Documents/WorkFile/TEST"  # XLS文件 所在的文件夹 绝对路径
-file_init = "asphaltConstant60km8192"  # 单个XLS文件名
+home_path = "/home/zheng/Documents/WorkFile/TEST"  # XLS文件 所在的文件夹 绝对路径\
+file_init = "RA 60kmph run01"  # 单个XLS文件名
 hz = 300  # 获取到多少行的数据
 
 file_path = home_path + "/"
@@ -17,10 +17,12 @@ file_name = file_init + ".xls"
 
 
 class ReadXls(object):
-    def __init__(self):
+    def __init__(self, file_name, hz):
         """
         已知从第二列开始
         """
+        self.hz = hz
+        self.file_name = file_name
         self.file = file_path + file_name
         self.sheet = xlrd.open_workbook(self.file).sheet_by_name('Sheet1')  # 标签名
         self.row_start = self.row_end = self.column_start = self.column_end = 1
@@ -35,7 +37,7 @@ class ReadXls(object):
             value = self.sheet.row_values(row)[0]
             if value == "":
                 self.row_start = row
-                self.row_end = self.row_start + hz + 1  # 索引特性
+                self.row_end = self.row_start + self.hz + 1  # 索引特性
 
         column_list = []
         for column in range(1, self.sheet.ncols):
@@ -68,7 +70,7 @@ class ReadXls(object):
         :return:
         """
         result_name = item[0].replace(" ", "") + ".txt"
-        result_path = file_path + file_name[:-4]
+        result_path = file_path + self.file_name[:-4]
         if os.path.exists(result_path) is False:
             try:
                 os.makedirs(result_path)
@@ -92,6 +94,6 @@ class ReadXls(object):
             self.save_txt(item)
 
 
-if __name__ == '__main__':
-    """入口函数"""
-    ReadXls().run()
+# if __name__ == '__main__':
+#     """入口函数"""
+#     ReadXls(file_init, hz).run()

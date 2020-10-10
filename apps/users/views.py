@@ -1,5 +1,7 @@
 import os
 import json
+
+from worktime.models import Laboratory
 from .serializers import *
 from django.views import View
 from django.db import transaction
@@ -35,7 +37,27 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
     def retrieve(self, request, *args, **kwargs):
-        return render(request, 'user/userinfo.html')
+        instance = self.get_object()
+        # 用户查看工时系统
+        try:
+            # Laboratory.objects.get(manage_user__id=user.id)
+            Laboratory.objects.get(manager__id=instance.id)
+            worktime = True
+        except:
+            worktime = False
+
+        # return {
+        #     'id': instance.id,
+        #     'username': instance.username,
+        #     "job_number": instance.job_number,
+        #     "worktime": worktime
+        # }
+        return render(request, 'user/userinfo.html', {
+            'id': instance.id,
+            'username': instance.username,
+            "job_number": instance.job_number,
+            "worktime": worktime
+        })
 
     def update(self, request, *args, **kwargs):
         print("通过UPDATE")
@@ -48,7 +70,9 @@ class UserViewSet(viewsets.ModelViewSet):
         # if getattr(instance, '_prefetched_objects_cache', None):
         #     instance._prefetched_objects_cache = {}
 
-        return Response(serializer.data)
+        # return Response(serializer.data)
+
+        return None
 
 class UserFileViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-id')

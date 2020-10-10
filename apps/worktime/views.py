@@ -214,7 +214,7 @@ class TaskDetailView(ModelViewSet):
                 task_serializer = WorkTaskSerializer(work).data
                 result.append({
                     "id": task_serializer["id"],
-                    "room": item["laboratory"], # 试验室
+                    "room": item["laboratory"],  # 试验室
                     "creatTime": task_serializer["create_time"],
                     "carModal": task_serializer["car_model"],
                     "carNumber": task_serializer["car_number"],

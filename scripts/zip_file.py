@@ -6,6 +6,7 @@
 
 
 import os
+import re
 import zipfile
 import zipstream
 from io import StringIO
@@ -55,10 +56,16 @@ class ZipUtilities(object):
         for file in os.listdir(folder):
             full_path = os.path.join(folder, file)
             if os.path.isfile(full_path):
-                self.zip_file.write(
-                    full_path,
-                    arcname=os.path.join(name, os.path.basename(full_path))
-                )
+                try:
+                    self.zip_file.write(
+                        full_path,
+                        arcname=os.path.join(name, os.path.basename(full_path))
+                    )
+                except:
+                    self.zip_file.write(
+                        full_path,
+                        arcname=os.path.join(re.findall(r'(.*/(.*))', full_path)[0][1], os.path.basename(full_path))
+                    )
             elif os.path.isdir(full_path):
                 self.add_folder_to_zip(
                     full_path,

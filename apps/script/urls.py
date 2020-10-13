@@ -11,5 +11,4 @@ urlpatterns = [
     url(r'^info/$', script_index, name="info"),
     url(r'^read_exce/$', read_excel, name="excel"),
     url(r'^download/$', download, name="download"),
-
 ]

@@ -3,7 +3,7 @@ import re
 from django.http import StreamingHttpResponse, JsonResponse
 from django.shortcuts import render
 
-from help.read_excel import ReadXls
+from help.save_txt_table import SaveTxtTable
 from scripts import zip_file
 
 
@@ -24,8 +24,6 @@ def read_excel(request):
     files = request.FILES.get("file")
     hz = int(request.POST.get("hz"))
 
-    print(files, hz)
-
     # 把文件上传到服务器
     home_path = "/home/zheng/Documents/WorkFile/TEST/"
     new_file = open(home_path + str(files), 'wb+')
@@ -33,7 +31,7 @@ def read_excel(request):
         new_file.write(chunk)
 
     # 解析文件
-    ReadXls(str(files), hz).run()
+    SaveTxtTable().run(str(files), hz)
     return JsonResponse({"code": 0, "file": str(files), "msg": "文件已保存到 {}".format(home_path + str(files))})
 
 

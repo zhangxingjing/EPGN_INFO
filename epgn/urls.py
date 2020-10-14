@@ -32,3 +32,5 @@ urlpatterns = [
 
     url(r'script/', include('script.urls'), name="script"),
 ]
+
+handler404 = 'script.views.pageNotFound'

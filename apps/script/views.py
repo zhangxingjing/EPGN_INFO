@@ -54,3 +54,11 @@ def download(request):
     response = StreamingHttpResponse(utilities.zip_file, content_type='application/zip')
     response['Content-Disposition'] = 'attachment;filename="{0}.zip"'.format(file_name)
     return response
+
+
+# 自定义404 500
+def pageNotFound(request):
+    '''
+    404、500处理函数
+    '''
+    return render(request, 'error/404time.html')

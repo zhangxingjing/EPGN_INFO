@@ -70,7 +70,7 @@ class ReadXls(object):
         :param item: 单个数据列表
         :return:
         """
-        result_name = item[0].replace(" ", "") + ".txt"
+        result_name = item[0].replace(" ", "") + ".ninc"
         result_path = file_path + self.file_name[:-4]
         if os.path.exists(result_path) is False:
             try:
@@ -189,8 +189,8 @@ class SaveTxtTable(object):
                 f.write('\n')
 
             f.write("+{}".format(return_sort_index(sort_index)) + "ENDT" + "\n")
-            f.write("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + "\n")
-            f.write("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" + "\n")
+            f.write("$" * 80 + "\n")
+            f.write("$" * 80 + "\n")
             f.close()
 
     def run(self, file_name, hz):

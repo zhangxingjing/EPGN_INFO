@@ -1,6 +1,7 @@
 import json
 
 import xlwt
+from django.db.models import Q
 from django.shortcuts import render
 from users.models import User, Task
 from django.http import JsonResponse
@@ -112,6 +113,72 @@ class LaboratoryViewSet(ViewSet):
 class WorkTaskViewSet(ModelViewSet):
     queryset = WorkTask.objects.all()
     serializer_class = WorkTaskSerializer
+
+    def list(self, request, *args, **kwargs):
+        # queryset = self.filter_queryset(self.get_queryset())
+        #
+        # page = self.paginate_queryset(queryset)
+        # if page is not None:
+        #     serializer = self.get_serializer(page, many=True)
+        #     return self.get_paginated_response(serializer.data)
+        #
+        # serializer = self.get_serializer(queryset, many=True)
+        # return Response(serializer.data)
+
+        manager_id = request.GET.get("manager_id")
+        manager = User.objects.get(id=manager_id)
+
+        #  通过 filter(~Q(parent__id=None)) 找不parent_id不为None的数据
+        task_list = TaskDetail.objects.filter(~Q(parent__id=None)).filter(parent__check_task=1, task_manager=manager)
+        detail_serializer = TaskDetailSerializer(task_list, many=True).data
+
+        result = []
+        for item in detail_serializer:
+            work = WorkTask.objects.get(id=item["parent"])
+            task_serializer = WorkTaskSerializer(work).data
+            result.append({
+                "id": task_serializer["id"],
+                "room": item["laboratory"],  # 试验室
+                "creatTime": task_serializer["create_time"],
+                "carModal": task_serializer["car_model"],
+                "carNumber": task_serializer["car_number"],
+                "carVin": task_serializer["vin"],
+                "taskName": task_serializer["task_title"],
+                "taskDetail_1": item["name"],
+                "taskDetail_2": item["detail"],
+                "taskHour": item["hour"],
+                "taskRole": item["role"],
+                "manager": task_serializer["task_manager"],  # 这里使用的应该是单个用户
+                "totalHour": task_serializer["hours"],
+                "taskStatus": task_serializer["check_task"],
+            })
+        return JsonResponse(
+            {
+                "code": 0,
+                "msg": "数据请求成功！",
+                "count": len(result),
+                "data": result
+            }
+        )
+
+    def update(self, request, *args, **kwargs):
+        # 在这里修改用户的任务状态-->确定一下前端需要修改哪些数据
+        try:
+            time_status = request.data["time_status"]
+            file_status = request.data["file_status"]
+            report_status = request.data["report_status"]
+            manager_id = request.data["manager_id"]
+            partial = kwargs.pop('partial', False)
+
+            instance = self.get_object()
+            instance.check_task = time_status
+            instance.save()
+
+            # serializer = WorkTaskSerializer(instance).data
+            # return Response(serializer)
+            return JsonResponse({"status": True})
+        except DatabaseError as e:
+            return JsonResponse({"status": False, "msg": e})
 
 
 class TaskDetailView(ModelViewSet):

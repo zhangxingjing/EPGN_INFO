@@ -38,9 +38,9 @@ class WorkTaskSerializer(serializers.ModelSerializer):
         if data.check_task == 1:
             return '未审核'
         elif data.check_task == 2:
-            return '审核中'
+            return '已通过'
         elif data.check_task == 3:
-            return '已审核'
+            return '未通过'
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):

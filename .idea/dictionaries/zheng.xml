@@ -4,9 +4,11 @@
       <w>alphamat</w>
       <w>asctime</w>
       <w>authtoken</w>
+      <w>colums</w>
       <w>conplain</w>
       <w>corsheaders</w>
       <w>devp</w>
+      <w>dzjlb</w>
       <w>ecap</w>
       <w>eendt</w>
       <w>endt</w>
@@ -17,13 +19,17 @@
       <w>hinten</w>
       <w>horz</w>
       <w>jieba</w>
+      <w>layui</w>
       <w>leerlauf</w>
       <w>levelname</w>
       <w>ninc</w>
       <w>ohne</w>
       <w>rechits</w>
+      <w>resdata</w>
       <w>rollgeraeusch</w>
       <w>tablib</w>
+      <w>templet</w>
+      <w>testinfo</w>
       <w>verbrauche</w>
       <w>vorn</w>
       <w>worktime</w>

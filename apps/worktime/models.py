@@ -31,11 +31,11 @@ class WorkTask(models.Model):
     id = models.AutoField(primary_key=True)
     vin = models.CharField(max_length=50, verbose_name="Vin码")
     hours = models.CharField(max_length=50, verbose_name="总工时")
-    car_number = models.CharField(max_length=50, verbose_name="车号")
     task_title = models.CharField(max_length=255, verbose_name="任务名称")
     create_time = models.DateField(auto_now_add=True, verbose_name="创建时间")
     check_data = models.BooleanField(default=False, verbose_name="确认数据上传")
     check_report = models.BooleanField(default=False, verbose_name="确认报告状况")
+    car_number = models.CharField(max_length=50, null=True, blank=True, verbose_name="车号")
     check_task = models.SmallIntegerField(default=1, choices=CHECK_WORK_INFO, verbose_name="确认任务内容")
 
     task_manager = models.ForeignKey(

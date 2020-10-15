@@ -15,3 +15,14 @@ Laboratory.objects.create(name='车身隔声试验室', manager=User.objects.get
 Laboratory.objects.create(name='动力总成试验室', manager=User.objects.get(id=19))
 Laboratory.objects.create(name='前驱转鼓试验室', manager=User.objects.get(id=22))
 Laboratory.objects.create(name='整车测试平台', manager=User.objects.get(id=10))
+
+"""
+线上用户
+Laboratory.objects.create(name='四驱转鼓试验室', manager=User.objects.get(username="俞伟杰"))
+Laboratory.objects.create(name='材料试验室', manager=User.objects.get(username="吴瑛"))
+Laboratory.objects.create(name='动刚度试验室', manager=User.objects.get(username="林君"))
+Laboratory.objects.create(name='车身隔声试验室', manager=User.objects.get(username="苏东弘"))
+Laboratory.objects.create(name='动力总成试验室', manager=User.objects.get(username="王若云"))
+Laboratory.objects.create(name='前驱转鼓试验室', manager=User.objects.get(username="陈晓宇"))
+Laboratory.objects.create(name='整车测试平台', manager=User.objects.get(username="余盛荣"))
+"""

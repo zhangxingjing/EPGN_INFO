@@ -1,7 +1,8 @@
 from django.db import models
-from users.models import User, Task
+
 from fileinfo.models import Platform
 from settings.dev import ROLE_CHOICE, CHECK_WORK_INFO, TEST_CATEGORY
+from users.models import User, Task
 
 
 class Laboratory(models.Model):

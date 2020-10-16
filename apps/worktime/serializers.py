@@ -46,6 +46,7 @@ class WorkTaskSerializer(serializers.ModelSerializer):
 class TaskDetailSerializer(serializers.ModelSerializer):
     # 自定义返回的数据
     role = serializers.SerializerMethodField()
+    color = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
     task_manager = serializers.SerializerMethodField()
     laboratory = serializers.CharField(source='laboratory.name', read_only=True)
@@ -53,6 +54,12 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskDetail
         fields = "__all__"
+
+    def get_color(self, data):
+        if data.color == 1:
+            return "1"
+        elif data.color == 2:
+            return "2"
 
     def get_role(self, data):
         if data.role == 1:

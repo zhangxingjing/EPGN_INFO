@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} WORKTIME {% endblock %}
+
+{% block link %}
+    <style>
+        #app1_top {
+            display: flex;
+            font-size: 22px;
+        }
+
+        .content_right {
+            padding: 0 20px;
+            width: 90%;
+            line-height: 40px;
+            margin-left: 5%;
+        }
+
+        .layui-table tbody tr:hover, .layui-table-hover, .layui-table-click {
+            background-color: rgba(255, 255, 255, 0) !important;
+        }
+
+        .layui-table-hover {
+            background-color: rgba(255, 255, 255, 0);
+        }
+
+        .el-input--prefix .el-input__inner {
+            font-size: 21px;
+        }
+
+        #qua_standard_table {
+            width: 90%;
+            margin-left: 5%;
+        }
+
+        .layui-table-cell {
+            height: auto;
+            overflow: visible;
+            text-overflow: inherit;
+            white-space: normal;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="layui-fluid layui-card" id="body_upload" v-loading="loading" element-loading-text="" style="margin: 20px">
+        <div id="app1" class="layui-card">
+            <div id="qua_standard_table" lay-filter="qua_standard_table">
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script src="{% static "ele/index.js" %}"></script>
+    <script src="{% static "js/jquery-3.4.1.js" %}"></script>
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+    <script>
+        new Vue({
+            el: '#app1',
+            data() {
+                return {
+                    options: [],
+                    date_value: '',
+                    car_modal: [],
+                    carModal: '',
+                    carNum: '',
+                    carVin: '',
+                    testName: '',
+                    testContent: '',
+                    taskName: '',
+                    role: '',
+                    num: [{
+                        value: '', show1: true
+                    }],
+                    total_hour: 0,
+                    timeHour: '',
+                    test_item: [{
+                        value: '车辆准备（上转鼓）'
+                    }, {
+                        value: '轮胎认可测试'
+                    }, {
+                        value: '测试准备'
+                    }, {
+                        value: '其他'
+                    }],
+                    role_item: [{value: 'R'}, {value: 'S'}, {value: 'M'},],
+                    task_type: [{value: 1, label: "测试任务"}, {value: 2, label: "管理任务"}],
+                    taskType: 1,
+
+
+                }
+            },
+            methods: {
+                addTask() {
+                    this.num.push({
+                            value: '',
+                            show1: true,
+                            taskDetail: ''
+
+                        }
+                    )
+                },
+                delTask(val) {
+                    this.num.splice(val, 1);
+                    const that = this;
+                    this.$options.methods.calculateHours(that);
+                },
+                submit1() {
+
+                    console.log(this.num);
+
+                },
+                submit2() {
+                    const that = this;
+                    this.$options.methods.calculateHours(that);
+                },
+                changeTestItem(val, index) {
+
+
+                    if (val == '测试准备') {
+                        this.num[index].workHours = 0.5;
+                        console.log(this.num);
+                        this.num[index].taskDetail = val;
+                    } else if (val == '轮胎认可测试') {
+                        this.num[index].workHours = 2;
+                        this.num[index].show2 = false;
+                        this.num[index].taskDetail = val;
+                    } else if (val == "其他") {
+                        // this.num[index].workHours =0;
+                        // let newItem = this.num[index];
+                        // newItem.show1 = false;
+                        // newItem.show2 = true;
+                        // Vue.set(this.num, index, newItem);
+                        this.num[index].show1 = false;
+                        this.num[index].show2 = true
+                    } else {
+                        this.num[index].workHours = 1;
+                        this.num[index].taskDetail = val;
+                    }
+                    const that = this;
+                    this.$options.methods.calculateHours(that);
+                },
+                calculateHours(that) {
+                    let nums = that.num;
+                    let hours = 0;
+                    for (let i = 0; i < nums.length; i++) {
+                        if (nums[i].hasOwnProperty('workHours') == true) {
+                            hours = hours + Number(nums[i].workHours);
+                        } else {
+                        }
+
+                    }
+                    that.total_hour = hours
+                }
+            },
+            computed: {
+                timeDefault() {
+                    var date = new Date();
+                    var s1 = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate());
+                    return s1;
+                }
+            },
+
+            mounted() {
+                // 初始化查询，默认为前一天
+                this.date_value = this.timeDefault;
+            }
+        });
+
+        layui.use(['element', 'table', 'form'], function () {
+            var element = layui.element,
+                form = layui.form,
+                table = layui.table;
+            var res = [{idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '车辆准备(不上转鼓)', hours: 0.5, role: 'R', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "2001"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '测试准备', hours: 1, role: 'S', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "202"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '怠速测试', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "2003"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '测试准备', hours: 1, role: 'M', personCharge: '杨飞', totalHour: '3', taskStatus: '已审核', testid: "2004"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '管理任务11', taskContent: '怠速测试222', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '3', taskStatus: '已审核', testid: "2005"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '怠速测试准备', hours: 1, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2006"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '怠速测试', hours: 2, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2007"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '测试总结', hours: 1, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2009"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '混合动力驱动台架准备', hours: 1, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "20010"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '轮胎噪声认可', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2011"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '内部噪声', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2018"},
+                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '内部噪声123', hours: 0.2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2018"},
+            ];
+
+            table.render({// 数据表格生成
+                elem: '#qua_standard_table',
+                height: "full-120",
+                data: res,
+                page: {
+                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                }, //开启分页
+                limit: 20,
+                limits: [10, 20],
+                cols: [
+                    [{
+                        field: 'idNumber',
+                        title: 'Id',
+                        width: 50,
+                        align: 'center'
+                    }, {
+                        field: 'laboratory',
+                        title: '实验室',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'date',
+                        title: '日期',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'carModal',
+                        title: '车型',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'carNum',
+                        title: '车号',
+                        width: 120,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'carVin',
+                        title: 'Vin',
+                        width: 240,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'task',
+                        title: '任务',
+                        width: 250,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'taskContent',
+                        title: '任务详细内容',
+                        width: 320,
+                        align: 'center',
+                        edit: 'text'
+                    }, {
+                        field: 'hours',
+                        title: '工时',
+                        width: 60,
+                        align: 'center'
+                    }, {
+                        field: 'role',
+                        title: '角色',
+                        width: 60,
+                        align: 'center'
+                    }, {
+                        field: 'personCharge',
+                        title: '负责人',
+                        width: 120,
+                        align: 'center'
+                    }, {
+                        field: 'totalHour',
+                        title: '总工时',
+                        width: 100,
+                        align: 'center'
+                    }, {
+                        field: 'taskStatus',
+                        title: '任务状态',
+                        width: 150,
+                        align: 'center',
+                        templet: setState,
+                    },
+
+                        {
+                            align: 'center', rowspan: 2, width: 120, field: 'task', title: '是否数据上传', templet: function (d) {
+                                return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                    '<input type="checkbox" name="sex" value=' + d.task + ' lay-skin="switch" lay-text="是|否" lay-filter="dataUpload" >' +
+                                    '</div>';
+                            }, fixed: 'right'
+                        },
+                        {
+                            align: 'center', rowspan: 2, width: 100, field: 'operation', title: '是否有报告', templet: function (d) {
+                                return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                    '<input type="checkbox" name="sex" value=' + d.task + ' lay-skin="switch" lay-text="是|否" lay-filter="reportUpload" >' +
+                                    '</div>';
+                            }, fixed: 'right'
+                        },
+                        {
+                            align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务内容', style: 'overflow:visible', templet: function (d) {
+                                return '<div class="layui-input-line" ><select name="interest" lay-filter="aihao"><option value="2">通过</option><option value="1" >拒绝</option>' +
+                                    '</select></div>';
+                            }, fixed: 'right'
+                        },
+
+                        // {
+                        //     title: '操作',
+                        //     width:200,
+                        //     toolbar:'#barDemo'
+                        //
+                        // }
+                    ],
+                ],
+                done: function (res, curr, count) {
+
+                    // $(".layui-input-line").css('overflow', 'visible');
+                    element.init();
+                    $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
+                    merge(res);//合并单元格
+                    // $(".layui-table-body, .layui-table-box, .layui-table-cell,.layui-input-line").css('overflow', 'visible');
+                }
+            });
+            form.on('switch(confirmContent)', function (data) {
+                const status = this.checked;
+                const that = this;
+                layer.confirm('确定删除本条任务嘛？', function (index) {
+                    layer.close(index);
+                    layer.tips(that.value + ' ' + that.name + '：' + status, data.othis);
+                    console.log(data);
+                });
+
+
+            });
+            form.on('switch(dataUpload)', function (data) {
+                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                console.log(data);
+            });
+            form.on('switch(reportUpload)', function (data) {
+                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                console.log(data);
+            });
+            form.on('aihao'), function (data) {
+                console.log(data)
+            };
+            table.on('tool(qua_standard_table)', function (obj) {
+
+                if (obj.event === 'qua_standard_edit') {
+                    layer.msg('添加');
+                } else if (obj.event === 'qua_standard_del') {
+                    console.log(obj.data);
+                    layer.confirm('确定删除本条数据嘛？', function (index) {
+                        obj.del();
+                        layer.close(index);
+                        //向服务端发送删除指令
+                    });
+                } else if (obj.event === "qua_standard_sexDemo") {
+                    console.log(obj);
+                    layer.confirm('确定删除本条任务嘛？', function () {
+                        layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                            offset: '6px'
+                        });
+                        //向服务端发送删除指令
+                    });
+
+                }
+            });
+        })
+
+        function setState(data) {
+            let status = data.taskStatus;
+            console.log(status);
+            if (status == "未审核") {
+                return "<span style='color: red'>未审核</span>"
+            } else {
+                return "<span style='color: green'>已审核</span>"
+            }
+        }
+
+        function merge(res) {
+            var data = res.data;
+            var mergeIndex = 0;//定位需要添加合并属性的行数
+            var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
+            var _number = 1;//保持序号列数字递增
+            var columsName = ['idNumber', 'laboratory', 'date', 'carModal', 'carNum', 'carVin', 'task', 'personCharge', 'totalHour', 'taskStatus', 'operation'];//需要合并的列名称
+            var columsIndex = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13,];//需要合并的列索引值
+            var mergeCondition = 'id';//需要合并的 首要条件  在这个前提下进行内容相同的合并
+            // var tdArrL = $('.layui-table-fixed-l > .layui-table-body').find("tr");//序号列左定位产生的table tr
+            var tdArrR = $('.layui-table-fixed-r > .layui-table-body').find("tr");//操作列定右位产生的table tr
+            var tt = $('.layui-table-fixed-r > .layui-table-body');
+            tt.find(".laytable-cell-1-0-15").css("overflow", "visible");
+            for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
+                var trArr = $(".layui-table-main>.layui-table").find("tr");//所有行
+                for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
+
+                    if (data[i][mergeCondition] === data[i - 1][mergeCondition]) {
+                        var tdCurArr = trArr.eq(i).find("td").eq(columsIndex[k]);//获取当前行的当前列
+                        var tdPreArr = trArr.eq(mergeIndex).find("td").eq(columsIndex[k]);//获取相同列的第一列
+
+                        if (data[i][columsName[k]] === data[i - 1][columsName[k]]) { //后一行的值与前一行的值做比较，相同就需要合并
+                            mark += 1;
+                            tdPreArr.each(function () {//相同列的第一列增加rowspan属性
+                                $(this).attr("rowspan", mark);
+                            });
+                            tdCurArr.each(function () {//当前行隐藏
+                                $(this).css("display", "none");
+                            });
+                        } else {
+                            mergeIndex = i;
+                            mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+                        }
+                    } else {
+                        mergeIndex = i;
+                        mark = 1;//一旦前后两行的值不一样了，那么需要合并的格子数mark就需要重新计算
+                    }
+                }
+                mergeIndex = 0;
+                mark = 1;
+            }
+
+            //操作左右定位列的表格
+            $.each($("#qua_standard_table").siblings('.layui-table-view').find('.layui-table-main>.layui-table').find("tr"), function (i, v) {
+                if ($(v).find('td').eq(6).css('display') === 'none') {
+                    // tdArrL.eq(i).find('td').css('display','none');
+                    tdArrR.eq(i).find('td').css('display', 'none');
+                } else {
+                    // tdArrL.eq(i).find('td').find('.laytable-cell-numbers').html(_number++);
+                    // tdArrL.eq(i).find('td').css('height',$(v).find('td').eq(2)[0].clientHeight);
+                    tdArrR.eq(i).find('td').css('height', $(v).find('td').eq(6)[0].clientHeight);
+
+                }
+            })
+        }
+    </script>
+{% endblock %}

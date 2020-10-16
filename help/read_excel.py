@@ -69,7 +69,7 @@ class ReadXls(object):
         :param item: 单个数据列表
         :return:
         """
-        result_name = item[0].replace(" ", "") + ".txt"
+        result_name = item[0].replace(" ", "") + ".ninc"
         result_path = file_path + self.file_name[:-4]
         if os.path.exists(result_path) is False:
             try:
@@ -92,7 +92,6 @@ class ReadXls(object):
         self.get_location()
         for item in self.read_file():
             self.save_txt(item)
-
 
 # if __name__ == '__main__':
 #     """入口函数"""

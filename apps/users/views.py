@@ -17,6 +17,7 @@ from django.core import serializers as dc_serializers
 from django.contrib.auth.hashers import make_password
 from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from worktime.models import WorkTask
 
 
 class AuthUserView(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
@@ -150,7 +151,10 @@ def home(request):
     user_download_files_data = user.download_files_data
     user_update_files_data = user.update_files_data
     user_task = user.task.count()
+
     user_task_info = user.task.all()  # 用户的待办事项
+    user_check_time = WorkTask.objects.filter(task_manager=user)    # 用户需要校验的数据
+
     file_point = []
     file_classify = Fileinfo.objects.values("carmodel").annotate(Count("carmodel")).order_by()
 
@@ -165,6 +169,7 @@ def home(request):
         "user_update": user_update_files_data,
         "user_items": items,
         "user_task": user_task,
-        "user_task_info": [task_info.name for task_info in user_task_info],
+        # "user_task_info": [task_info.name for task_info in user_task_info],
+        "user_task_info": [time_info.id for time_info in user_check_time],
     }
     return JsonResponse(user_data)

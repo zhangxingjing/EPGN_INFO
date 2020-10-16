@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^submit/$', WaitViewSet.as_view({"get": "submit"})),
     url(r'^search/$', WaitViewSet.as_view({"get": "search"})),
     url(r'^item/$', WaitViewSet.as_view({"get": "get_items"})),
+    url(r'^check_/$', WaitViewSet.as_view({"get": "check"})),
 
     url(r'^save/$', save_xls_download),
 ]

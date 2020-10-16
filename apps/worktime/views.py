@@ -1,4 +1,5 @@
 import json
+import os
 
 import xlwt
 from django.db.models import Q
@@ -6,12 +7,14 @@ from django.shortcuts import render
 from users.models import User, Task
 from django.http import JsonResponse
 from fileinfo.models import Platform
+from django.utils.http import urlquote
 from rest_framework.response import Response
 from django.db import transaction, DatabaseError
 from fileinfo.serializers import CarModelSerializer
 from .models import Laboratory, WorkTask, TaskDetail
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from .serializers import LaboratorySerializer, WorkTaskSerializer, TaskDetailSerializer
+from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 
 
 class WaitViewSet(ViewSet):
@@ -88,6 +91,9 @@ class WaitViewSet(ViewSet):
     def search(self, request):
         return render(request, "worktime/search.html")
 
+    def check(self, request):
+        return render(request, 'worktime/check.html')
+
 
 class LaboratoryViewSet(ViewSet):
     """
@@ -151,6 +157,7 @@ class WorkTaskViewSet(ModelViewSet):
                 "manager": task_serializer["task_manager"],  # 这里使用的应该是单个用户
                 "totalHour": task_serializer["hours"],
                 "taskStatus": task_serializer["check_task"],
+                "color": item["color"],
             })
         return JsonResponse(
             {
@@ -217,15 +224,27 @@ class TaskDetailView(ModelViewSet):
 
                 # 需要将任务类别关联到详细信息中
                 for task in json.loads(request.data["content"]):
+
+                    laboratory = Laboratory.objects.get(name=request.data["laboratoryId"])
+
+                    # 获取一个默认状态下的工时信息, 确认状态
+                    color_ = False
+                    time_default = TaskDetail.objects.filter(laboratory=laboratory, parent__id=None, name=task["taskName"]).first()
+
+                    print(task["taskHour"], time_default.hour, time_default.id)
+
+                    if task["taskHour"] != time_default.hour:
+                        color_ = True
+
                     task_obj = TaskDetail(
                         # id=(TaskDetail.objects.all().order_by('-id')[:1][0].id + 1    # 使用id最后一个
                         hour=task["taskHour"],  #
                         name=task["taskName"],  #
-                        color=False,
+                        color=color_,
                         role=task["taskRole"],  #
                         detail=task["taskDetail"],  #
                         category=1,
-                        laboratory=Laboratory.objects.get(name=request.data["laboratoryId"]),
+                        laboratory=laboratory,
                         parent=work_obj,
                         # task_manager=[User.objects.get(username=request.data["manager"])]
                     )
@@ -294,6 +313,7 @@ class TaskDetailView(ModelViewSet):
                     "manager": task_serializer["task_manager"],  # 这里使用的应该是单个用户
                     "totalHour": task_serializer["hours"],
                     "taskStatus": task_serializer["check_task"],
+                    "color": item["color"]
                 })
             return JsonResponse(
                 {
@@ -356,6 +376,7 @@ class CheckWorkTime(ModelViewSet):
                     "manager": task_serializer["task_manager"],  # 这里使用的应该是单个用户
                     "totalHour": task_serializer["hours"],
                     "taskStatus": task_serializer["check_task"],
+                    "color": item["color"]
                 })
             return JsonResponse(
                 {
@@ -377,27 +398,33 @@ def save_xls_download(request):
     :param request:前端请求request对象
     :return:当前数据的xls文件
     """
-    # 将数据保存到xls中
-    items = [
-        {
-            "id": 1,
-            "task_user": "张晓康",
-            "试验室": "test_content.test_title",
-            "日期": "2020-09-09",
-            "车型": "T-Cross",
-            "车号": "123",
-            "Vin": "123345",
-            "任务名称": "test_content.task_title",
-            "任务详细内容": "test_content.name",
-            "角色": "test_content.default_role",
-            "工时": "test_content.test_time",
-            "任务负责人": "test_content.task_manage",
-            "总工时": 23,
+    # 获取已审核的数据列表
+    task_list = TaskDetail.objects.filter(~Q(parent__id=None)).filter(parent__check_task=2)
+    detail_serializer = TaskDetailSerializer(task_list, many=True).data
+    results = []
+    for item in detail_serializer:
+        work = WorkTask.objects.get(id=item["parent"])
+        task_serializer = WorkTaskSerializer(work).data
+        results.append({
+            "ID": task_serializer["id"],
+            "试验员": "张晓康",
+            "试验室": item["laboratory"],
+            "日期": task_serializer["create_time"],
+            "车型": task_serializer["car_model"],
+            "车号": task_serializer["car_number"],
+            "Vin": task_serializer["vin"],
+            "任务名称": task_serializer["task_title"],
+            "任务详细内容": item["name"],
+            "角色": item["role"],
+            "工时": item["hour"],
+            "任务负责人": task_serializer["task_manager"],
+            "总工时": task_serializer["hours"],
             "是否确认任务内容": "未审核",
             "是否上传数据": "qwe",
             "是否有报告": "false",
-        }
-    ]
+        })
+
+    # 将数据写入到excel中
     file = xlwt.Workbook(encoding='utf-8')
     table = file.add_sheet('data')
     alignment = xlwt.Alignment()
@@ -408,7 +435,7 @@ def save_xls_download(request):
 
     # 写表头
     row0 = [
-        "序号", "id", "task_user", "试验室", "日期",
+        "序号", "ID", "试验员", "试验室", "日期",
         "车型", "车号", "Vin", "任务名称", "任务详细内容", "角色", "工时", "任务负责人", "总工时",
         "是否确认任务内容", "是否上传数据", "是否有报告"
     ]
@@ -418,11 +445,11 @@ def save_xls_download(request):
     # 写数据
     data = {}
     num = 0
-    for item in items:
+    for item in results:
         num += 1
         data.update({
             num: [
-                item["id"], item["task_user"], item["试验室"], item["日期"],
+                item["ID"], item["试验员"], item["试验室"], item["日期"],
                 item["车型"], item["车号"], item["Vin"], item["任务名称"], item["任务详细内容"], item["角色"], item["工时"], item["任务负责人"], item["总工时"],
                 item["是否确认任务内容"], item["是否上传数据"], item["是否有报告"]
             ]
@@ -440,40 +467,44 @@ def save_xls_download(request):
             table.write(i + 1, j, q, style)
 
     # 设置单元格宽度
-    table.col(0).width = 2000
-    table.col(1).width = 2000
-    table.col(2).width = 2000
-    table.col(3).width = 5000
-    table.col(4).width = 3000
-    table.col(5).width = 3000
-    table.col(6).width = 2000
-    table.col(7).width = 2000
-    table.col(8).width = 5000
-    table.col(9).width = 5000
-    table.col(10).width = 2000
+    table.col(0).width = 2000  # 序号
+    table.col(1).width = 2000  # ID
+    table.col(2).width = 2000  # 试验员
+    table.col(3).width = 5000  # 试验室
+    table.col(4).width = 3000  # 日期
+    table.col(5).width = 5000  # 车型
+    table.col(6).width = 5000  # 车号
+    table.col(7).width = 5000  # Vin
+    table.col(8).width = 5000  # 任务名称
+    table.col(9).width = 5000  # 任务详细内容
+    table.col(10).width = 2000  # 角色
+    table.col(11).width = 2000  # 工时
+    table.col(12).width = 5000  # 任务负责人
+    table.col(13).width = 2000  # 总工时
+    table.col(14).width = 5000  # 是否确认任务内容
+    table.col(15).width = 5000  # 是否上传数据
+    table.col(16).width = 5000  # 是否有报告
 
-    file.save('/home/zheng/Desktop/formatting.xls')
+    # 文件存储路径(自动获取当前文件所在位置)
+    file_name = "formatting.xls"
+    current_path = os.path.abspath(__file__)
+    file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "."), file_name)
+    file.save(file_path)
 
-    """使用不同的方式，把数据保存到xls中
-    # 将json中的key作为header, 也可以自定义header（列名）
-    header = (
-        "id", "task_user", "试验室", "日期",
-        "车型", "车号", "Vin", "任务名称", "任务详细内容", "角色", "工时", "任务负责人",
-        "总工时", "是否确认任务内容", "是否上传数据", "是否有报告"
-    )
+    # 将写好的数据发送给用户
+    def file_iterator(file_path, chunk_size=512):
+        with open(file_path, mode='rb') as f:
+            while True:
+                count = f.read(chunk_size)
+                if count:
+                    yield count
+                else:
+                    break
 
-    # 循环里面的字典，将value作为数据写入进去
-    data = []
-    for row in rows:
-        data.append((
-            row["id"], row["task_user"], row["试验室"], row["日期"],
-            row["车型"], row["车号"], row["Vin"], row["任务名称"], row["任务详细内容"], row["角色"], row["工时"], row["任务负责人"],
-            row["总工时"],
-            row["是否确认任务内容"], row["是否上传数据"], row["是否有报告"]
-        ))
-
-    # 使用tablib写入数据
-    data = tablib.Dataset(*data, headers=header)
-    with open('/home/zheng/Desktop/formatting.xls', "wb") as f:
-        f.write(data.xls)
-    """
+    try:
+        response = StreamingHttpResponse(file_iterator(file_path))
+        response['Content-Type'] = 'application/octet-stream'
+        response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
+    except:
+        return HttpResponse("Sorry but Not Found the File")
+    return response

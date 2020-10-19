@@ -57,9 +57,9 @@ class TaskDetailSerializer(serializers.ModelSerializer):
 
     def get_color(self, data):
         if data.color == 1:
-            return "1"
-        elif data.color == 2:
-            return "2"
+            return "1"  # 未修改
+        elif data.color == 0:
+            return "0"  # 修改了
 
     def get_role(self, data):
         if data.role == 1:

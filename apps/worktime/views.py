@@ -227,14 +227,11 @@ class TaskDetailView(ModelViewSet):
 
                     laboratory = Laboratory.objects.get(name=request.data["laboratoryId"])
 
-                    # 获取一个默认状态下的工时信息, 确认状态
-                    color_ = False
+                    # 获取一个默认状态下的工时信息, 确认状态 ==>修改了工时，则color的值为 0
+                    color_ = True
                     time_default = TaskDetail.objects.filter(laboratory=laboratory, parent__id=None, name=task["taskName"]).first()
-
-                    print(task["taskHour"], time_default.hour, time_default.id)
-
                     if task["taskHour"] != time_default.hour:
-                        color_ = True
+                        color_ = False
 
                     task_obj = TaskDetail(
                         # id=(TaskDetail.objects.all().order_by('-id')[:1][0].id + 1    # 使用id最后一个
@@ -329,8 +326,6 @@ class TaskDetailView(ModelViewSet):
     def update(self, request, *args, **kwargs):
 
         # 在这里修改用户的任务状态-->确定一下前端需要修改哪些数据
-        print(request.data)
-
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)

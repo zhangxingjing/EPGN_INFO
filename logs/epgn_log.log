@@ -1,2 +1,0 @@
-INFO 2020-10-16 17:23:45,739 basehttp 124 [32m[32m"DELETE /time/work/12/ HTTP/1.1" 204 0[0m[0m
-INFO 2020-10-16 17:23:45,897 basehttp 124 [32m[32m"GET /time/task/?user_id=22 HTTP/1.1" 200 5295[0m[0m

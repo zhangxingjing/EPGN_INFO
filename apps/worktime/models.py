@@ -63,9 +63,12 @@ class WorkTask(models.Model):
 
     task = models.ForeignKey(
         Task,
+        null=True,
+        blank=True,
         related_name="task",
         verbose_name="工时任务",
-        on_delete=models.CASCADE
+        # on_delete=models.CASCADE    # 级联删除
+        on_delete=models.SET_NULL
     )
 
     class Meta:

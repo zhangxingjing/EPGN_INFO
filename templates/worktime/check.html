@@ -10,7 +10,7 @@
         }
 
         .content_right {
-            padding: 0 20px;
+            /* padding: 0 20px; */
             width: 90%;
             line-height: 40px;
             margin-left: 5%;
@@ -35,8 +35,7 @@
 
         .layui-table-cell {
             height: auto;
-            overflow: visible;
-            text-overflow: inherit;
+        {#overflow: visible;#} text-overflow: inherit;
             white-space: normal;
         }
     </style>
@@ -47,10 +46,14 @@
 
 {% block content %}
     <div class="layui-fluid layui-card" id="body_upload" v-loading="loading" element-loading-text="" style="margin: 20px">
-        <div id="app1" class="layui-card">
+        <div id="app1">
             <div id="qua_standard_table" lay-filter="qua_standard_table">
 
             </div>
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            </script>
 
         </div>
     </div>
@@ -60,306 +63,619 @@
     <script src="{% static 'js/vue_2.6.10.js' %}"></script>
     <script src="{% static "ele/index.js" %}"></script>
     <script src="{% static "js/jquery-3.4.1.js" %}"></script>
-    <script type="text/html" id="barDemo">
-        <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
-        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-    </script>
     <script>
-        new Vue({
-            el: '#app1',
-            data() {
-                return {
-                    options: [],
-                    date_value: '',
-                    car_modal: [],
-                    carModal: '',
-                    carNum: '',
-                    carVin: '',
-                    testName: '',
-                    testContent: '',
-                    taskName: '',
-                    role: '',
-                    num: [{
-                        value: '', show1: true
-                    }],
-                    total_hour: 0,
-                    timeHour: '',
-                    test_item: [{
-                        value: '车辆准备（上转鼓）'
-                    }, {
-                        value: '轮胎认可测试'
-                    }, {
-                        value: '测试准备'
-                    }, {
-                        value: '其他'
-                    }],
-                    role_item: [{value: 'R'}, {value: 'S'}, {value: 'M'},],
-                    task_type: [{value: 1, label: "测试任务"}, {value: 2, label: "管理任务"}],
-                    taskType: 1,
+        var userId = sessionStorage.getItem('user_id');
+        var res = '';
+        console.log(userId);
+        $.ajax({
+            type: 'get',
+            url: '/time/work/?manager_id=' + userId,
+            dataType: "json",
+            success: function (data) {
+                console.log(data);
+                res = data.data;
+                layui.use(['element', 'table', 'form'], function () {
+                        var element = layui.element,
+                            form = layui.form,
+                            table = layui.table;
+                        table.render({// 数据表格生成
+                            elem: '#qua_standard_table',
+                            height: "full-120",
+                            data: res,
+                            page: {
+                                layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                            }, //开启分页
+                            limit: 18,
+                            limits: [18, 30],
+                            cols: [
+                                [{
+                                    field: 'room',
+                                    title: '实验室',
+                                    width: 140,
+                                    align: 'center'
+                                }, {
+                                    field: 'creatTime',
+                                    title: '日期',
+                                    width: 110,
+                                    align: 'center'
+                                }, {
+                                    field: 'carModal',
+                                    title: '车型',
+                                    width: 129,
+                                    align: 'center'
+                                }, {
+                                    field: 'carNumber',
+                                    title: '车号',
+                                    width: 129,
+                                    align: 'center',
+                                }, {
+                                    field: 'carVin',
+                                    title: 'Vin',
+                                    width: 180,
+                                    align: 'center',
+                                }, {
+                                    field: 'taskName',
+                                    title: '任务',
+                                    width: 200,
+                                    align: 'center',
+                                }, {
+                                    field: 'taskDetail_2',
+                                    title: '任务详细内容',
+                                    width: 212,
+                                    align: 'center',
+                                }, {
+                                    field: 'taskHour',
+                                    title: '工时',
+                                    width: 60,
+                                    align: 'center',
+                                    templet: setHourState,
+                                }, {
+                                    field: 'taskRole',
+                                    title: '角色',
+                                    width: 60,
+                                    align: 'center'
+                                }, {
+                                    field: 'totalHour',
+                                    title: '总工时',
+                                    width: 80,
+                                    align: 'center'
+                                },
+
+                                    {
+                                        align: 'center', rowspan: 2, width: 80, field: 'task', title: '数据', templet: function (d) {
+                                            return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                                '<input type="checkbox" name="data_upload" value=' + d.id + ' lay-skin="switch" lay-text="是|否" lay-filter="dataUpload" >' +
+                                                '</div>';
+                                        }, fixed: 'right'
+                                    },
+                                    {
+                                        align: 'center', rowspan: 2, width: 80, field: 'operation', title: '报告', templet: function (d) {
+                                            return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                                '<input type="checkbox" name="report_upload" value=' + d.id + ' lay-skin="switch" lay-text="是|否" lay-filter="reportUpload" >' +
+                                                '</div>';
+                                        }, fixed: 'right'
+                                    },
+                                    {
+                                        align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务内容', templet: function (d) {
+                                            return '<div class="layui-input-line" ><select name="interest" lay-filter="aihao"><option value=' + '1' + d.id + ' name="请选择" selected="selected">请选择</option><option value=' + '2' + d.id + ' name="通过">通过</option><option value=' + '3' + d.id + ' name="拒绝">拒绝</option>' +
+                                                '</select></div>';
+                                        }, fixed: 'right'
+                                    },
+
+                                    // {
+                                    //     title: '操作',
+                                    //     width:200,
+                                    //     toolbar:'#barDemo'
+                                    //
+                                    // }
+                                ],
+                            ],
+                            done: function (res, curr, count) {
+
+                                // $(".layui-input-line").css('overflow', 'visible');
+                                element.init();
+                                $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
+                                merge(res);//合并单元格
+                                // $(".layui-table-body, .layui-table-box, .layui-table-cell,.layui-input-line").css('overflow', 'visible');
+                            }
+                            ,
+                        });
+                        var statusArray = [];
+                        form.on('switch(dataUpload)', function (data) {
+                            layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                            let obj = {};
+                            obj.id = this.value;
+                            statusArray.map(e => {
+                                if (this.value.includes(e.id)) {
+                                    let index = statusArray.findIndex(x => x.id === this.value);
+                                    console.log(index);
+                                    if (data.elem.checked == true) {
+                                        statusArray[index].file_status = 2
+                                    } else {
+                                        statusArray[index].file_status = 1
+                                    }
+
+                                }
+                                ;
+                            });
+                            if (statusArray.findIndex(x => x.id === this.value) == -1) {
+                                if (data.elem.checked == true) {
+                                    obj.file_status = 2
+                                } else {
+                                    obj.file_status = 1
+                                }
+                                statusArray.push(obj);
+
+                            } else {
+
+                            }
+                            ;
+                            console.log(statusArray);
 
 
-                }
-            },
-            methods: {
-                addTask() {
-                    this.num.push({
-                            value: '',
-                            show1: true,
-                            taskDetail: ''
+                        });
+                        form.on('switch(reportUpload)', function (data) {
+                            layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                            let obj = {};
+                            obj.id = this.value;
+                            statusArray.map(e => {
+                                if (this.value.includes(e.id)) {
+                                    let index = statusArray.findIndex(x => x.id === this.value);
+                                    console.log(index);
+                                    if (data.elem.checked == true) {
+                                        statusArray[index].report_status = 2
+                                    } else {
+                                        statusArray[index].report_status = 1
+                                    }
 
-                        }
-                    )
-                },
-                delTask(val) {
-                    this.num.splice(val, 1);
-                    const that = this;
-                    this.$options.methods.calculateHours(that);
-                },
-                submit1() {
+                                }
+                                ;
+                            });
+                            if (statusArray.findIndex(x => x.id === this.value) == -1) {
+                                if (data.elem.checked == true) {
+                                    obj.report_status = 2
+                                } else {
+                                    obj.report_status = 1
+                                }
+                                statusArray.push(obj);
 
-                    console.log(this.num);
+                            } else {
 
-                },
-                submit2() {
-                    const that = this;
-                    this.$options.methods.calculateHours(that);
-                },
-                changeTestItem(val, index) {
+                            }
+                            ;
+                            console.log(statusArray);
+                        });
+
+                        form.on('select(aihao)', function (data) {
+                            let check_status = this.innerHTML;
+                            console.log(data.value);
+                            let taskId = data.value.substr(1);
 
 
-                    if (val == '测试准备') {
-                        this.num[index].workHours = 0.5;
-                        console.log(this.num);
-                        this.num[index].taskDetail = val;
-                    } else if (val == '轮胎认可测试') {
-                        this.num[index].workHours = 2;
-                        this.num[index].show2 = false;
-                        this.num[index].taskDetail = val;
-                    } else if (val == "其他") {
-                        // this.num[index].workHours =0;
-                        // let newItem = this.num[index];
-                        // newItem.show1 = false;
-                        // newItem.show2 = true;
-                        // Vue.set(this.num, index, newItem);
-                        this.num[index].show1 = false;
-                        this.num[index].show2 = true
-                    } else {
-                        this.num[index].workHours = 1;
-                        this.num[index].taskDetail = val;
+                            if (check_status == "拒绝") {
+                                layer.confirm('确定本条任务审核不通过？', function (index) {
+                                    $.ajax({
+                                        type: 'patch',
+                                        url: '/time/work/' + taskId + '/',
+                                        data: {
+                                            "manager_id": userId,
+                                            "time_status": 3,
+                                            "report_status": 1,
+                                            "file_status": 1,
+                                        },
+                                        success: function (data) {
+                                            layer.alert("处理完成!");
+                                            reloadTable();
+                                        },
+                                        error: function (jqXHR) {
+                                            layer.alert("处理失败!")
+                                        }
+                                    });
+                                    layer.close(index);
+                                });
+                            } else if (check_status == "通过") {
+                                layer.confirm('确定本条任务审核通过？', function (index) {
+                                    if (statusArray.findIndex(x => x.id === taskId) == -1) {
+                                        $.ajax({
+                                            type: 'patch',
+                                            url: '/time/work/' + taskId + '/',
+                                            data: {
+                                                "manager_id": userId,
+                                                "time_status": 2,
+                                                "report_status": 1,
+                                                "file_status": 1,
+                                            },
+                                            success: function (data) {
+                                                layer.alert("处理完成!");
+                                                reloadTable();
+                                            },
+                                            error: function (jqXHR) {
+                                                layer.alert("处理失败!")
+                                            }
+                                        });
+
+                                    } else {
+                                        let index = statusArray.findIndex(x => x.id === taskId);
+                                        if ("report_status" in statusArray[index]) {
+
+                                        } else {
+                                            statusArray[index].report_status = 1
+                                        }
+                                        ;
+                                        if ("file_status" in statusArray[index]) {
+
+                                        } else {
+                                            statusArray[index].file_status = 1
+                                        }
+                                        $.ajax({
+                                            type: 'patch',
+                                            url: '/time/work/' + taskId + '/',
+                                            data: {
+                                                "manager_id": userId,
+                                                "time_status": 2,
+                                                "report_status": statusArray[index].report_status,
+                                                "file_status": statusArray[index].file_status,
+                                            },
+                                            success: function (data) {
+                                                layer.alert("处理完成!");
+                                                reloadTable();
+                                            },
+                                            error: function (jqXHR) {
+                                                layer.alert("处理失败!")
+                                            }
+                                        });
+                                    }
+                                    ;
+
+
+                                    layer.close(index);
+                                });
+                            } else {
+
+                            }
+
+
+                        });
+
+                        table.on('tool(qua_standard_table)', function (obj) {
+
+                            if (obj.event === 'qua_standard_edit') {
+                                layer.msg('添加');
+                            } else if (obj.event === 'qua_standard_del') {
+                                console.log(obj.data);
+                                layer.confirm('确定删除本条数据嘛？', function (index) {
+                                    obj.del();
+                                    layer.close(index);
+                                    //向服务端发送删除指令
+                                });
+                            } else if (obj.event === "qua_standard_sexDemo") {
+                                console.log(obj);
+                                layer.confirm('确定删除本条任务嘛？', function () {
+                                    layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                                        offset: '6px'
+                                    });
+                                    //向服务端发送删除指令
+                                });
+
+                            }
+                        });
                     }
-                    const that = this;
-                    this.$options.methods.calculateHours(that);
-                },
-                calculateHours(that) {
-                    let nums = that.num;
-                    let hours = 0;
-                    for (let i = 0; i < nums.length; i++) {
-                        if (nums[i].hasOwnProperty('workHours') == true) {
-                            hours = hours + Number(nums[i].workHours);
-                        } else {
-                        }
+                )
 
-                    }
-                    that.total_hour = hours
-                }
             },
-            computed: {
-                timeDefault() {
-                    var date = new Date();
-                    var s1 = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate());
-                    return s1;
-                }
-            },
-
-            mounted() {
-                // 初始化查询，默认为前一天
-                this.date_value = this.timeDefault;
+            error: function (jqXHR) {
+                console.log(jqXHR);
             }
         });
 
-        layui.use(['element', 'table', 'form'], function () {
-            var element = layui.element,
-                form = layui.form,
-                table = layui.table;
-            var res = [{idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '车辆准备(不上转鼓)', hours: 0.5, role: 'R', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "2001"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '测试准备', hours: 1, role: 'S', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "202"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '怠速测试', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '3.5', taskStatus: '未审核', testid: "2003"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '冷启动舒适性测试213213123dsadsadqwdeqweqweqweqweqweqweqweqwsad12133123123', taskContent: '测试准备', hours: 1, role: 'M', personCharge: '杨飞', totalHour: '3', taskStatus: '已审核', testid: "2004"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Lavida", carNum: 'LN6-R12', carVin: 'LSVUZ5B25KN073473', task: '管理任务11', taskContent: '怠速测试222', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '3', taskStatus: '已审核', testid: "2005"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '怠速测试准备', hours: 1, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2006"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '怠速测试', hours: 2, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2007"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-20", carModal: "Octovia", carNum: 'LN6-R13', carVin: 'xxxx2', task: '冷启动舒适性测试', taskContent: '测试总结', hours: 1, role: 'M', personCharge: '吴春军', totalHour: '4', taskStatus: '未审核', testid: "2009"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '混合动力驱动台架准备', hours: 1, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "20010"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '轮胎噪声认可', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2011"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '内部噪声', hours: 2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2018"},
-                {idNumber: "1", laboratory: "四驱转鼓", date: "2020-08-21", carModal: "Lavida", carNum: 'LN6-R15', carVin: 'xxxx4', task: '舒适性测试', taskContent: '内部噪声123', hours: 0.2, role: 'M', personCharge: '杨飞', totalHour: '5', taskStatus: '未审核', testid: "2018"},
-            ];
+        function reloadTable() {
+            $.ajax({
+                type: 'get',
+                url: '/time/work/?manager_id=' + userId,
+                dataType: "json",
+                success: function (data) {
+                    res = data.data;
+                    layui.use(['element', 'table', 'form'], function () {
+                            var element = layui.element,
+                                form = layui.form,
+                                table = layui.table;
+                            table.render({// 数据表格生成
+                                elem: '#qua_standard_table',
+                                height: "full-120",
+                                data: res,
+                                page: {
+                                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
+                                }, //开启分页
+                                limit: 18,
+                                limits: [18, 30],
+                                cols: [
+                                    [{
+                                        field: 'id',
+                                        title: 'Id',
+                                        width: 50,
+                                        align: 'center'
+                                    }, {
+                                        field: 'room',
+                                        title: '实验室',
+                                        width: 140,
+                                        align: 'center'
+                                    }, {
+                                        field: 'creatTime',
+                                        title: '日期',
+                                        width: 110,
+                                        align: 'center'
+                                    }, {
+                                        field: 'carModal',
+                                        title: '车型',
+                                        width: 120,
+                                        align: 'center'
+                                    }, {
+                                        field: 'carNumber',
+                                        title: '车号',
+                                        width: 120,
+                                        align: 'center',
+                                    }, {
+                                        field: 'carVin',
+                                        title: 'Vin',
+                                        width: 240,
+                                        align: 'center',
+                                    }, {
+                                        field: 'taskName',
+                                        title: '任务',
+                                        width: 250,
+                                        align: 'center',
+                                    }, {
+                                        field: 'taskDetail_2',
+                                        title: '任务详细内容',
+                                        width: 320,
+                                        align: 'center',
+                                    }, {
+                                        field: 'taskHour',
+                                        title: '工时',
+                                        width: 60,
+                                        align: 'center',
+                                        templet: setHourState,
+                                    }, {
+                                        field: 'taskRole',
+                                        title: '角色',
+                                        width: 60,
+                                        align: 'center'
+                                    }, {
+                                        field: 'manager',
+                                        title: '负责人',
+                                        width: 120,
+                                        align: 'center'
+                                    }, {
+                                        field: 'totalHour',
+                                        title: '总工时',
+                                        width: 100,
+                                        align: 'center'
+                                    }, {
+                                        field: 'taskStatus',
+                                        title: '任务状态',
+                                        width: 150,
+                                        align: 'center',
+                                        templet: setState,
+                                    },
 
-            table.render({// 数据表格生成
-                elem: '#qua_standard_table',
-                height: "full-120",
-                data: res,
-                page: {
-                    layout: ['count', 'limit', 'prev', 'page', 'next', 'skip']
-                }, //开启分页
-                limit: 20,
-                limits: [10, 20],
-                cols: [
-                    [{
-                        field: 'idNumber',
-                        title: 'Id',
-                        width: 50,
-                        align: 'center'
-                    }, {
-                        field: 'laboratory',
-                        title: '实验室',
-                        width: 120,
-                        align: 'center'
-                    }, {
-                        field: 'date',
-                        title: '日期',
-                        width: 120,
-                        align: 'center'
-                    }, {
-                        field: 'carModal',
-                        title: '车型',
-                        width: 120,
-                        align: 'center'
-                    }, {
-                        field: 'carNum',
-                        title: '车号',
-                        width: 120,
-                        align: 'center',
-                        edit: 'text'
-                    }, {
-                        field: 'carVin',
-                        title: 'Vin',
-                        width: 240,
-                        align: 'center',
-                        edit: 'text'
-                    }, {
-                        field: 'task',
-                        title: '任务',
-                        width: 250,
-                        align: 'center',
-                        edit: 'text'
-                    }, {
-                        field: 'taskContent',
-                        title: '任务详细内容',
-                        width: 320,
-                        align: 'center',
-                        edit: 'text'
-                    }, {
-                        field: 'hours',
-                        title: '工时',
-                        width: 60,
-                        align: 'center'
-                    }, {
-                        field: 'role',
-                        title: '角色',
-                        width: 60,
-                        align: 'center'
-                    }, {
-                        field: 'personCharge',
-                        title: '负责人',
-                        width: 120,
-                        align: 'center'
-                    }, {
-                        field: 'totalHour',
-                        title: '总工时',
-                        width: 100,
-                        align: 'center'
-                    }, {
-                        field: 'taskStatus',
-                        title: '任务状态',
-                        width: 150,
-                        align: 'center',
-                        templet: setState,
-                    },
+                                        {
+                                            align: 'center', rowspan: 2, width: 120, field: 'task', title: '是否数据上传', templet: function (d) {
+                                                return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                                    '<input type="checkbox" name="data_upload" value=' + d.id + ' lay-skin="switch" lay-text="是|否" lay-filter="dataUpload" >' +
+                                                    '</div>';
+                                            }, fixed: 'right'
+                                        },
+                                        {
+                                            align: 'center', rowspan: 2, width: 100, field: 'operation', title: '是否有报告', templet: function (d) {
+                                                return '<div class="layui-breadcrumb" lay-separator="|">' +
+                                                    '<input type="checkbox" name="report_upload" value=' + d.id + ' lay-skin="switch" lay-text="是|否" lay-filter="reportUpload" >' +
+                                                    '</div>';
+                                            }, fixed: 'right'
+                                        },
+                                        {
+                                            align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务内容', templet: function (d) {
+                                                return '<div class="layui-input-line" ><select name="interest" style="overflow:visible !important" lay-filter="aihao"><option value=' + '1' + d.id + ' name="请选择" selected="selected">请选择</option><option value=' + '2' + d.id + ' name="通过">通过</option><option value=' + '3' + d.id + ' name="拒绝">拒绝</option>' +
+                                                    '</select></div>';
+                                            }, fixed: 'right'
+                                        },
 
-                        {
-                            align: 'center', rowspan: 2, width: 120, field: 'task', title: '是否数据上传', templet: function (d) {
-                                return '<div class="layui-breadcrumb" lay-separator="|">' +
-                                    '<input type="checkbox" name="sex" value=' + d.task + ' lay-skin="switch" lay-text="是|否" lay-filter="dataUpload" >' +
-                                    '</div>';
-                            }, fixed: 'right'
-                        },
-                        {
-                            align: 'center', rowspan: 2, width: 100, field: 'operation', title: '是否有报告', templet: function (d) {
-                                return '<div class="layui-breadcrumb" lay-separator="|">' +
-                                    '<input type="checkbox" name="sex" value=' + d.task + ' lay-skin="switch" lay-text="是|否" lay-filter="reportUpload" >' +
-                                    '</div>';
-                            }, fixed: 'right'
-                        },
-                        {
-                            align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务内容', style: 'overflow:visible', templet: function (d) {
-                                return '<div class="layui-input-line" ><select name="interest" lay-filter="aihao"><option value="2">通过</option><option value="1" >拒绝</option>' +
-                                    '</select></div>';
-                            }, fixed: 'right'
-                        },
+                                    ],
+                                ],
+                                done: function (res, curr, count) {
 
-                        // {
-                        //     title: '操作',
-                        //     width:200,
-                        //     toolbar:'#barDemo'
-                        //
-                        // }
-                    ],
-                ],
-                done: function (res, curr, count) {
+                                    {#$(".layui-input-line").css('overflow', 'visible');#}
+                                    element.init();
+                                    $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
+                                    merge(res);//合并单元格
+                                    // $(".layui-table-body, .layui-table-box, .layui-table-cell,.layui-input-line").css('overflow', 'visible');
+                                },
+                            });
+                            var statusArray = [];
+                            form.on('switch(dataUpload)', function (data) {
+                                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                                let obj = {};
+                                obj.id = this.value;
+                                statusArray.map(e => {
+                                    if (this.value.includes(e.id)) {
+                                        let index = statusArray.findIndex(x => x.id === this.value);
+                                        console.log(index);
+                                        if (data.elem.checked == true) {
+                                            statusArray[index].file_status = 2
+                                        } else {
+                                            statusArray[index].file_status = 1
+                                        }
 
-                    // $(".layui-input-line").css('overflow', 'visible');
-                    element.init();
-                    $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
-                    merge(res);//合并单元格
-                    // $(".layui-table-body, .layui-table-box, .layui-table-cell,.layui-input-line").css('overflow', 'visible');
+                                    }
+                                    ;
+                                });
+                                if (statusArray.findIndex(x => x.id === this.value) == -1) {
+                                    if (data.elem.checked == true) {
+                                        obj.file_status = 2
+                                    } else {
+                                        obj.file_status = 1
+                                    }
+                                    statusArray.push(obj);
+
+                                } else {
+
+                                }
+                                ;
+                                console.log(statusArray);
+
+
+                            });
+                            form.on('switch(reportUpload)', function (data) {
+                                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
+                                let obj = {};
+                                obj.id = this.value;
+                                statusArray.map(e => {
+                                    if (this.value.includes(e.id)) {
+                                        let index = statusArray.findIndex(x => x.id === this.value);
+                                        console.log(index);
+                                        if (data.elem.checked == true) {
+                                            statusArray[index].report_status = 2
+                                        } else {
+                                            statusArray[index].report_status = 1
+                                        }
+
+                                    }
+                                    ;
+                                });
+                                if (statusArray.findIndex(x => x.id === this.value) == -1) {
+                                    if (data.elem.checked == true) {
+                                        obj.report_status = 2
+                                    } else {
+                                        obj.report_status = 1
+                                    }
+                                    statusArray.push(obj);
+
+                                } else {
+
+                                }
+                                ;
+                                console.log(statusArray);
+                            });
+
+                            form.on('select(aihao)', function (data) {
+                                let check_status = this.innerHTML;
+                                console.log(data.value);
+                                let taskId = data.value.substr(1);
+                                if (check_status == "拒绝") {
+                                    layer.confirm('确定本条任务审核不通过？', function (index) {
+                                        $.ajax({
+                                            type: 'patch',
+                                            url: '/time/work/' + taskId + '/',
+                                            data: {
+                                                "manager_id": userId,
+                                                "time_status": 3,
+                                                "report_status": 1,
+                                                "file_status": 1,
+                                            },
+                                            success: function (data) {
+                                                layer.alert("处理完成!");
+                                                reloadTable();
+                                            },
+                                            error: function (jqXHR) {
+                                                layer.alert("处理失败!")
+                                            }
+                                        });
+                                        layer.close(index);
+                                    });
+                                } else if (check_status == "通过") {
+                                    layer.confirm('确定本条任务审核通过？', function (index) {
+                                        if (statusArray.findIndex(x => x.id === taskId) == -1) {
+                                            $.ajax({
+                                                type: 'patch',
+                                                url: '/time/work/' + taskId + '/',
+                                                data: {
+                                                    "manager_id": userId,
+                                                    "time_status": 2,
+                                                    "report_status": 1,
+                                                    "file_status": 1,
+                                                },
+                                                success: function (data) {
+                                                    layer.alert("处理完成!");
+                                                    reloadTable();
+                                                },
+                                                error: function (jqXHR) {
+                                                    layer.alert("处理失败!")
+                                                }
+                                            });
+
+                                        } else {
+                                            let index = statusArray.findIndex(x => x.id === taskId);
+                                            if ("report_status" in statusArray[index]) {
+
+                                            } else {
+                                                statusArray[index].report_status = 1
+                                            }
+                                            ;
+                                            if ("file_status" in statusArray[index]) {
+
+                                            } else {
+                                                statusArray[index].file_status = 1
+                                            }
+                                            $.ajax({
+                                                type: 'patch',
+                                                url: '/time/work/' + taskId + '/',
+                                                data: {
+                                                    "manager_id": userId,
+                                                    "time_status": 2,
+                                                    "report_status": statusArray[index].report_status,
+                                                    "file_status": statusArray[index].file_status,
+                                                },
+                                                success: function (data) {
+                                                    layer.alert("处理完成!");
+                                                    reloadTable();
+                                                },
+                                                error: function (jqXHR) {
+                                                    layer.alert("处理失败!")
+                                                }
+                                            });
+                                        }
+                                        ;
+
+
+                                        layer.close(index);
+                                    });
+                                } else {
+
+                                }
+
+
+                            });
+
+                            table.on('tool(qua_standard_table)', function (obj) {
+
+                                if (obj.event === 'qua_standard_edit') {
+                                    layer.msg('添加');
+                                } else if (obj.event === 'qua_standard_del') {
+                                    console.log(obj.data);
+                                    layer.confirm('确定删除本条数据嘛？', function (index) {
+                                        obj.del();
+                                        layer.close(index);
+                                        //向服务端发送删除指令
+                                    });
+                                } else if (obj.event === "qua_standard_sexDemo") {
+                                    console.log(obj);
+                                    layer.confirm('确定删除本条任务嘛？', function () {
+                                        layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
+                                            offset: '6px'
+                                        });
+                                        //向服务端发送删除指令
+                                    });
+
+                                }
+                            });
+                        }
+                    )
+
+                },
+                error: function (jqXHR) {
+                    console.log(jqXHR);
                 }
             });
-            form.on('switch(confirmContent)', function (data) {
-                const status = this.checked;
-                const that = this;
-                layer.confirm('确定删除本条任务嘛？', function (index) {
-                    layer.close(index);
-                    layer.tips(that.value + ' ' + that.name + '：' + status, data.othis);
-                    console.log(data);
-                });
-
-
-            });
-            form.on('switch(dataUpload)', function (data) {
-                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
-                console.log(data);
-            });
-            form.on('switch(reportUpload)', function (data) {
-                layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
-                console.log(data);
-            });
-            form.on('aihao'), function (data) {
-                console.log(data)
-            };
-            table.on('tool(qua_standard_table)', function (obj) {
-
-                if (obj.event === 'qua_standard_edit') {
-                    layer.msg('添加');
-                } else if (obj.event === 'qua_standard_del') {
-                    console.log(obj.data);
-                    layer.confirm('确定删除本条数据嘛？', function (index) {
-                        obj.del();
-                        layer.close(index);
-                        //向服务端发送删除指令
-                    });
-                } else if (obj.event === "qua_standard_sexDemo") {
-                    console.log(obj);
-                    layer.confirm('确定删除本条任务嘛？', function () {
-                        layer.msg('开关checked：' + (this.checked ? 'true' : 'false'), {
-                            offset: '6px'
-                        });
-                        //向服务端发送删除指令
-                    });
-
-                }
-            });
-        })
+        }
 
         function setState(data) {
             let status = data.taskStatus;
@@ -369,7 +685,18 @@
             } else {
                 return "<span style='color: green'>已审核</span>"
             }
-        }
+        };
+
+        function setHourState(data) {
+            let status = data.color;
+            console.log(status);
+            if (status == "0") {
+                return "<span style='color: red'>" + data.taskHour + "</span>"
+            } else {
+                return "<span>" + data.taskHour + "</span>"
+            }
+        };
+
 
         function merge(res) {
             var data = res.data;
@@ -426,4 +753,5 @@
             })
         }
     </script>
+
 {% endblock %}

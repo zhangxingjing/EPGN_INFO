@@ -40,7 +40,7 @@ class WorkTaskSerializer(serializers.ModelSerializer):
         elif data.check_task == 2:
             return '已通过'
         elif data.check_task == 3:
-            return '未通过'
+            return '已拒绝'
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):

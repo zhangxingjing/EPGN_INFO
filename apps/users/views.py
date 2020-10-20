@@ -169,7 +169,7 @@ def home(request):
         "user_update": user_update_files_data,
         "user_items": items,
         "user_task": user_task,
-        # "user_task_info": [task_info.name for task_info in user_task_info],
-        "user_task_info": [time_info.id for time_info in user_check_time],
+        "user_task_info": [task_info.name for task_info in user_task_info],
+        # "user_task_info": [time_info.id for time_info in user_check_time],
     }
     return JsonResponse(user_data)

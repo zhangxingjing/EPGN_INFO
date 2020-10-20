@@ -43,6 +43,7 @@ class WaitViewSet(ViewSet):
                     "detail": test["detail"]
                 })
                 test_manager = test["task_manager"]
+                # test_manager = sorted(test["task_manager"], key=lambda i: i["name"][0]),
 
             manager_obj = TaskDetail.objects.filter(category=2, laboratory=laboratory_obj, parent__id=None)
             managers = TaskDetailSerializer(manager_obj, many=True)
@@ -63,13 +64,13 @@ class WaitViewSet(ViewSet):
                 "taskInfo": [
                     {
                         "test": {
-                            "data": test_data,
-                            "manager": test_manager
+                            "data": sorted(test_data, key=lambda i: i["name"], reverse=True),
+                            "manager": sorted(test_manager, key=lambda x: x.encode("gbk"))
                         }
                     }, {
                         "manage": {
-                            "data": manager_data,
-                            "manager": manage_manager
+                            "data": sorted(manager_data, key=lambda i: i["name"], reverse=True),
+                            "manager": sorted(manage_manager, key=lambda x: x.encode("gbk"))
                         }
                     }
                 ]
@@ -169,21 +170,40 @@ class WorkTaskViewSet(ModelViewSet):
         )
 
     def update(self, request, *args, **kwargs):
+
         # 在这里修改用户的任务状态-->确定一下前端需要修改哪些数据
         try:
-            time_status = request.data["time_status"]
-            file_status = request.data["file_status"]
-            report_status = request.data["report_status"]
-            manager_id = request.data["manager_id"]
-            partial = kwargs.pop('partial', False)
+            with transaction.atomic():  # MySQL的事务，执行回滚
+                time_status = request.data["time_status"]
+                file_status = request.data["file_status"]
+                report_status = request.data["report_status"]
+                manager_id = request.data["manager_id"]
+                partial = kwargs.pop('partial', False)
 
-            instance = self.get_object()
-            instance.check_task = time_status
-            instance.save()
+                instance = self.get_object()
+                instance.check_task = time_status
+                instance.save()
 
-            # serializer = WorkTaskSerializer(instance).data
-            # return Response(serializer)
-            return JsonResponse({"status": True})
+                # 当管理员审核通过/拒绝时，管理员的任务应该少一条
+                # 拒绝的时候，在任务列表中新增一条用户未通过的任务
+
+                # 这里操作数据的时候，必须要确定是哪条数据，然后在对数据进行任务状态的修改
+                Task.objects.get(id=instance.task_id).delete()
+                user = User.objects.get(id=instance.task_user_id)
+
+                if time_status == "2":    # 审核通过
+                    user_new_task = Task.objects.filter(name="工时审核未通过--{}".format(user.username)).first()
+                    if user_new_task:
+                        user_new_task.delete()
+
+                elif time_status == "3":  # 审核未通过
+                    user_old_task = Task(name="工时审核未通过--{}".format(user.username))
+                    user_old_task.save()
+                    user.task.add(user_old_task)
+
+                # serializer = WorkTaskSerializer(instance).data
+                # return Response(serializer)
+                return JsonResponse({"status": True})
         except DatabaseError as e:
             return JsonResponse({"status": False, "msg": e})
 
@@ -295,6 +315,10 @@ class TaskDetailView(ModelViewSet):
             for item in detail_serializer:
                 work = WorkTask.objects.get(id=item["parent"])
                 task_serializer = WorkTaskSerializer(work).data
+
+                # 按照指定规则排序
+                rule = {"已拒绝": 0,"未审核": 1,"已通过": 2}
+
                 result.append({
                     "id": task_serializer["id"],
                     "room": item["laboratory"],  # 试验室
@@ -317,6 +341,7 @@ class TaskDetailView(ModelViewSet):
                     "code": 0,
                     "msg": "数据请求成功！",
                     "count": len(result),
+                    # "data": sorted(result, key=lambda x: rule[x["taskStatus"]])
                     "data": result
                 }
             )

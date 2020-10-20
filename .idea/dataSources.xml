@@ -15,25 +15,5 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="EPGN_TEST" uuid="9a8fda86-e4de-433b-96ec-b7f339aef9e2">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_TEST</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="MySQL - EPGN_INFO@localhost" uuid="a0df333e-e20f-4d35-b82b-04618140430b">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="Django default" uuid="f9b6a821-4042-41d5-85eb-4ba7a42a087b">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>$PROJECT_DIR$/settings/dev.py</remarks>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:3306/EPGN_INFO</jdbc-url>
-    </data-source>
   </component>
 </project>

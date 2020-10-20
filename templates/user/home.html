@@ -73,6 +73,7 @@
         .day {
             background-color: #FFB800;
         }
+
         .week {
             background-color: #1E9FFF;
         }
@@ -160,6 +161,8 @@
             white-space: nowrap;
             font-size: 20px;
             margin-bottom: 5px;
+            /* padding-right: 20px; */
+            /* background: rgb(57, 170, 226) url("../image/close.gif") right 9px no-repeat */
         }
     </style>
 {% endblock %}
@@ -237,14 +240,18 @@
                     <div class="time-frequency week">周</div>
                 </div>
                 <div class="task-list" id="task_list">
+
                 </div>
             </div>
         </div>
         <div class="layui-form">
             <table class="layui-table" style="background: white;width: 94.2%;margin-left: 1%" id="file_info"
                    lay-filter="test">
+
             </table>
         </div>
+
+
     </div>
     <div id="shadowlayer" style="width:100%;
     height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
@@ -268,6 +275,7 @@
 {% block javascript %}
     <script src="{% static 'layui/layui.js' %}"></script>
     <script src="{% static 'js/echart.js' %}"></script>
+
     <script>
         var user_id = sessionStorage.user_id;
         $.ajax({
@@ -281,9 +289,19 @@
                 $("#totaldownload").text(result.user_download);
                 $("#tasknumber").text(result.user_task);
                 var vtask = result.user_task_info;
-                $("#task_list").append("<div><a href='/time/check_/'>" + "1." + "工时审核" + " - " + vtask.length + "</a> </div>");
+                if (vtask.length == 0) {
+
+                } else {
+                    $("#task_list").append("<div ><a href='/time/check_/' style='color:red'>" + "1." + "工时审核" + " -- " + vtask.length + "条</a> </div>");
+                }
+
+                /*for (let j = 0; j < vtask.length; j++) {
+                    let k = j + 1;
+                    $("#task_list").append("<div> " + k + ". " + vtask[j] + " </div>");
+                }*/
             }
         });
+
         var myChart = echarts.init(document.getElementById('main'));
 
         // 指定图表的配置项和数据
@@ -316,6 +334,7 @@
                     data: []
                 }]
         };
+
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
         var myChart2 = echarts.init(document.getElementById('main2'));
@@ -370,6 +389,7 @@
                 element = layui.element;
         });
 
+
         layui.use('table', function () {
             var $ = layui.$,
                 table = layui.table;
@@ -381,6 +401,7 @@
                 page: true, // 是否分页
                 limit: 30, // 一页显示多少条数据
                 height: 'full-130', // 表格的高度
+                {#defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏#}
                 toolbar: '#toolbarDemo',
                 cols: [
                     [{
@@ -414,6 +435,7 @@
                         title: '文件名',
                         width: '35%',
                         sort: true,
+
                     }, {
                         field: 'other_need',
                         title: '其他',
@@ -424,6 +446,7 @@
                         width: '8.32%'
                     }]
                 ],
+
             });
 
             // 表格重载动作
@@ -457,7 +480,9 @@
                     });
                 }
             };
+
             //监听复选框点击
+
         });
 
         var filenameArr = [];
@@ -481,7 +506,9 @@
                                 layer.msg("请选择需要分析计算的文件！")
                             } else {
                                 for (let j = 0; j < add_arrayData1.length; j++) {
+
                                     if (add_arrayData1[j]["file_status"] == "否") {
+
                                         confirmstatus = 1;
                                         break;
                                     } else {
@@ -517,9 +544,11 @@
                                             nameSession = JSON.stringify(nameArray);
                                             sessionStorage.setItem("uploadnewname", nameSession);
                                         }
+
                                     });
                                 }
                             }
+                            ;
                             break;
                         case 'deleteFile':
                             var delete_arrayData = checkStatus.data;
@@ -564,18 +593,20 @@
                                             page: true, // 是否分页
                                             limit: 30, // 一页显示多少条数据
                                             height: 'full-130', // 表格的高度
+                                            {#defaultToolbar: ['filter', 'print', 'exports'], // 表头右侧工具栏#}
                                             toolbar: '#toolbarDemo',
-                                            cols: [[
-                                                {
+                                            cols: [
+                                                [{
                                                     type: 'checkbox',
                                                     LAY_CHECKED: false,
-                                                }, {
-                                                    field: 'carmodel',
-                                                    title: '车型',
-                                                    width: '8%',
-                                                    sort: true,     // 开启排序
-                                                    align: 'center'   // 居中显示
-                                                }, {
+                                                },
+                                                    {
+                                                        field: 'carmodel',
+                                                        title: '车型',
+                                                        width: '8%',
+                                                        sort: true,     // 开启排序
+                                                        align: 'center'   // 居中显示
+                                                    }, {
                                                     field: 'car_num',
                                                     title: '车辆编号',
                                                     width: '8%',
@@ -596,6 +627,7 @@
                                                     title: '文件名',
                                                     width: '35%',
                                                     sort: true,
+
                                                 }, {
                                                     field: 'other_need',
                                                     title: '其他',
@@ -606,6 +638,7 @@
                                                     width: '8.32%'
                                                 }]
                                             ],
+
                                         });
                                     },
                                     error: function (result) {
@@ -675,6 +708,16 @@
                 filenameArr = [];
                 sessionStorage.setItem("sessionType", 1);
                 window.open('/calculate/parse/')
+                // $.ajax({
+                //     url: /parsefilelist/,
+                //     dataType: "json",
+                //     data: JSON.stringify({"fileList": filenameArr}),
+                //     type: "post",
+                //     success: function (result) {
+                //         $('#jumpbox').html(result);
+                //         $('#jumpbox').modal('show');
+                //     }
+                // });
             })
         });
 

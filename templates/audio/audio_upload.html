@@ -212,6 +212,7 @@
                     </div>
 
 
+
                     <div v-show="Chassis_comfort">
                         <div><span></span></div>
                         <el-select v-model="comfort_road_condition" placeholder="选择路面">
@@ -224,6 +225,14 @@
                     <div v-show="Chassis_comfort">
                         <div><span></span></div>
                         <el-input v-model="comfort_speed" clearable placeholder="填写车速"
+                        ></el-input>
+                    </div>
+
+
+
+                    <div v-show="Other_condition">
+                        <div><span></span></div>
+                        <el-input v-model="other_condition" clearable placeholder="详细描述"
                         ></el-input>
                     </div>
 
@@ -441,6 +450,8 @@
                         roll_road_condition: '',
                         roll_speed: '',
                         Chassis_comfort: false,
+                        Other_condition:false,
+                        other_condition:'',
                         comfort_road_condition: '',
                         comfort_speed: '',
                         filelist_hdf: [],
@@ -536,26 +547,37 @@
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
+                            this.Other_condition = false;
                         } else if (this.condition == "匀速") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = true;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
+                            this.Other_condition = false;
                         } else if (this.condition == "滚动噪声/轮胎噪声") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = true;
                             this.Chassis_comfort = false;
+                            this.Other_condition = false;
                         } else if (this.condition == "底盘舒适性") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = true;
+                            this.Other_condition = false;
+                        }else if (this.condition == "其他") {
+                            this.Accelerate_show = false;
+                            this.Uniform_speed = false;
+                            this.Rolling_noise = false;
+                            this.Chassis_comfort = false;
+                            this.Other_condition = true;
                         } else {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
+                            this.Other_condition = false;
                         }
                     },
                     submitupload() {
@@ -673,6 +695,9 @@
                             formData.append('condition', condition_list);
                         } else if (this.condition == "底盘舒适性") {
                             let condition_list = this.condition + "-" + this.comfort_road_condition + "-" + this.comfort_speed + "km/h";
+                            formData.append('condition', condition_list);
+                        } else if (this.condition == "其他") {
+                            let condition_list = this.condition + "-" + this.other_condition;
                             formData.append('condition', condition_list);
                         } else {
                             formData.append('condition', this.condition);

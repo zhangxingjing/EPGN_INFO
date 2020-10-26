@@ -88,12 +88,21 @@
                             </el-select>
                         </div>
 
-                        <div style="display: flex">
-                            <div style="width: 100px;text-align: center">日期:</div>
-                            <el-date-picker v-model="date_value" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
+                        <div style="display: flex;">
+                            <div style="width: 82px;text-align: center;margin-left: 5px">日期:</div>
+                            <el-date-picker
+                                    v-model="date_value"
+                                    type="date"
+                                    format="yyyy-MM-dd"
+                                    value-format="yyyy-MM-dd"
+                                    @change="dateChange"
+                                    placeholder="选择日期"
+                            >
+
+                            </el-date-picker>
                         </div>
 
-                        <div style="display: flex;margin-left: 10px">
+                        <div style="display: flex;margin-left: 25px">
                             <div style="width: 100px;text-align: center">总工时:</div>
                             <div v-html="total_hour">{{ total_hour }}</div>
                         </div>
@@ -125,7 +134,7 @@
                         </div>
                     </div>
 
-                    <div style="margin-left: 18%;display: flex;justify-content: center;margin-bottom: 20px;padding: 5px;width: 66%;margin-top: 20px">
+                    <div style="margin-left: 17%;display: flex;justify-content: center;margin-bottom: 20px;padding: 5px;width: 66%;margin-top: 20px">
                         <el-button type="primary" @click="addTask" style="width: 100%">+ 添加任务</el-button>
                     </div>
                     <div style="margin-left: 18%;display: flex;justify-content: center;margin-top: 20px;padding: 5px;width: 64%;margin-top: 20px">
@@ -135,7 +144,8 @@
                 </div>
             </div>
 
-            <div id="qua_standard_table" lay-filter="qua_standard_table"></div>
+            <div id="qua_standard_table" lay-filter="qua_standard_table">
+            </div>
 
             <script type="text/html" id="barDemo">
                 <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
@@ -193,6 +203,39 @@
                     this.$options.methods.calculateHours(that);
                 },
                 submitTask() {
+                    if (this.carModal == "") {
+                        this.$message({
+                            message: '请选择车型信息!',
+                            type: 'warning'
+                        });
+                        return
+                    }
+                    ;
+                    if (this.carVin == "") {
+                        this.$message({
+                            message: '请填写Vin码信息!!',
+                            type: 'warning'
+                        });
+                        return
+                    }
+                    ;
+                    if (this.taskName == "") {
+                        this.$message({
+                            message: '请填写任务名称!',
+                            type: 'warning'
+                        });
+                        return
+                    }
+                    ;
+                    if (this.role == "") {
+                        this.$message({
+                            message: '请选择项目负责人!',
+                            type: 'warning'
+                        });
+                        return
+                    };
+
+
                     this.loading = true;
                     const that = this;
                     $.ajax({
@@ -230,6 +273,9 @@
                     this.$forceUpdate();
                     const that = this;
                     this.$options.methods.calculateHours(that);
+                },
+                dateChange(val) {
+                    this.date_value = val;
                 },
                 changeRole(index) {
                     this.$forceUpdate();
@@ -405,22 +451,29 @@
                         },
                     });
                     table.on('tool(qua_standard_table)', function (obj) {
-                        if (obj.event === 'qua_standard_edit') {
-                            layer.msg('添加');
-                        } else if (obj.event === 'qua_standard_del') {
+                        if (obj.event === 'qua_standard_del') {
                             layer.confirm('确定删除本条数据？', function (index) {
-                                let deleteId = obj.data.id;
-                                $.ajax({
-                                    type: 'delete',
-                                    url: '/time/work/' + deleteId + '/',
-                                    success: function (data) {
-                                        layer.alert("数据删除成功!");
-                                        reloadTable();
-                                    },
-                                    error: function (jqXHR) {
-                                        layer.alert("数据删失败!")
-                                    }
-                                });
+                                let task_status = obj.data.taskStatus;
+                                if (task_status == "未审核") {
+                                    let deleteId = obj.data.id;
+                                    $.ajax({
+                                        type: 'delete',
+                                        url: '/time/work/' + deleteId + '/',
+                                        success: function (data) {
+                                            layer.alert("数据删除成功!");
+                                            reloadTable();
+                                        },
+                                        error: function (jqXHR) {
+                                            layer.alert("数据删失败!")
+                                        }
+                                    });
+                                    return;
+                                } else {
+                                    layer.alert("数据无法删除!!");
+                                    return;
+                                }
+
+
                                 layer.close(index);
                             });
                         }
@@ -531,22 +584,29 @@
                             },
                         });
                         table.on('tool(qua_standard_table)', function (obj) {
-                            if (obj.event === 'qua_standard_edit') {
-                                layer.msg('添加');
-                            } else if (obj.event === 'qua_standard_del') {
+                            if (obj.event === 'qua_standard_del') {
                                 layer.confirm('确定删除本条数据？', function (index) {
-                                    let deleteId = obj.data.id;
-                                    $.ajax({
-                                        type: 'delete',
-                                        url: '/time/work/' + deleteId + '/',
-                                        success: function (data) {
-                                            layer.alert("数据删除成功!");
-                                            reloadTable();
-                                        },
-                                        error: function (jqXHR) {
-                                            layer.alert("数据删失败!")
-                                        }
-                                    });
+                                    let task_status = obj.data.taskStatus;
+                                    if (task_status == "未审核") {
+                                        let deleteId = obj.data.id;
+                                        $.ajax({
+                                            type: 'delete',
+                                            url: '/time/work/' + deleteId + '/',
+                                            success: function (data) {
+                                                layer.alert("数据删除成功!");
+                                                reloadTable();
+                                            },
+                                            error: function (jqXHR) {
+                                                layer.alert("数据删失败!")
+                                            }
+                                        });
+                                        return;
+                                    } else {
+                                        layer.alert("数据无法删除!!");
+                                        return;
+                                    }
+
+
                                     layer.close(index);
                                 });
                             }

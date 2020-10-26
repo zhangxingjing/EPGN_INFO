@@ -319,9 +319,9 @@
                         this.worktime = response.data.worktime;
                     })
                     .catch(error => {
-                        if (error.response.status == 401 || error.response.status == 403) {
-                            location.href = {% static login_2.html %};
-                        }
+                        {#if (error.response.status == 401 || error.response.status == 403) {#}
+                        {#    location.href = {% static login_2.html %};#}
+
                     });
             } else {
                 location.href = '/user/home/';

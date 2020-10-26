@@ -32,15 +32,18 @@
             width: 90%;
             margin-left: 5%;
         }
-        .layui-form-select dl{
+
+        .layui-form-select dl {
             z-index: 9999;
         }
 
-        .layui-table-cell {
-            height: auto;
-        {#overflow: visible;#} text-overflow: inherit;
-            white-space: normal;
-        }
+
+        {#.layui-table-cell {#}
+        {#    height: auto;#}
+        {#    text-overflow: inherit;#}
+        {#    white-space: normal;#}
+
+
     </style>
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
@@ -111,15 +114,10 @@
                             limit: 18,
                             limits: [18, 30],
                             cols: [
-                                [{
-                                    field: 'id',
-                                    title: 'Id',
-                                    width: 50,
-                                    align: 'center'
-                                }, {
+                                [ {
                                     field: 'room',
                                     title: '实验室',
-                                    width: 140,
+                                    width: 130,
                                     align: 'center'
                                 }, {
                                     field: 'creatTime',
@@ -129,27 +127,27 @@
                                 }, {
                                     field: 'carModal',
                                     title: '车型',
-                                    width: 120,
+                                    width: 125,
                                     align: 'center'
                                 }, {
                                     field: 'carNumber',
                                     title: '车号',
-                                    width: 120,
+                                    width: 110,
                                     align: 'center',
                                 }, {
                                     field: 'carVin',
                                     title: 'Vin',
-                                    width: 240,
+                                    width: 140,
                                     align: 'center',
                                 }, {
                                     field: 'taskName',
                                     title: '任务',
-                                    width: 250,
+                                    width: 240,
                                     align: 'center',
                                 }, {
                                     field: 'taskDetail_2',
                                     title: '任务详细内容',
-                                    width: 320,
+                                    width: 175,
                                     align: 'center',
                                 }, {
                                     field: 'taskHour',
@@ -163,23 +161,11 @@
                                     width: 60,
                                     align: 'center'
                                 }, {
-                                    field: 'manager',
-                                    title: '负责人',
-                                    width: 120,
-                                    align: 'center'
-                                }, {
                                     field: 'totalHour',
                                     title: '总工时',
-                                    width: 100,
+                                    width: 90,
                                     align: 'center'
-                                }, {
-                                    field: 'taskStatus',
-                                    title: '任务状态',
-                                    width: 150,
-                                    align: 'center',
-                                    templet: setState,
                                 },
-
                                     {
                                         align: 'center', rowspan: 2, width: 120, field: 'task', title: '是否数据上传', templet: function (d) {
                                             return '<div class="layui-breadcrumb" lay-separator="|">' +
@@ -212,6 +198,10 @@
                             done: function (res, curr, count) {
 
                                 // $(".layui-input-line").css('overflow', 'visible');
+                                $(".layui-table-body").css('overflow', 'visible');
+                                 $(".layui-table-box").css('overflow-x', 'scroll');
+                                  $(".layui-table-box").css('overflow-y', 'visible');
+                                {#$(".layui-table-body").css('overflow-x', 'auto');#}
                                 element.init();
                                 $('#qua_standard_table').siblings('div').find('dl').find('.layui-this').click();//模拟点击 初始化数据
                                 merge(res);//合并单元格
@@ -221,7 +211,6 @@
                         });
                         var statusArray = [];
                         form.on('switch(dataUpload)', function (data) {
-                            layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
                             let obj = {};
                             obj.id = this.value;
                             statusArray.map(e => {
@@ -254,7 +243,6 @@
 
                         });
                         form.on('switch(reportUpload)', function (data) {
-                            layer.tips(this.value + ' ' + this.name + '：' + data.elem.checked, data.othis);
                             let obj = {};
                             obj.id = this.value;
                             statusArray.map(e => {
@@ -266,9 +254,7 @@
                                     } else {
                                         statusArray[index].report_status = 1
                                     }
-
-                                }
-                                ;
+                                };
                             });
                             if (statusArray.findIndex(x => x.id === this.value) == -1) {
                                 if (data.elem.checked == true) {
@@ -277,9 +263,7 @@
                                     obj.report_status = 1
                                 }
                                 statusArray.push(obj);
-
                             } else {
-
                             }
                             ;
                             console.log(statusArray);
@@ -434,12 +418,12 @@
             var mark = 1; //这里涉及到简单的运算，mark是计算每次需要合并的格子数
             var _number = 1;//保持序号列数字递增
             var columsName = ['idNumber', 'laboratory', 'date', 'carModal', 'carNum', 'carVin', 'task', 'personCharge', 'totalHour', 'taskStatus', 'operation'];//需要合并的列名称
-            var columsIndex = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13,];//需要合并的列索引值
+            var columsIndex = [0, 1, 2, 3, 4, 5, 9, 10, 11, 12,];//需要合并的列索引值
             var mergeCondition = 'id';//需要合并的 首要条件  在这个前提下进行内容相同的合并
             // var tdArrL = $('.layui-table-fixed-l > .layui-table-body').find("tr");//序号列左定位产生的table tr
             var tdArrR = $('.layui-table-fixed-r > .layui-table-body').find("tr");//操作列定右位产生的table tr
             var tt = $('.layui-table-fixed-r > .layui-table-body');
-            tt.find(".laytable-cell-1-0-15").css("overflow", "visible");
+            tt.find(".laytable-cell-1-0-12").css("overflow", "visible");
             for (var k = 0; k < columsName.length; k++) { //这里循环所有要合并的列
                 var trArr = $(".layui-table-main>.layui-table").find("tr");//所有行
                 for (var i = 1; i < res.data.length; i++) { //这里循环表格当前的数据
@@ -471,13 +455,13 @@
 
             //操作左右定位列的表格
             $.each($("#qua_standard_table").siblings('.layui-table-view').find('.layui-table-main>.layui-table').find("tr"), function (i, v) {
-                if ($(v).find('td').eq(6).css('display') === 'none') {
+                if ($(v).find('td').eq(5).css('display') === 'none') {
                     // tdArrL.eq(i).find('td').css('display','none');
                     tdArrR.eq(i).find('td').css('display', 'none');
                 } else {
                     // tdArrL.eq(i).find('td').find('.laytable-cell-numbers').html(_number++);
                     // tdArrL.eq(i).find('td').css('height',$(v).find('td').eq(2)[0].clientHeight);
-                    tdArrR.eq(i).find('td').css('height', $(v).find('td').eq(6)[0].clientHeight);
+                    tdArrR.eq(i).find('td').css('height', $(v).find('td').eq(5)[0].clientHeight);
 
                 }
             })

@@ -10,7 +10,7 @@
         }
 
         .content_right {
-            padding: 0 20px;
+            /* padding: 0 20px; */
             width: 90%;
             line-height: 40px;
             margin-left: 5%;
@@ -33,11 +33,9 @@
             margin-left: 5%;
         }
 
-        .layui-table-cell {
-            height: auto;
-        {#overflow: visible;#} text-overflow: inherit;
-            white-space: normal;
-        }
+
+
+
     </style>
     <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
     <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
@@ -156,7 +154,7 @@
                                         }, fixed: 'right'
                                     },
                                     {
-                                        align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务', templet: function (d) {
+                                        align: 'center', rowspan: 2, width: 140, field: 'testid', title: '确认任务内容', templet: function (d) {
                                             return '<div class="layui-input-line" ><select name="interest" lay-filter="aihao"><option value=' + '1' + d.id + ' name="请选择" selected="selected">请选择</option><option value=' + '2' + d.id + ' name="通过">通过</option><option value=' + '3' + d.id + ' name="拒绝">拒绝</option>' +
                                                 '</select></div>';
                                         }, fixed: 'right'

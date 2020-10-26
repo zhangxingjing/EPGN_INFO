@@ -85,7 +85,7 @@
                             icon: 3,
                         }, function (index) {
                             $.ajax({
-                                url: "/bug/info/" + obj.data["id"],
+                                url: "/bug/info/" + obj.data["pk"],
                                 dataType: "html",
                                 method: "DELETE",
                                 success: layer.msg('删除成功！', {icon: 1})
@@ -108,7 +108,7 @@
                         shade: 0.8,
                         anim: 0,    // 显示动画
                         area: ['80%', '60%'],
-                        content: '/bug/info/' + data["id"],
+                        content: '/bug/info/' + data["pk"],
                     });
                 }
             })

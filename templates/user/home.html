@@ -196,6 +196,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="tips-block">
                 <div class="tips-block-title">
                     <div>文件下载量</div>
@@ -239,15 +240,18 @@
                     <div class="time-frequency week">周</div>
                 </div>
                 <div class="task-list" id="task_list">
-
+                    <div id="timeWork_save" style="display: none"><a href="/time/save/">工时下载</a></div>
                 </div>
             </div>
         </div>
         <div class="layui-form">
             <table class="layui-table" style="background: white;width: 94.2%;margin-left: 1%" id="file_info"
                    lay-filter="test">
+
             </table>
         </div>
+
+
     </div>
     <div id="shadowlayer" style="width:100%;
     height: 100%;position:absolute;background:rgba(0,0,0,.5);z-index: 1000;display: none;top:0px"></div>
@@ -273,9 +277,7 @@
     <script src="{% static 'js/echart.js' %}"></script>
 
     <script>
-        var userList = ["22", "34"] // 试验室人员的列表
-        var user_id = sessionStorage.user_id;
-
+        var userList = ["22", "39"];  // 提交工时表格的用户列表
         function isInArray(arr, value) {
             for (var i = 0; i < arr.length; i++) {
                 if (value === arr[i]) {
@@ -285,7 +287,17 @@
             return false;
         }
 
-        var isManager = isInArray(userList, user_id)
+        var user_id = sessionStorage.user_id;
+        var userName = sessionStorage.username;
+        var isManager = isInArray(userList, user_id);
+        var saveManager=["束元","官明超"];
+        if(saveManager.includes(username)){
+            document.getElementById('timeWork_save').style.display='block';
+        }
+        else{
+
+        }
+
         $.ajax({
             url: "/user/home/",
             dataType: "json",
@@ -301,9 +313,9 @@
 
                 } else {
                     if (isManager) {
-                        $("#task_list").append("<div ><a href='/time/submit/' style='color:red'>" + "1." + "工时审核" + " -- " + vtask.length + "条</a> </div>");
+                        $("#task_list").append("<div ><a href='/time/submit/' style='color:red'>" + "1. " + "工时审核" + " -- " + vtask.length + "条</a> </div>");
                     } else {
-                        $("#task_list").append("<div ><a href='/time/check_/' style='color:red'>" + "1." + "工时审核" + " -- " + vtask.length + "条</a> </div>");
+                        $("#task_list").append("<div ><a href='/time/check_/' style='color:red'>" + "1. " + "工时审核" + " -- " + vtask.length + "条</a> </div>");
                     }
                 }
 

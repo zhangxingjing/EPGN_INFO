@@ -1,20 +1,21 @@
+import datetime
 import json
 import os
 
 import xlwt
+from django.db import transaction, DatabaseError
 from django.db.models import Q
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import render
-from users.models import User, Task
-from django.http import JsonResponse
-from fileinfo.models import Platform
 from django.utils.http import urlquote
 from rest_framework.response import Response
-from django.db import transaction, DatabaseError
-from fileinfo.serializers import CarModelSerializer
-from .models import Laboratory, WorkTask, TaskDetail
 from rest_framework.viewsets import ViewSet, ModelViewSet
+
+from fileinfo.models import Platform
+from fileinfo.serializers import CarModelSerializer
+from users.models import User, Task
+from .models import Laboratory, WorkTask, TaskDetail
 from .serializers import LaboratorySerializer, WorkTaskSerializer, TaskDetailSerializer
-from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
 
 
 class WaitViewSet(ViewSet):
@@ -191,7 +192,7 @@ class WorkTaskViewSet(ModelViewSet):
                 Task.objects.get(id=instance.task_id).delete()
                 user = User.objects.get(id=instance.task_user_id)
 
-                if time_status == "2":    # 审核通过
+                if time_status == "2":  # 审核通过
                     user_new_task = Task.objects.filter(name="工时审核未通过--{}".format(user.username)).first()
                     if user_new_task:
                         user_new_task.delete()
@@ -206,6 +207,13 @@ class WorkTaskViewSet(ModelViewSet):
                 return JsonResponse({"status": True})
         except DatabaseError as e:
             return JsonResponse({"status": False, "msg": e})
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+
+        Task.objects.get(id=instance.task_id).delete()
+        return JsonResponse({"status": True})
 
 
 class TaskDetailView(ModelViewSet):
@@ -234,7 +242,7 @@ class TaskDetailView(ModelViewSet):
                     hours=request.data["totalHour"],
                     car_number=request.data["carNum"],
                     task_title=request.data["taskName"],
-                    create_time=request.data["creatTime"],
+                    create_time=datetime.datetime.strptime(request.data["creatTime"], '%Y-%m-%d').date(),
                     task_manager=User.objects.get(username=request.data["manager"]),
                     task_user=User.objects.get(username=request.data["userId"]),
                     car_model=Platform.objects.get(name=request.data["carModal"]),
@@ -317,7 +325,7 @@ class TaskDetailView(ModelViewSet):
                 task_serializer = WorkTaskSerializer(work).data
 
                 # 按照指定规则排序
-                rule = {"已拒绝": 0,"未审核": 1,"已通过": 2}
+                rule = {"已拒绝": 0, "未审核": 1, "已通过": 2}
 
                 result.append({
                     "id": task_serializer["id"],
@@ -409,7 +417,10 @@ class CheckWorkTime(ModelViewSet):
         except Exception as e:
             return JsonResponse({"status": False, "msg": e})
 
-
+# 姜怡伊
+# 姜婷怡
+# 姜亦倩
+# 姜
 def save_xls_download(request):
     """
     这里如何触发：

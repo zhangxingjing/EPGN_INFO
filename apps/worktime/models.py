@@ -33,7 +33,7 @@ class WorkTask(models.Model):
     vin = models.CharField(max_length=50, verbose_name="Vin码")
     hours = models.CharField(max_length=50, verbose_name="总工时")
     task_title = models.CharField(max_length=255, verbose_name="任务名称")
-    create_time = models.DateField(auto_now_add=True, verbose_name="创建时间")
+    create_time = models.DateField(verbose_name="创建时间")
     check_data = models.BooleanField(default=False, verbose_name="确认数据上传")
     check_report = models.BooleanField(default=False, verbose_name="确认报告状况")
     car_number = models.CharField(max_length=50, null=True, blank=True, verbose_name="车号")

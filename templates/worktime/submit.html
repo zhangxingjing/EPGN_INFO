@@ -88,6 +88,11 @@
                             </el-select>
                         </div>
 
+                        <div style="display: flex">
+                            <div style="width: 100px;text-align: center">日期:</div>
+                            <el-date-picker v-model="date_value" type="date" format="yyyy-MM-dd" value-format="yyyy-MM-dd" placeholder="选择日期"></el-date-picker>
+                        </div>
+
                         <div style="display: flex;margin-left: 10px">
                             <div style="width: 100px;text-align: center">总工时:</div>
                             <div v-html="total_hour">{{ total_hour }}</div>

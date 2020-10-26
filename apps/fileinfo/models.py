@@ -75,6 +75,8 @@ class GearBox(models.Model):
         db_table = 'tb_car_gearbox'  # corresponding data table name
         verbose_name_plural = verbose_name = '变速箱信息'
 
+    def __str__(self):
+        return self.name
 
 # channel
 class Channel(models.Model):

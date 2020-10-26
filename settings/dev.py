@@ -1,6 +1,8 @@
+import datetime
 import os
 import sys
-import datetime
+import time
+
 from utils import log_theme
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,10 +12,11 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-ALLOWED_HOSTS = ['*', 'localhost','192.168.43.230']
+ALLOWED_HOSTS = ['*', 'localhost', '192.168.43.230']
 
 # 子应用
 INSTALLED_APPS = [
+    'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -358,3 +361,71 @@ TEST_CATEGORY = (
     (1, '测试'),
     (2, '管理')
 )
+
+# simpleui 使用
+SIMPLEUI_HOME_INFO = False  # 服务器信息
+SIMPLEUI_ANALYSIS = False  # 不收集分析信息
+# SIMPLEUI_HOME_TITLE = '百度一下你就知道'    # 首页标题
+SIMPLEUI_LOGO = 'http://127.0.0.1:8899/static/image/favicon.ico'    # LOGO
+
+
+# 自定义图标
+SIMPLEUI_ICON = {
+    'Users': 'fab fa-apple',
+    '任务信息': 'fas fa-user-tie'
+}
+
+# far fa-circle
+SIMPLEUI_CONFIG = {
+    'system_keep': False,
+    'menu_display': ['Audio', 'Bug', 'Fileinfo', 'Users', 'Worktime'],
+    'dynamic': True,
+    'menus': [
+        {
+            'app': 'Audio',
+            'name': 'Audio',
+            'icon': 'fa fa-audio-description',
+            'models': [
+                {'name': '抱怨工况', 'icon': 'far fa-circle', 'url': 'audio/status/'},
+                {'name': '抱怨描述', 'icon': 'far fa-circle', 'url': 'audio/description/'},
+                {'name': '抱怨音频', 'icon': 'far fa-circle', 'url': 'audio/audio/'},
+                {'name': '抱怨频率', 'icon': 'far fa-circle', 'url': 'audio/frequency/'},
+            ]
+        }, {
+            'app': 'Bug',
+            'name': 'Bug',
+            'icon': 'fa fa-bug',
+            'models': [
+                {'name': '错误信息', 'icon': 'far fa-circle', 'url': 'bug/bug/'},
+                {'name': '错误分类', 'icon': 'far fa-circle', 'url': 'bug/category/'},
+            ]
+        }, {
+            'name': 'Fileinfo',
+            'icon': 'fa fa-car',
+            'models': [
+                {'name': '专业方向-工况', 'icon': 'far fa-circle', 'url': 'fileinfo/direction/'},
+                {'name': '动力总成-功率', 'icon': 'far fa-circle', 'url': 'fileinfo/propulsionpower/'},
+                {'name': '变速箱信息', 'icon': 'far fa-circle', 'url': 'fileinfo/gearbox/'},
+                {'name': '平台-车型', 'icon': 'far fa-circle', 'url': 'fileinfo/platform/'},
+                {'name': '汽车数据信息', 'icon': 'far fa-circle', 'url': 'fileinfo/fileinfo/'},
+                {'name': '通道-其他写法', 'icon': 'far fa-circle', 'url': 'fileinfo/channel/'},
+            ]
+        }, {
+            'name': 'Users',
+            'icon': 'fa fa-user',
+            'models': [
+                {'name': '任务信息', 'icon': 'far fa-circle', 'url': 'users/task/'},
+                {'name': '用户信息', 'icon': 'far fa-circle', 'url': 'users/user/'},
+                {'name': '部门信息', 'icon': 'far fa-circle', 'url': 'users/section/'},
+            ]
+        }, {
+            'name': 'Worktime',
+            'icon': 'fa fa-calendar',
+            'models': [
+                {'name': '工时信息', 'icon': 'far fa-circle', 'url': 'worktime/worktask/'},
+                {'name': '试验内容', 'icon': 'far fa-circle', 'url': 'worktime/taskdetail/'},
+                {'name': '试验室信息', 'icon': 'far fa-circle', 'url': 'worktime/laboratory/'},
+            ]
+        }
+    ]
+}

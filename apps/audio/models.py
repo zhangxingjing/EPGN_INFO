@@ -23,6 +23,8 @@ class Frequency(models.Model):
         db_table = 'tb_audio_frequency'
         verbose_name_plural = verbose_name = '频率'
 
+    def __str__(self):
+        return self.name
 
 class Status(models.Model):
     id = models.AutoField(primary_key=True)
@@ -33,6 +35,8 @@ class Status(models.Model):
         db_table = 'tb_audio_status'
         verbose_name_plural = verbose_name = '抱怨工况'
 
+    def __str__(self):
+        return self.name
 
 class Audio(models.Model):
     """

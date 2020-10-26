@@ -9,11 +9,11 @@ class CategoryAdmin():
     list_display_links = ['name', ]
 
 
-@xadmin.sites.register(Developer)
-class DeveloperAdmin():
-    list_display = ['id', 'name']
-    search_fields = ['name', ]
-    list_display_links = ['name', ]
+# @xadmin.sites.register(Developer)
+# class DeveloperAdmin():
+#     list_display = ['id', 'name']
+#     search_fields = ['name', ]
+#     list_display_links = ['name', ]
 
 
 @xadmin.sites.register(Bug)

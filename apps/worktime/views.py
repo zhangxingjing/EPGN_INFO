@@ -417,10 +417,7 @@ class CheckWorkTime(ModelViewSet):
         except Exception as e:
             return JsonResponse({"status": False, "msg": e})
 
-# 姜怡伊
-# 姜婷怡
-# 姜亦倩
-# 姜
+
 def save_xls_download(request):
     """
     这里如何触发：

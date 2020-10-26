@@ -1,4 +1,5 @@
 import xadmin
+from django.contrib import admin
 from django.conf.urls import url, include
 from rest_framework_jwt.views import obtain_jwt_token
 from django.views.generic.base import TemplateView, RedirectView
@@ -6,7 +7,8 @@ from users.utils import jwt_response_payload_handler
 
 urlpatterns = [
     # 站点管理
-    url(r'^admin/', xadmin.site.urls, name="xadmin"),
+    # url(r'^admin/', xadmin.site.urls, name="xadmin"),
+    url(r'^admin/', admin.site.urls, name="admin"),
 
     # 显示图片的请求 ==> /favicon.ico
     url(r'^favicon\.ico$', RedirectView.as_view(url=r'static/image/favicon.ico')),
@@ -34,3 +36,7 @@ urlpatterns = [
 ]
 
 handler404 = 'script.views.pageNotFound'
+
+# 修改admin中的标题
+admin.site.site_title = "EPGN_INFO 后台管理"
+admin.site.site_header = "EPGN_INFO"

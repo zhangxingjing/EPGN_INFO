@@ -5,7 +5,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'^info', BugViewSet)
 router.register(r'^cate', CategoryViewSet)
-router.register(r'^developer', DeveloperViewSet)
+# router.register(r'^developer', DeveloperViewSet)
 
 urlpatterns = [
     url(r'page/$', page),

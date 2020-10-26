@@ -366,6 +366,7 @@ TEST_CATEGORY = (
 SIMPLEUI_HOME_INFO = False  # 服务器信息
 SIMPLEUI_ANALYSIS = False  # 不收集分析信息
 # SIMPLEUI_HOME_TITLE = '百度一下你就知道'    # 首页标题
+SIMPLEUI_STATIC_OFFLINE = True  # 离线模式
 SIMPLEUI_LOGO = 'http://127.0.0.1:8899/static/image/favicon.ico'    # LOGO
 
 

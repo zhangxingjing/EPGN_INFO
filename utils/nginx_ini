@@ -1,0 +1,101 @@
+# 9000
+server {
+    listen 8000;  # 监听的地址
+    charset utf-8;
+    server_name epgn.9000.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9000;    # 指向的地址
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# 9001
+server {
+    listen 8001;
+    charset utf-8;
+    server_name epgn.9001.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9001;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# 9002
+server {
+    listen 8002;
+    charset utf-8;
+    server_name www.epgn9002.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9002;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# 9003
+server {
+    listen 8003;
+    charset utf-8;
+    server_name www.epgn9003.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9003;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# 9004
+server {
+    listen 80;
+    charset utf-8;
+    server_name www.epgn9004.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9004;
+        include /etc/nginx/uwsgi_params;
+    }
+}
+
+# 9005
+server {
+    listen 80;
+    charset utf-8;
+    server_name www.epgn9005.com;
+
+    location /static {
+        alias /home/zheng/Documents/Project/EPGN_INFO/static/;
+    }
+
+    location / {
+        uwsgi_max_temp_file_size 0;
+        uwsgi_pass 0.0.0.0:9005;
+        include /etc/nginx/uwsgi_params;
+    }
+}

@@ -14,7 +14,8 @@ class LaboratoryAdmin(admin.ModelAdmin):
     list_display = [
         "id",
         "name",
-        "manager"
+        "manager",
+        "job_num"   # 显示其他属性
     ]
     search_fields = [
         'name',
@@ -23,6 +24,9 @@ class LaboratoryAdmin(admin.ModelAdmin):
     list_display_links = [
         'name'
     ]
+
+    def job_num(self, obj):
+        return obj.manager.job_number
 
 
 class WorkTimeAdmin(admin.ModelAdmin):

@@ -183,6 +183,11 @@ class WorkTaskViewSet(ModelViewSet):
 
                 instance = self.get_object()
                 instance.check_task = time_status
+                if file_status == "2":
+                    instance.check_data = 1
+                if report_status == "2":
+                    instance.check_report = 1
+
                 instance.save()
 
                 # 当管理员审核通过/拒绝时，管理员的任务应该少一条
@@ -435,7 +440,7 @@ def save_xls_download(request):
         task_serializer = WorkTaskSerializer(work).data
         results.append({
             "ID": task_serializer["id"],
-            "试验员": "张晓康",
+            "试验员": User.objects.get(id=task_serializer["task_user"]).username,
             "试验室": item["laboratory"],
             "日期": task_serializer["create_time"],
             "车型": task_serializer["car_model"],
@@ -447,9 +452,9 @@ def save_xls_download(request):
             "工时": item["hour"],
             "任务负责人": task_serializer["task_manager"],
             "总工时": task_serializer["hours"],
-            "是否确认任务内容": "未审核",
-            "是否上传数据": "qwe",
-            "是否有报告": "false",
+            "是否确认任务内容": task_serializer["check_task"],
+            "是否上传数据": task_serializer["check_data"],
+            "是否有报告": task_serializer["check_report"],
         })
 
     # 将数据写入到excel中
@@ -518,6 +523,8 @@ def save_xls_download(request):
     current_path = os.path.abspath(__file__)
     file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "."), file_name)
     file.save(file_path)
+
+    # 这回导致文件里面本身就存有一部分数据
 
     # 将写好的数据发送给用户
     def file_iterator(file_path, chunk_size=512):

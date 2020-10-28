@@ -212,7 +212,6 @@
                     </div>
 
 
-
                     <div v-show="Chassis_comfort">
                         <div><span></span></div>
                         <el-select v-model="comfort_road_condition" placeholder="选择路面">
@@ -225,14 +224,6 @@
                     <div v-show="Chassis_comfort">
                         <div><span></span></div>
                         <el-input v-model="comfort_speed" clearable placeholder="填写车速"
-                        ></el-input>
-                    </div>
-
-
-
-                    <div v-show="Other_condition">
-                        <div><span></span></div>
-                        <el-input v-model="other_condition" clearable placeholder="详细描述"
                         ></el-input>
                     </div>
 
@@ -258,16 +249,16 @@
                         </el-select>
                     </div>
                     <div>
-                        <div><span><span style="color: red">*</span>发动机：</span></div>
+                        <div><span>发动机：</span></div>
                         <el-select v-model="car_engine" placeholder="请选择">
                             <el-option v-for="item in engine"
-                                       :key="item"
-                                       :label="item"
-                                       :value="item"></el-option>
+                                       :key="item.id"
+                                       :label="item.num"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div>
-                        <div><span><span style="color: red">*</span>变速箱：</span></div>
+                        <div><span>变速箱：</span></div>
                         <el-select v-model="car_gearbox" placeholder="请选择">
                             <el-option v-for="item in gearbox"
                                        :key="item.id"
@@ -276,12 +267,12 @@
                         </el-select>
                     </div>
                     <div>
-                        <div><span><span style="color: red">*</span>功率：</span></div>
+                        <div><span>功率：</span></div>
                         <el-select v-model="car_power" placeholder="请选择">
                             <el-option v-for="item in power"
-                                       :key="item"
-                                       :label="item"
-                                       :value="item"></el-option>
+                                       :key="item.id"
+                                       :label="item.num"
+                                       :value="item.id"></el-option>
                         </el-select>
                     </div>
                     <div>
@@ -323,6 +314,7 @@
                                 :on-exceed="handleExceed"
                                 :file-list="complain_filelist"
                                 :auto-upload="false"
+
                         >
                             <el-button size="small" type="primary">选择文件</el-button>
                             <div slot="tip" class="el-upload__tip">只能上传hdf/dat文件</div>
@@ -450,8 +442,6 @@
                         roll_road_condition: '',
                         roll_speed: '',
                         Chassis_comfort: false,
-                        Other_condition:false,
-                        other_condition:'',
                         comfort_road_condition: '',
                         comfort_speed: '',
                         filelist_hdf: [],
@@ -547,37 +537,31 @@
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
-                            this.Other_condition = false;
                         } else if (this.condition == "匀速") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = true;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
-                            this.Other_condition = false;
                         } else if (this.condition == "滚动噪声/轮胎噪声") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = true;
                             this.Chassis_comfort = false;
-                            this.Other_condition = false;
                         } else if (this.condition == "底盘舒适性") {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = true;
-                            this.Other_condition = false;
-                        }else if (this.condition == "其他") {
-                            this.Accelerate_show = false;
-                            this.Uniform_speed = false;
+                        } else if (this.condition == "其他") {
+                           this.Accelerate_show = false;
+                            this.Uniform_speed = true;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
-                            this.Other_condition = true;
                         } else {
                             this.Accelerate_show = false;
                             this.Uniform_speed = false;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
-                            this.Other_condition = false;
                         }
                     },
                     submitupload() {
@@ -617,7 +601,7 @@
                             })
                             return false
                         }
-                        if (this.car_engine == '') {
+                        /*if (this.car_engine == '') {
                             this.$message({
                                 message: '请选择发动机信息!',
                                 type: 'warning'
@@ -644,7 +628,7 @@
                                 type: 'warning'
                             })
                             return false
-                        }
+                        }*/
                         /*if (this.filelist_hdf.length == 0) {
                             this.$message({
                                 message: '请上传抱怨原始数据!',
@@ -696,8 +680,9 @@
                         } else if (this.condition == "底盘舒适性") {
                             let condition_list = this.condition + "-" + this.comfort_road_condition + "-" + this.comfort_speed + "km/h";
                             formData.append('condition', condition_list);
-                        } else if (this.condition == "其他") {
-                            let condition_list = this.condition + "-" + this.other_condition;
+                        }
+                        else if (this.condition == "其他") {
+                            let condition_list = this.condition + "-" + this.uniform_speed + "km/h";
                             formData.append('condition', condition_list);
                         } else {
                             formData.append('condition', this.condition);

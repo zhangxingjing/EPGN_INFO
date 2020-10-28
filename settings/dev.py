@@ -265,8 +265,8 @@ DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # 静态文件目录
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ] # TODO: 使用runserver时候，使用DIRS
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')    # TODO: uwsgi + Nginx时, 使用ROOT
 
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = (os.path.join(

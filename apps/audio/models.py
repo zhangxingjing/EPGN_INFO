@@ -43,7 +43,7 @@ class Audio(models.Model):
     按照需求，这里所有的数据都可以为空，当获取的数据中为None时，也发布购入
     """
     id = models.AutoField(primary_key=True)
-    description = models.ForeignKey(Description, verbose_name="抱怨描述", null=True, blank=True, default=None)
+    description = models.ForeignKey(Description, on_delete=models.CASCADE,verbose_name="抱怨描述", null=True, blank=True, default=None)
     details = models.CharField(verbose_name='抱怨详细描述', max_length=255, null=True, blank=True, default=None)
     detail_from = models.CharField(verbose_name="抱怨来源", max_length=255, null=True, blank=True, default=None)
 

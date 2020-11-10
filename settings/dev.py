@@ -5,6 +5,7 @@ import time
 
 from utils import log_theme
 
+############################################################ Django默认配置 ############################################################
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
@@ -13,6 +14,18 @@ DEBUG = True
 
 # 白名单
 ALLOWED_HOSTS = ['*', 'localhost', '192.168.43.230']
+
+# 中间件自定义白名单
+WHITE_REGEX_URL_LIST = [
+    "/",
+    "/favicon.ico",
+    "/user/logout/",
+    "/user/sms/",
+    "/user/register/",
+    "/user/image/code/",
+    "/user/login/sms/",
+    "/user/login/user/",
+]
 
 # 子应用
 INSTALLED_APPS = [
@@ -23,29 +36,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 注册DRF子应用
-    'rest_framework',
+
+    'rest_framework',  # 注册DRF子应用
     'rest_framework.authtoken',  # 设置Token
-
-    # 注册CORS
-    'corsheaders',
-
-    # 注册全文检索
-    'haystack',
+    'corsheaders',  # 注册CORS
     'jieba',
-
-    # 使用xadmin
-    'xadmin',
     'crispy_forms',
+    'django_crontab',
 
-    # 注册子应用
-    'users.apps.UsersConfig',
+    'users.apps.UsersConfig',  # 注册子应用
     'fileinfo.apps.FileInfoConfig',
     'calculate.apps.CalculateConfig',
     'audio.apps.AudioConfig',
     'bug.apps.BugConfig',
     'worktime.apps.WorktimeConfig',
     'script.apps.ScriptConfig',
+    'voice.apps.VoiceConfig',
 ]
 
 # 中间件
@@ -57,10 +63,10 @@ MIDDLEWARE = [
     # 'django.middleware.csrf.CsrfViewMiddleware',  # 关闭csrf自动校验
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
 
-ROOT_URLCONF = 'epgn.urls'  # 使用Nginx
+    # TODO: 写入中间件的顺序
+    # 'middleware.auth.AuthMiddleware',
+]
 
 # 模板文件
 TEMPLATES = [
@@ -78,8 +84,6 @@ TEMPLATES = [
         },
     },
 ]
-
-WSGI_APPLICATION = 'epgn.wsgi.application'
 
 # 配置数据库
 DATABASES = {
@@ -99,80 +103,6 @@ DATABASES = {
         },
     }
 }
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-# 语言、时区
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = False
-
-# 配置缓存 ==> 要使用redis的话，要修改配置文件中的访问地址，再重启服务器
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/0",  # 修改redis数据库配置
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "root"  # redis密码
-        }
-    },
-    "session": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "root"  # redis密码
-        }
-    },
-    'verifications': {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/2",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "root"  # redis密码
-        }
-    },
-    "history": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/3",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "root"  # redis密码
-        }
-    },
-    'contrast': {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/5",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            "PASSWORD": "root"  # redis密码
-        }
-    },
-}
-
-# session保存到缓存当中
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-# 指明session保存的session这个redis库中
-SESSION_CACHE_ALIAS = "session"
 
 # 日志文件
 LOGGING = {
@@ -216,30 +146,57 @@ LOGGING = {
     }
 }
 
-# Haystack 对接elasticsearch搜索引擎
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'INDEX_NAME': 'epgn',
-        'URL': 'http://192.168.43.230:9200/',
-        "PATH": os.path.join(BASE_DIR, 'whoosh'),
-        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
-        # 'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+# 配置缓存 ==> 要使用redis的话，要修改配置文件中的访问地址，再重启服务器
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",  # 修改redis数据库配置
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "root"  # redis密码
+        }
+    },
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            # "PASSWORD": "root"  # redis密码
+        }
     },
 }
 
-# 当添加、修改、删除数据时，自动生成索引
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+# 密码验证
+AUTH_PASSWORD_VALIDATORS = [
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
+]
+
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"  # session保存到缓存当中
+SESSION_CACHE_ALIAS = "session"  # 指明session保存的session这个redis库中
+
+# 语言、时区
+LANGUAGE_CODE = 'zh-hans'
+TIME_ZONE = 'Asia/Shanghai'
+USE_I18N = True
+USE_L10N = True
+USE_TZ = False
+
+ROOT_URLCONF = 'epgn.urls'  # 项目跟路由的位置
+WSGI_APPLICATION = 'epgn.wsgi.application'
 
 # DRF配置
 REST_FRAMEWORK = {
     # 异常处理
-    'EXCEPTION_HANDLER': 'scripts.exceptions.exception_handler',
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework.authentication.BasicAuthentication',
-    # ),
-    'DEFAULT_AUTHENTICATION_CLASSES': [],
+    # 'EXCEPTION_HANDLER': 'scripts.exceptions.exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        #     'rest_framework.authentication.SessionAuthentication',
+        #     'rest_framework.authentication.BasicAuthentication',
+    ),
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [],
     # 分页
     'DEFAULT_PAGINATION_CLASS': 'scripts.pagination.StandardResultsSetPagination',
 }
@@ -254,41 +211,13 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
-# DRF扩展
-REST_FRAMEWORK_EXTENSIONS = {
-    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,  # 缓存时间
-    'DEFAULT_USE_CACHE': 'default',  # 缓存存储
-}
-
 # django文件存储
 DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # 静态文件目录
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ] # TODO: 使用runserver时候，使用DIRS
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')    # TODO: uwsgi + Nginx时, 使用ROOT
-
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = (os.path.join(
-#     os.path.dirname(
-#         os.path.dirname(
-#             os.path.dirname(
-#                 os.path.dirname(
-#                     os.path.dirname(
-#                         os.path.dirname(BASE_DIR)
-#                     )
-#                 )
-#             )
-#         )
-#     ), 'media/sf_Y_DRIVE/Database/Audio/'))
-# print(MEDIA_ROOT)
-
-
-# 用户认证 ==> JWT
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',  # 指定使用的JWT返回的函数
-}
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]  # TODO: 使用runserver时候，使用DIRS
 
 # 配置自定义认证模型类
 AUTH_USER_MODEL = 'users.User'  # 指明使用自定义的用户模型类
@@ -300,19 +229,29 @@ AUTHENTICATION_BACKENDS = [
 # 配置用户登录链接
 LOGIN_URL = '/login/'  # 这个路径需要根据你网站的实际登陆地址来设置
 
+# Xadmin站点
 XADMIN_TITLE = "EPGN_INFO 后台管理"  # 左上方的文字
 XADMIN_FOOTER_TITLE = "small.spider.p@gmail.com"  # 最下面的文字
 
-# 配置全局`文件`路径
+############################################################ DRF扩展配置 ############################################################
+REST_FRAMEWORK_EXTENSIONS = {
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,  # 缓存时间
+    'DEFAULT_USE_CACHE': 'default',  # 缓存存储
+}
+
+# 用户认证 ==> JWT
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 指明token的有效期
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',  # 指定使用的JWT返回的函数
+}
+
+############################################################ EPGN项目配置 ############################################################
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 
 FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
 FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
 AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
-
-# FILE_HEAD_PATH = "/media/sf_Y_DRIVE/Database/H_HDF/"    # 文件上传的路径
-# FILE_READ_PATH = "/media/sf_Y_DRIVE/Database/R_HDF/"    # 可读HDF文件路径
-# AUDIO_FILE_PATH = "/media/sf_Y_DRIVE/Database/Audio/"   # 抱怨音频文件
+VOICE_FILE_PATH = "/home/zheng/Documents/WorkFile/Voice/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",
@@ -341,93 +280,89 @@ CALCULATE_RULE = {
 REFERENCE_CHANNEL = ["time", "EngineRPM", "EngineCoolantTemp", "VehicleSpeed"]
 FALLING_LIST = ['(N)G3 VS', '(N)G5 VS', ]
 
-DEVELOPER_CHOICE = (
-    (1, "郑兴涛"),
-    (2, "吴斌")
-)
+TEST_CATEGORY = ((1, '测试'), (2, '管理'))
+DEVELOPER_CHOICE = ((1, "郑兴涛"), (2, "吴斌"))
+ROLE_CHOICE = ((1, "R"), (2, "S"), (3, "M"),)
+CHECK_WORK_INFO = ((1, '未审核'), (2, '已通过'), (3, '未通过'))
 
-ROLE_CHOICE = (
-    (1, "R"),
-    (2, "S"),
-    (3, "M"),
-)
+################################################ Haystack 对接elasticsearch搜索引擎 ################################################
+# HAYSTACK_CONNECTIONS = {
+#     'default': {
+#         'INDEX_NAME': 'epgn',
+#         'URL': 'http://192.168.43.230:9200/',
+#         "PATH": os.path.join(BASE_DIR, 'whoosh'),
+#         'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+#         # 'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#     },
+# }
+#
+# HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'  # 当添加、修改、删除数据时，自动生成索引
 
-CHECK_WORK_INFO = (
-    (1, '未审核'),
-    (2, '已通过'),
-    (3, '未通过')
-)
-
-TEST_CATEGORY = (
-    (1, '测试'),
-    (2, '管理')
-)
-
-# simpleui 使用
+########################################################## simpleui 使用 ##########################################################
 SIMPLEUI_HOME_INFO = False  # 服务器信息
 SIMPLEUI_ANALYSIS = False  # 不收集分析信息
-# SIMPLEUI_HOME_TITLE = '百度一下你就知道'    # 首页标题
 SIMPLEUI_STATIC_OFFLINE = True  # 离线模式
-SIMPLEUI_LOGO = 'http://127.0.0.1:8899/static/image/favicon.ico'    # LOGO
+SIMPLEUI_LOGO = 'http://127.0.0.1:8899/static/image/favicon.ico'  # LOGO
+SIMPLEUI_ICON = {'Users': 'fab fa-apple', '任务信息': 'fas fa-user-tie'}  # 自定义图标
 
-
-# 自定义图标
-SIMPLEUI_ICON = {
-    'Users': 'fab fa-apple',
-    '任务信息': 'fas fa-user-tie'
-}
-
-# far fa-circle
-SIMPLEUI_CONFIG = {
-    'system_keep': False,
-    'menu_display': ['Audio', 'Bug', 'Fileinfo', 'Users', 'Worktime'],
-    'dynamic': True,
-    'menus': [
-        {
-            'app': 'Audio',
-            'name': 'Audio',
-            'icon': 'fa fa-audio-description',
-            'models': [
-                {'name': '抱怨工况', 'icon': 'far fa-circle', 'url': 'audio/status/'},
-                {'name': '抱怨描述', 'icon': 'far fa-circle', 'url': 'audio/description/'},
-                {'name': '抱怨音频', 'icon': 'far fa-circle', 'url': 'audio/audio/'},
-                {'name': '抱怨频率', 'icon': 'far fa-circle', 'url': 'audio/frequency/'},
-            ]
-        }, {
-            'app': 'Bug',
-            'name': 'Bug',
-            'icon': 'fa fa-bug',
-            'models': [
-                {'name': '错误信息', 'icon': 'far fa-circle', 'url': 'bug/bug/'},
-                {'name': '错误分类', 'icon': 'far fa-circle', 'url': 'bug/category/'},
-            ]
-        }, {
-            'name': 'Fileinfo',
-            'icon': 'fa fa-car',
-            'models': [
-                {'name': '专业方向-工况', 'icon': 'far fa-circle', 'url': 'fileinfo/direction/'},
-                {'name': '动力总成-功率', 'icon': 'far fa-circle', 'url': 'fileinfo/propulsionpower/'},
-                {'name': '变速箱信息', 'icon': 'far fa-circle', 'url': 'fileinfo/gearbox/'},
-                {'name': '平台-车型', 'icon': 'far fa-circle', 'url': 'fileinfo/platform/'},
-                {'name': '汽车数据信息', 'icon': 'far fa-circle', 'url': 'fileinfo/fileinfo/'},
-                {'name': '通道-其他写法', 'icon': 'far fa-circle', 'url': 'fileinfo/channel/'},
-            ]
-        }, {
-            'name': 'Users',
-            'icon': 'fa fa-user',
-            'models': [
-                {'name': '任务信息', 'icon': 'far fa-circle', 'url': 'users/task/'},
-                {'name': '用户信息', 'icon': 'far fa-circle', 'url': 'users/user/'},
-                {'name': '部门信息', 'icon': 'far fa-circle', 'url': 'users/section/'},
-            ]
-        }, {
-            'name': 'Worktime',
-            'icon': 'fa fa-calendar',
-            'models': [
-                {'name': '工时信息', 'icon': 'far fa-circle', 'url': 'worktime/worktask/'},
-                {'name': '试验内容', 'icon': 'far fa-circle', 'url': 'worktime/taskdetail/'},
-                {'name': '试验室信息', 'icon': 'far fa-circle', 'url': 'worktime/laboratory/'},
-            ]
-        }
-    ]
-}
+# SIMPLEUI_CONFIG = {
+#     'system_keep': False,
+#     'menu_display': ['Audio', 'Bug', 'Fileinfo', 'Users', 'Worktime', "Voice"],
+#     'dynamic': True,
+#     'menus': [
+#         {
+#             'app': 'Audio',
+#             'name': 'Audio',
+#             'icon': 'fa fa-audio-description',
+#             'models': [
+#                 {'name': '抱怨工况', 'icon': 'far fa-circle', 'url': 'audio/status/'},
+#                 {'name': '抱怨描述', 'icon': 'far fa-circle', 'url': 'audio/description/'},
+#                 {'name': '抱怨音频', 'icon': 'far fa-circle', 'url': 'audio/audio/'},
+#                 {'name': '抱怨频率', 'icon': 'far fa-circle', 'url': 'audio/frequency/'},
+#             ]
+#         }, {
+#             'app': 'Bug',
+#             'name': 'Bug',
+#             'icon': 'fa fa-bug',
+#             'models': [
+#                 {'name': '错误信息', 'icon': 'far fa-circle', 'url': 'bug/bug/'},
+#                 {'name': '错误分类', 'icon': 'far fa-circle', 'url': 'bug/category/'},
+#             ]
+#         }, {
+#             'name': 'Fileinfo',
+#             'icon': 'fa fa-car',
+#             'models': [
+#                 {'name': '专业方向-工况', 'icon': 'far fa-circle', 'url': 'fileinfo/direction/'},
+#                 {'name': '动力总成-功率', 'icon': 'far fa-circle', 'url': 'fileinfo/propulsionpower/'},
+#                 {'name': '变速箱信息', 'icon': 'far fa-circle', 'url': 'fileinfo/gearbox/'},
+#                 {'name': '平台-车型', 'icon': 'far fa-circle', 'url': 'fileinfo/platform/'},
+#                 {'name': '汽车数据信息', 'icon': 'far fa-circle', 'url': 'fileinfo/fileinfo/'},
+#                 {'name': '通道-其他写法', 'icon': 'far fa-circle', 'url': 'fileinfo/channel/'},
+#             ]
+#         }, {
+#             'name': 'Users',
+#             'icon': 'fa fa-user',
+#             'models': [
+#                 {'name': '任务信息', 'icon': 'far fa-circle', 'url': 'users/task/'},
+#                 {'name': '用户信息', 'icon': 'far fa-circle', 'url': 'users/user/'},
+#                 {'name': '部门信息', 'icon': 'far fa-circle', 'url': 'users/section/'},
+#             ]
+#         }, {
+#             'name': 'Worktime',
+#             'icon': 'fa fa-calendar',
+#             'models': [
+#                 {'name': '工时信息', 'icon': 'far fa-circle', 'url': 'worktime/worktask/'},
+#                 {'name': '试验内容', 'icon': 'far fa-circle', 'url': 'worktime/taskdetail/'},
+#                 {'name': '试验室信息', 'icon': 'far fa-circle', 'url': 'worktime/laboratory/'},
+#             ]
+#         }, {
+#             'name': 'Voice',
+#             'icon': 'fa fa-calendar',
+#             'models': [
+#                 {'name': '声音细节', 'icon': 'far fa-circle', 'url': 'voice/category/'},
+#                 {'name': '抱怨分类', 'icon': 'far fa-circle', 'url': 'voice/detail/'},
+#                 {'name': 'NVH 音频', 'icon': 'far fa-circle', 'url': 'voice/'},
+#             ]
+#         }
+#     ]
+# }

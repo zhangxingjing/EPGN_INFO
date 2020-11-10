@@ -1,23 +1,25 @@
+import datetime
+import json
 import os
 import re
-import json
 import threading
-import datetime
-from .serializers import *
-from .models import Fileinfo
-from django.views import View
-from users.models import User
-from django.db.models import Q, Max
-from pymysql import DatabaseError
-from django.db import transaction
+
 from django.core import serializers
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import transaction
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import render
 from django.utils.http import urlquote
-from rest_framework.viewsets import ViewSet, ModelViewSet
+from django.views import View
+from pymysql import DatabaseError
 from rest_framework.response import Response
-from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH, BASE_DIR
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, JsonResponse, FileResponse, StreamingHttpResponse
+from rest_framework.viewsets import ViewSet, ModelViewSet
+
+from settings.dev import FILE_HEAD_PATH, FILE_READ_PATH
+from users.models import User
+from .models import Fileinfo
+from .serializers import *
 
 lock = threading.Lock()  # 创建一个锁的实例
 
@@ -238,7 +240,7 @@ class Upload(View):
         # 調整filename命名方式
         try:
             luan_filename = str(files).replace('%', '')
-            x= re.findall(r'(.*)\.(.*.hdf)', luan_filename)
+            x = re.findall(r'(.*)\.(.*.hdf)', luan_filename)
             try:
                 filename = (x[0][0] + x[0][1]).replace("?", "")
             except:
@@ -363,6 +365,7 @@ class Word(View):
         # response = FileResponse(file)
         # response['Content-Type'] = 'application/octet-stream'
         file_name = "{}_车辆信息查询表.xlsx".format(str(datetime.date.today()))
+
         # response['Content-Disposition'] = 'attachment;filename="%s"' % (urlquote(file_name))
         # return response
 

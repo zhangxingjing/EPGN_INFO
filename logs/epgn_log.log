@@ -1,0 +1,126 @@
+INFO 2020-11-10 13:19:12,298 autoreload 578 [32m[32mWatching for file changes with StatReloader[0m[0m
+INFO 2020-11-10 13:19:17,907 basehttp 154 [32m[32m"GET /admin/ HTTP/1.1" 200 25524[0m[0m
+INFO 2020-11-10 13:19:18,359 basehttp 154 [32m[32m"GET /admin/fileinfo/fileinfo/ HTTP/1.1" 200 26626[0m[0m
+INFO 2020-11-10 13:19:18,905 basehttp 154 [32m[32m"GET /admin/jsi18n/ HTTP/1.1" 200 7722[0m[0m
+INFO 2020-11-10 13:19:19,395 basehttp 154 [32m[32m"GET /favicon.ico HTTP/1.1" 302 0[0m[0m
+INFO 2020-11-10 13:19:19,408 basehttp 154 [32m[32m"GET /static/image/favicon.ico HTTP/1.1" 200 67646[0m[0m
+INFO 2020-11-10 13:19:32,246 basehttp 154 [32m[32m"GET / HTTP/1.1" 200 7152[0m[0m
+INFO 2020-11-10 13:19:32,333 basehttp 154 [32m[32m"GET /static/js/vue_2.6.10.js HTTP/1.1" 200 311030[0m[0m
+INFO 2020-11-10 13:19:32,333 basehttp 154 [32m[32m"GET /static/js/jquery-3.4.1.js HTTP/1.1" 200 149581[0m[0m
+INFO 2020-11-10 13:19:32,338 basehttp 154 [32m[32m"GET /static/image/back_pic.jpg HTTP/1.1" 200 282025[0m[0m
+INFO 2020-11-10 13:19:32,340 basehttp 154 [32m[32m"GET /static/image/login.jpg HTTP/1.1" 200 3579[0m[0m
+INFO 2020-11-10 13:19:39,093 basehttp 154 [32m[32m"POST /authorization/ HTTP/1.1" 200 232[0m[0m
+INFO 2020-11-10 13:19:39,108 basehttp 154 [32m[32m"GET /user/home/ HTTP/1.1" 200 44627[0m[0m
+INFO 2020-11-10 13:19:39,123 basehttp 154 [32m[32m"GET /static/layui/css/layui.css HTTP/1.1" 200 72911[0m[0m
+INFO 2020-11-10 13:19:39,124 basehttp 154 [32m[32m"GET /static/js/axios-0.18.0.min.js HTTP/1.1" 200 12941[0m[0m
+INFO 2020-11-10 13:19:39,131 basehttp 154 [32m[32m"GET /static/layui/css/admin.css HTTP/1.1" 200 25936[0m[0m
+INFO 2020-11-10 13:19:39,135 basehttp 154 [32m[32m"GET /static/layui/css/modules/layer/default/layer.css HTTP/1.1" 200 14425[0m[0m
+INFO 2020-11-10 13:19:39,139 basehttp 154 [32m[32m"GET /static/ele/index.css HTTP/1.1" 200 232432[0m[0m
+INFO 2020-11-10 13:19:39,147 basehttp 154 [32m[32m"GET /static/layui/layui.js HTTP/1.1" 200 9642[0m[0m
+INFO 2020-11-10 13:19:39,147 basehttp 154 [32m[32m"GET /static/image/close_window.png HTTP/1.1" 200 2182[0m[0m
+INFO 2020-11-10 13:19:39,167 basehttp 154 [32m[32m"GET /static/js/echart.js HTTP/1.1" 200 717610[0m[0m
+INFO 2020-11-10 13:19:39,325 basehttp 154 [32m[32m"GET /test/car_platform/ HTTP/1.1" 200 294[0m[0m
+INFO 2020-11-10 13:19:39,328 basehttp 154 [32m[32m"GET /user/user/54 HTTP/1.1" 301 0[0m[0m
+INFO 2020-11-10 13:19:39,331 basehttp 154 [32m[32m"GET /static/layui/font/iconfont.woff2?v=250 HTTP/1.1" 200 23140[0m[0m
+INFO 2020-11-10 13:19:39,434 basehttp 154 [32m[32m"POST /user/home/ HTTP/1.1" 200 106[0m[0m
+INFO 2020-11-10 13:19:39,508 basehttp 154 [32m[32m"GET /static/home/index.js HTTP/1.1" 200 1994[0m[0m
+INFO 2020-11-10 13:19:39,515 basehttp 154 [32m[32m"GET /static/layui/lay/modules/table.js HTTP/1.1" 200 31323[0m[0m
+INFO 2020-11-10 13:19:39,522 basehttp 154 [32m[32m"GET /static/layui/lay/modules/upload.js HTTP/1.1" 200 7231[0m[0m
+INFO 2020-11-10 13:19:39,607 basehttp 154 [32m[32m"GET /user/user/54/ HTTP/1.1" 200 21403[0m[0m
+INFO 2020-11-10 13:19:39,642 basehttp 154 [32m[32m"GET /static/home/config.js HTTP/1.1" 200 3916[0m[0m
+INFO 2020-11-10 13:19:39,647 basehttp 154 [32m[32m"GET /static/layui/lay/modules/layer.js HTTP/1.1" 200 22041[0m[0m
+INFO 2020-11-10 13:19:39,656 basehttp 154 [32m[32m"GET /static/layui/lay/modules/laytpl.js HTTP/1.1" 200 1836[0m[0m
+INFO 2020-11-10 13:19:39,677 basehttp 154 [32m[32m"GET /static/layui/lay/modules/laypage.js HTTP/1.1" 200 4472[0m[0m
+INFO 2020-11-10 13:19:39,679 basehttp 154 [32m[32m"GET /static/layui/css/modules/layer/default/layer.css?v=3.1.1 HTTP/1.1" 200 14425[0m[0m
+INFO 2020-11-10 13:19:39,691 basehttp 154 [32m[32m"GET /static/layui/lay/modules/form.js HTTP/1.1" 200 9329[0m[0m
+INFO 2020-11-10 13:19:39,691 basehttp 154 [32m[32m"GET /static/layui/lay/modules/element.js HTTP/1.1" 200 7264[0m[0m
+INFO 2020-11-10 13:19:39,767 basehttp 154 [32m[32m"GET /static/layui/lay/modules/util.js HTTP/1.1" 200 3622[0m[0m
+INFO 2020-11-10 13:19:39,776 basehttp 154 [32m[32m"GET /static/layui/lay/modules/layedit.js HTTP/1.1" 200 75602[0m[0m
+INFO 2020-11-10 13:19:39,839 basehttp 154 [32m[32m"GET /static/layui/lay/modules/laydate.js HTTP/1.1" 200 27377[0m[0m
+INFO 2020-11-10 13:19:39,894 basehttp 154 [32m[32m"GET /user/file/54?page=1&limit=30 HTTP/1.1" 301 0[0m[0m
+INFO 2020-11-10 13:19:39,905 basehttp 154 [32m[32m"GET /static/home/lib/admin.js HTTP/1.1" 200 0[0m[0m
+INFO 2020-11-10 13:19:39,954 basehttp 154 [32m[32m"GET /static/layui/css/modules/laydate/default/laydate.css?v=5.0.9 HTTP/1.1" 200 7537[0m[0m
+INFO 2020-11-10 13:19:39,969 basehttp 154 [32m[32m"GET /user/file/54/?page=1&limit=30 HTTP/1.1" 200 48[0m[0m
+INFO 2020-11-10 13:19:44,493 basehttp 154 [32m[32m"GET /test/datainfo/100 HTTP/1.1" 301 0[0m[0m
+INFO 2020-11-10 13:19:44,541 basehttp 154 [32m[32m"GET /test/datainfo/100/ HTTP/1.1" 200 49011[0m[0m
+INFO 2020-11-10 13:19:44,567 basehttp 154 [32m[32m"GET /static/js/header.js HTTP/1.1" 200 6211[0m[0m
+INFO 2020-11-10 13:19:44,568 basehttp 154 [32m[32m"GET /static/css/header.css HTTP/1.1" 200 1762[0m[0m
+INFO 2020-11-10 13:19:44,569 basehttp 154 [32m[32m"GET /static/js/jquery.cookie.js HTTP/1.1" 200 3121[0m[0m
+INFO 2020-11-10 13:19:44,666 basehttp 154 [32m[32m"GET /test/car_platform/ HTTP/1.1" 200 294[0m[0m
+INFO 2020-11-10 13:19:44,776 basehttp 154 [32m[32m"GET /user/user/54/ HTTP/1.1" 200 21403[0m[0m
+ERROR 2020-11-10 13:19:45,056 log 228 [31m[31mInternal Server Error: /test/search/[0m[0m
+Traceback (most recent call last):
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/views/generic/base.py", line 97, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/zheng/Documents/Project/Python/Django/EPGN_INFO/apps/fileinfo/views.py", line 197, in get
+    items = json.loads(serializers.serialize("json", page_item))
+AttributeError: module 'rest_framework.serializers' has no attribute 'serialize'
+ERROR 2020-11-10 13:19:45,057 basehttp 154 [31m[31m"GET /test/search/?page=1&limit=30 HTTP/1.1" 500 19946[0m[0m
+INFO 2020-11-10 13:19:45,780 basehttp 154 [32m[32m"GET /test/datainfo/400 HTTP/1.1" 301 0[0m[0m
+INFO 2020-11-10 13:19:45,837 basehttp 154 [32m[32m"GET /test/datainfo/400/ HTTP/1.1" 200 49306[0m[0m
+INFO 2020-11-10 13:19:46,003 basehttp 154 [32m[32m"GET /test/car_platform/ HTTP/1.1" 200 294[0m[0m
+INFO 2020-11-10 13:19:46,120 basehttp 154 [32m[32m"GET /user/user/54/ HTTP/1.1" 200 21403[0m[0m
+ERROR 2020-11-10 13:19:46,314 log 228 [31m[31mInternal Server Error: /test/search/[0m[0m
+Traceback (most recent call last):
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/views/generic/base.py", line 97, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/zheng/Documents/Project/Python/Django/EPGN_INFO/apps/fileinfo/views.py", line 197, in get
+    items = json.loads(serializers.serialize("json", page_item))
+AttributeError: module 'rest_framework.serializers' has no attribute 'serialize'
+ERROR 2020-11-10 13:19:46,316 basehttp 154 [31m[31m"GET /test/search/?page=1&limit=30 HTTP/1.1" 500 19946[0m[0m
+INFO 2020-11-10 13:19:47,314 basehttp 154 [32m[32m"GET /audio/search/ HTTP/1.1" 200 37642[0m[0m
+INFO 2020-11-10 13:19:47,352 basehttp 154 [32m[32m"GET /static/vue.js HTTP/1.1" 200 0[0m[0m
+INFO 2020-11-10 13:19:47,362 basehttp 154 [32m[32m"GET /static/ele/index.js HTTP/1.1" 200 567158[0m[0m
+INFO 2020-11-10 13:19:47,708 basehttp 154 [32m[32m"GET /test/car_platform/ HTTP/1.1" 200 294[0m[0m
+INFO 2020-11-10 13:19:47,907 basehttp 154 [32m[32m"GET /audio/wait/ HTTP/1.1" 200 3868[0m[0m
+INFO 2020-11-10 13:19:47,967 basehttp 154 [32m[32m"GET /static/ele/fonts/element-icons.woff HTTP/1.1" 200 28200[0m[0m
+INFO 2020-11-10 13:19:48,024 basehttp 154 [32m[32m"GET /user/user/54/ HTTP/1.1" 200 21403[0m[0m
+ERROR 2020-11-10 13:19:48,293 log 228 [31m[31mInternal Server Error: /audio/file/[0m[0m
+Traceback (most recent call last):
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/django/views/decorators/csrf.py", line 54, in wrapped_view
+    return view_func(*args, **kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/rest_framework/viewsets.py", line 116, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/rest_framework/views.py", line 495, in dispatch
+    response = self.handle_exception(exc)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/rest_framework/views.py", line 455, in handle_exception
+    self.raise_uncaught_exception(exc)
+  File "/home/zheng/.virtualenvs/EPGN/lib/python3.7/site-packages/rest_framework/views.py", line 492, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "/home/zheng/Documents/Project/Python/Django/EPGN_INFO/apps/audio/views.py", line 255, in list
+    items = json.loads(serializers.serialize("json", page_item))
+AttributeError: module 'rest_framework.serializers' has no attribute 'serialize'
+ERROR 2020-11-10 13:19:48,296 basehttp 154 [31m[31m"GET /audio/file/?page=1&limit=10 HTTP/1.1" 500 20432[0m[0m
+INFO 2020-11-10 13:21:08,661 autoreload 203 [32m[32m/home/zheng/Documents/Project/Python/Django/EPGN_INFO/apps/audio/views.py changed, reloading.[0m[0m
+INFO 2020-11-10 13:21:10,976 autoreload 578 [32m[32mWatching for file changes with StatReloader[0m[0m
+INFO 2020-11-10 13:21:16,615 autoreload 203 [32m[32m/home/zheng/Documents/Project/Python/Django/EPGN_INFO/apps/audio/views.py changed, reloading.[0m[0m
+INFO 2020-11-10 13:21:18,915 autoreload 578 [32m[32mWatching for file changes with StatReloader[0m[0m
+INFO 2020-11-10 13:21:27,074 basehttp 154 [32m[32m"GET /audio/search/ HTTP/1.1" 200 37642[0m[0m
+INFO 2020-11-10 13:21:27,290 basehttp 154 [32m[32m"GET /test/car_platform/ HTTP/1.1" 200 294[0m[0m
+INFO 2020-11-10 13:21:27,427 basehttp 154 [32m[32m"GET /audio/wait/ HTTP/1.1" 200 3868[0m[0m
+INFO 2020-11-10 13:21:27,538 basehttp 154 [32m[32m"GET /user/user/54/ HTTP/1.1" 200 21403[0m[0m
+INFO 2020-11-10 13:21:27,725 basehttp 154 [32m[32m"GET /audio/file/?page=1&limit=10 HTTP/1.1" 200 41[0m[0m
+INFO 2020-11-10 13:21:27,767 basehttp 154 [32m[32m"GET /favicon.ico HTTP/1.1" 302 0[0m[0m
+INFO 2020-11-10 13:21:27,775 basehttp 154 [32m[32m"GET /static/image/favicon.ico HTTP/1.1" 200 67646[0m[0m

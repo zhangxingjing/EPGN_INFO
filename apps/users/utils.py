@@ -53,13 +53,14 @@ def jwt_response_payload_handler(token, user=None, request=None):
     except:
         worktime = False
 
-    return {
+    user_info = {
         'id': user.id,
         'token': token,
         'username': user.username,
         "job_number": user.job_number,
         "worktime": worktime
     }
+    return user_info
 
 
 # 后台创建用户的时候用户的密码明文显示 ==> 校验密码错误

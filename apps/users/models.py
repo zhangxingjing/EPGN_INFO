@@ -39,7 +39,7 @@ class User(AbstractUser):
     update_files_data = models.SmallIntegerField(default=0, verbose_name='数据上传')
     download_files_data = models.SmallIntegerField(default=0, verbose_name='数据下载')
     job_number = models.CharField(max_length=22, unique=True, verbose_name='工号')
-    section = models.ForeignKey(Section, null=True, blank=True, default=None, verbose_name='部门信息')
+    section = models.ForeignKey(Section, on_delete=models.CASCADE, null=True, blank=True, default=None, verbose_name='部门信息')
     task = models.ManyToManyField(
         Task, blank=True, default=None, verbose_name='待办事项',
         db_table='tb_user_and_task',
@@ -55,3 +55,19 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+# 周任务
+class WeenSum(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="用户")
+    total = models.IntegerField(verbose_name="周上传量")
+
+    class Meta:
+        '对应的数据表名字'
+        ordering = ('id',)
+        db_table = 'tb_user_week'
+        verbose_name_plural = verbose_name = '用户信息'
+
+    def __str__(self):
+        return self.user

@@ -522,9 +522,11 @@ def save_xls_download(request):
     file_name = "formatting.xls"
     current_path = os.path.abspath(__file__)
     file_path = os.path.join(os.path.abspath(os.path.dirname(current_path) + os.path.sep + "."), file_name)
-    file.save(file_path)
 
-    # 这回导致文件里面本身就存有一部分数据
+    # 如果文件存在，先删除文件，再重新创建一个同名文件
+    # if os.path.exists(file_path):
+    #     os.remove(file_path)
+    file.save(file_path)
 
     # 将写好的数据发送给用户
     def file_iterator(file_path, chunk_size=512):

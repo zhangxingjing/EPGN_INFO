@@ -1,9 +1,7 @@
-import xadmin
-from django.contrib import admin
 from django.conf.urls import url, include
-from rest_framework_jwt.views import obtain_jwt_token
+from django.contrib import admin
 from django.views.generic.base import TemplateView, RedirectView
-from users.utils import jwt_response_payload_handler
+from rest_framework_jwt.views import obtain_jwt_token
 
 urlpatterns = [
     # 站点管理
@@ -20,19 +18,21 @@ urlpatterns = [
     url(r'^authorization/$', obtain_jwt_token),
     # url(r'^authorization/$', jwt_response_payload_handler),
 
-    url(r'user/', include('users.urls')),
+    url(r'user/', include('users.urls'), name="users"),
 
-    url(r'test/', include('fileinfo.urls')),
+    url(r'test/', include('fileinfo.urls'), name="test"),
 
-    url(r'calculate/', include('calculate.urls')),
+    url(r'calculate/', include('calculate.urls'), name="calculate"),
 
-    url(r'audio/', include('audio.urls')),
+    url(r'audio/', include('audio.urls'), name="audio"),
 
-    url(r'bug/', include('bug.urls')),
+    url(r'bug/', include('bug.urls'), name="bug"),
 
     url(r'time/', include('worktime.urls'), name="time"),
 
     url(r'script/', include('script.urls'), name="script"),
+
+    url(r'voice/', include('voice.urls'), name="voice"),
 ]
 
 handler404 = 'script.views.pageNotFound'

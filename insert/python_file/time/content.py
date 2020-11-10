@@ -447,55 +447,55 @@ except Exception as e:
 
 # 整车测试平台
 try:
-    content = TaskDetail(hour="0.5", category=2, name="车辆准备", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="0.5", category=1, name="车辆准备", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="1", category=2, name="测试准备（标准）", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="1", category=1, name="测试准备（标准）", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="2", category=2, name="测试准备 （特殊）", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="2", category=1, name="测试准备 （特殊）", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="2", category=2, name="内部噪声", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="2", category=1, name="内部噪声", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="1", category=2, name="滚动噪声", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="1", category=1, name="滚动噪声", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="1", category=2, name="怠速舒适性", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="1", category=1, name="怠速舒适性", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="1", category=2, name="Pass by", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="1", category=1, name="Pass by", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="1", category=2, name="C-ECAP", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="1", category=1, name="C-ECAP", color=False, role=1, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)
         content.task_manager.add(manage_obj)
 
-    content = TaskDetail(hour="", category=2, name="其他", color=False, role=2, detail="", laboratory=Laboratory.objects.get(id=7))
+    content = TaskDetail(hour="", category=1, name="其他", color=False, role=2, detail="", laboratory=Laboratory.objects.get(id=7))
     content.save()
     for manage_id in manage_id_list_all:
         manage_obj = User.objects.get(id=manage_id)

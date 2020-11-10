@@ -1,7 +1,4 @@
-from .search_indexes import AudioIndex
 from rest_framework import serializers
-from drf_haystack.viewsets import HaystackViewSet
-from drf_haystack.serializers import HaystackSerializer
 from .models import Audio, Status, Description, Frequency
 
 
@@ -38,20 +35,19 @@ class FrequencySerializer(serializers.ModelSerializer):
         model = Frequency
         fields = ['id', 'name']
 
-
-class AudioSearchSerializer(HaystackViewSet):
-    """FileInfo序列化器"""
-
-    class Meta:
-        model = Audio
-        fields = "__all__"
-
-
-class AudioIndexSerializer(HaystackSerializer):
-    """FileInfo索引结果数据序列化器"""
-
-    # object = AudioSearchSerializer(read_only=True)
-
-    class Meta:
-        index_classes = [AudioIndex]
-        fields = ('id', "status", "frequency", "details", "detail_from", "complaint_feature", "order", "reason", "measures", "car_model", "propulsion", "gearbox", "power", "tire_model", "author", "hdf", "img", "mp3", "ppt", "description_name")
+# class AudioSearchSerializer(HaystackViewSet):
+#     """FileInfo序列化器"""
+#
+#     class Meta:
+#         model = Audio
+#         fields = "__all__"
+#
+#
+# class AudioIndexSerializer(HaystackSerializer):
+#     """FileInfo索引结果数据序列化器"""
+#
+#     # object = AudioSearchSerializer(read_only=True)
+#
+#     class Meta:
+#         index_classes = [AudioIndex]
+#         fields = ('id', "status", "frequency", "details", "detail_from", "complaint_feature", "order", "reason", "measures", "car_model", "propulsion", "gearbox", "power", "tire_model", "author", "hdf", "img", "mp3", "ppt", "description_name")

@@ -57,7 +57,7 @@ def download(request):
 
 
 # 自定义404 500
-def pageNotFound(request):
+def pageNotFound(request, exception):
     '''
     404、500处理函数
     '''

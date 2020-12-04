@@ -4,8 +4,8 @@ import os
 import re
 import threading
 
-from django.core import serializers
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.serializers import serialize
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
@@ -194,7 +194,7 @@ class Search(View):
         except EmptyPage:
             page_item = paginator.page(paginator.num_pages)
 
-        items = json.loads(serializers.serialize("json", page_item))
+        items = json.loads(serialize("json", page_item))
 
         # 构建数据列表
         res_list = []

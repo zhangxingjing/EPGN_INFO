@@ -1,24 +1,26 @@
+import json
 import os
 import re
-import json
 import shutil
-import difflib
-from django.db.models import Q
-from audio.serializers import *
-from django.db import transaction
-from django.shortcuts import render
-from django.core import serializers
-from rest_framework import viewsets
-from django.utils.http import urlquote
-from settings.dev import AUDIO_FILE_PATH
-from rest_framework.viewsets import ViewSet
-from rest_framework.response import Response
-from scripts import zip_file, judge_frequency
-from fileinfo.models import Platform, PropulsionPower, GearBox
-from audio.models import Audio, Description, Status, Frequency
+import time
+
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.serializers import serialize
+from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
+from django.shortcuts import render
+from django.utils.http import urlquote
+from pypinyin import lazy_pinyin
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.viewsets import ViewSet
+
+from audio.serializers import *
+from fileinfo.models import Platform, PropulsionPower, GearBox
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
+from scripts import zip_file, judge_frequency
+from settings.dev import AUDIO_FILE_PATH
 
 
 class AudioViewSet(viewsets.ModelViewSet):
@@ -61,22 +63,10 @@ class AudioViewSet(viewsets.ModelViewSet):
         if "/" in description.name:
             description.name = description.name.replace('/', '／')
 
-        directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "/"
-        file_num = difflib.get_close_matches(description.name + "_" + car_model, os.walk(AUDIO_FILE_PATH))
-        if len(file_num) > 1:
-            print(int(len(file_num) + 1))
-
-        # 无--新建文件夹，添加文件 -->> 保存文件的时候，文件名+1
-        if not os.path.exists(directory_path):
-            os.mkdir(directory_path)
-        else:
-            file_num = difflib.get_close_matches(
-                details + "_" + car_model,
-                os.listdir(AUDIO_FILE_PATH),
-                cutoff=0.94
-            )  # /0.94
-            if len(file_num) > 0:
-                os.mkdir(AUDIO_FILE_PATH + details + "_" + car_model + "_" + str(len(file_num)))
+        now_time = str(round(time.time() * 1000))
+        # directory_path = VOICE_FILE_PATH + car_model.name + "_" + source + "_" + now_time + "/"
+        directory_path = AUDIO_FILE_PATH + description.name + "_" + car_model + "_" + now_time + "/"
+        os.mkdir(directory_path)
 
         # 有 --添加到之前的文件夹中
         try:
@@ -250,7 +240,7 @@ class AudioViewSet(viewsets.ModelViewSet):
             page_item = paginator.page(1)
         except EmptyPage:
             page_item = paginator.page(paginator.num_pages)
-        items = json.loads(serializers.serialize("json", page_item))
+        items = json.loads(serialize("json", page_item))
 
         # 构建数据列表
         res_list = []
@@ -275,7 +265,10 @@ class AudioViewSet(viewsets.ModelViewSet):
         try:
             folder_path = AUDIO_FILE_PATH + instance.description_name + "_" + instance.car_model
             if os.path.isdir(folder_path):
-                shutil.rmtree(folder_path)  # 删除磁盘文件
+                try:
+                    shutil.rmtree(folder_path)  # 删除磁盘文件
+                except:
+                    pass
             self.perform_destroy(instance)  # 删除数据库中的数据
             return JsonResponse({"status": True})
         except Exception as e:
@@ -318,7 +311,7 @@ class Wait(ViewSet):
         frequency_range = FrequencySerializer(frequency, many=True)
 
         # 车型
-        car = Platform.objects.filter(parent_id__gte=100)  # 大于等于
+        car = Platform.objects.values("id", "name").filter(parent_id__gte=100)  # 大于等于
         car_model = CarModelSerializer(car, many=True)
 
         # 发动机
@@ -335,7 +328,8 @@ class Wait(ViewSet):
 
         # 抱怨库工况
         audio_status = Status.objects.all()
-        condition = AudioStatusSerializer(audio_status, many=True)
+        status_list = AudioStatusSerializer(audio_status, many=True).data
+        status_list.sort(key=lambda char: lazy_pinyin(char["name"][0])[0][0])
 
         # 功率排序
         power_list = sorted(power.data, key=lambda i: int(re.search(r'\d+', i["num"]).group()))
@@ -360,7 +354,7 @@ class Wait(ViewSet):
             "car_engine": sort_car_engine_list,
             "car_gearbox": sorted(car_gearbox.data, key=lambda i: i["name"][0]),
             "power": new_sort_power_list,
-            "condition": condition.data,
+            "condition": status_list,
         }
         return Response(data=data)
 

@@ -18,5 +18,11 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://127.0.0.1:3306/EPGN_INFO</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="Docker MySQL" uuid="a8ac3dfb-d37b-4970-b25d-69538e6d36bf">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://192.168.43.230:13306/EPGN_INFO</jdbc-url>
+    </data-source>
   </component>
 </project>

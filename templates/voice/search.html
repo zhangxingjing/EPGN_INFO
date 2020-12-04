@@ -1,10 +1,546 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% load static %}
+
+{% block title %} SEARCH {% endblock %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <style>
+        .layui-form-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .layui-elem-field legend {
+            font-weight: bold;
+        }
+
+        .layui-table td, .layui-table th {
+            font-weight: bold;
+        }
+
+        .list-data {
+            font-size: 18px;
+            padding: 3px;
+            height: 35px;
+            line-height: 35px
+        }
+
+        .list-data img {
+            height: 50%;
+            padding-top: 2px;
+            width: auto
+        }
+    </style>
+    <script type="text/javascript" src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/axios-0.18.0.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+    <style>
+        #app {
+            margin-top: 30px;
+        }
+
+        h3 {
+            display: flex;
+            flex-direction: row;
+            font-size: 22px;
+            margin-top: 20px;
+        }
+
+        h3:before,
+        h3:after {
+            content: "";
+            flex: 1 1;
+            border-bottom: 1px solid #000;
+            margin: 10px;
+        }
+
+        .item-flex {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        #submit-button {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #app {
+
+        }
+
+        #content1 {
+            width: 90%;
+            padding-left: 5%;
+            padding-right: 5%;
+            display: flex;
+            line-height: 45px;
+        }
+
+        #content1 div {
+            display: flex;
+            margin-bottom: 5px;
+            margin-right: 10px;
+        }
+
+        #content1 div span:nth-child(1) {
+            margin-right: 10px;
+        }
+
+        #content2 {
+            width: 90%;
+            padding-left: 5%;
+            padding-right: 5%;
+            display: flex;
+            line-height: 45px;
+        }
+
+        .el-input__inner {
+            width: auto;
+        }
+
+        .el-input {
+            width: auto;
+        }
+
+        .el-form-item {
+            width: 17%;
+        }
+
+        .el-form-item__label {
+            width: 28%;
+        }
+
+        #content2 div {
+            display: flex;
+            margin-bottom: 5px;
+            margin-right: 10px;
+        }
+
+        #content2 div span:nth-child(1) {
+            line-height: 45px;
+            margin-right: 10px;
+        }
+
+        #content3 {
+            width: 90%;
+            padding-left: 5%;
+            display: flex;
+            line-height: 45px;
+        }
+
+        #content3 div {
+            display: flex;
+            margin-bottom: 5px;
+            line-height: 45px;
+        }
+
+    </style>
+    <script src="{% static 'vue.js' %}"></script>
+    <script src="{% static 'ele/index.js' %}"></script>
+    <script src="{% static 'js/jquery-1.7.2.min.js' %}"></script>
+    <script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="layui-fluid">
+        <div class="layui-card" style="padding: 10px">
+
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+                <legend>抱怨检索</legend>
+            </fieldset>
+
+            <div id="app">
+                <div id="content1">
+                    <div>
+                        <div><span style="width: 112px">抱怨简单描述：</span></div>
+                        <el-select v-model="brief_description" placeholder="请选择">
+                            <el-option v-for="item in car_briefDescription" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span>频率范围：</span></div>
+                        <el-select v-model="frequency" placeholder="请选择频率范围">
+                            <el-option v-for="item in frequency_range" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span style="width: 56px">阶次：</span></div>
+                        <el-input v-model="order" placeholder="请输入抱怨阶次" clearable></el-input>
+                    </div>
+                    <div>
+                        <div><span>关键零件或因素：</span></div>
+                        <el-input v-model="key_parts" placeholder="" clearable></el-input>
+                    </div>
+
+                </div>
+                <div id="content2">
+                    <div>
+                        <div><span style="width:112px">车型：</span></div>
+                        <el-select v-model="car_modal" placeholder="请选择">
+                            <el-option v-for="item in carmodal" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span style="width: 70px">发动机：</span></div>
+                        <el-select v-model="car_engine" placeholder="请选择">
+                            <el-option v-for="item in engine" :key="item" :label="item" :value="item"></el-option>
+                        </el-select>
+                    </div>
+                    <div style="margin-right: 0px">
+                        <div><span>变速箱：</span></div>
+                        <el-select v-model="car_gearbox" placeholder="请选择">
+                            <el-option v-for="item in gearbox" :key="item.id" :label="item.name" :value="item.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <div><span style="width: 112px">功率：</span></div>
+                        <el-select v-model="car_power" placeholder="请选择">
+                            <el-option v-for="item in power" :key="item" :label="item" :value="item"></el-option>
+                        </el-select>
+                    </div>
+
+                </div>
+                <div id="content3">
+                    <div style="margin-right: 30px">
+                        <div><span style="width: 112px;margin-right: 20px">工况：</span></div>
+                        <el-select v-model="car_condition" placeholder="请选择">
+                            <el-option v-for="item in condition" :key="item.id" :label="item.name" :value="item.name"></el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <span style="margin-right: 20px">轮胎信息：</span>
+                        <el-input v-model="tire_supplier" placeholder="供应商" clearable></el-input>
+                        <span style="margin-right: 5px"></span>
+                        <el-input v-model="tire_size" placeholder="轮胎尺寸" clearable></el-input>
+                        <span style="margin-right: 5px"></span>
+                        <el-input v-model="tire_pattern" placeholder="轮胎花纹" clearable></el-input>
+                    </div>
+                </div>
+
+                <button style="background: #3a8ee6;color: white;margin-left: 5%;width: 100px;line-height: 35px;font-size: 15px;text-align:center;border-radius: 3px;margin-bottom: 20px;border: 0px " @click="search_complain">
+                    点击查询
+                </button>
+                <div style="display: flex;margin-left: 5%">
+                    <div>
+                        <el-input v-model="fuzzy_word" placeholder="模糊内容搜索" clearable></el-input>
+                    </div>
+                    <button style="width: 100px;background: #3a8ee6;color: white;margin-left: 1%;line-height: 40px;text-align: center;display: block;border-radius: 4px;font-size: 15px;border: 0px;" @click="search_complain">
+                        模糊搜索
+                    </button>
+                </div>
+            </div>
+            <!--<div style="border-bottom: 1px solid black;margin-top: 20px;margin-bottom: 40px"></div>-->
+            <div style="width: 100%;margin-top: 2%">
+                <table class="layui-hide" id="test" lay-filter="test"></table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/html" id="barDemo">
+        <a class="layui-btn layui-btn-xs" lay-event="edit">查看详情</a>
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    </script>
+
+    <script>
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element', 'table'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                $ = layui.jquery,
+                upload = layui.upload;
+            table = layui.table;
+
+            table.render({
+                elem: '#test'
+                , url: '/audio/file/'
+                , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                    title: '提示'
+                    , layEvent: 'LAYTABLE_TIPS'
+                    , icon: 'layui-icon-tips'
+                }]
+                , title: '用户数据表'
+                , cols: [[
+                    {field: 'car_modal', title: '车型', width: 100, fixed: 'left', sort: true}
+                    , {field: 'car_engine', title: '发动机', width: 80, edit: 'text'}
+                    , {field: 'car_gearbox', title: '变速箱', width: 120, edit: 'text'}
+                    , {field: 'power', title: '功率', width: 80, edit: 'text', sort: true}
+                    , {field: 'tire_model', title: '轮胎', width: 100}
+                    , {field: 'details', title: '抱怨详细描述'}
+                    , {field: 'frequency', title: '频率', width: 120}
+                    , {field: 'order', title: '阶次', width: 100}
+                    , {field: 'condition', title: '工况', width: 220}
+                    , {field: 'reason', title: '关键零件或因素', width: 120}
+                    , {field: 'author', title: '上传者', width: 80, hide: true}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
+                ]]
+                , page: true
+            });
+
+            //头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                switch (obj.event) {
+                    case 'getCheckData':
+                        var data = checkStatus.data;
+                        layer.alert(JSON.stringify(data));
+                        break;
+                    case 'getCheckLength':
+                        var data = checkStatus.data;
+                        layer.msg('选中了：' + data.length + ' 个');
+                        break;
+                    case 'isAll':
+                        layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                        break;
+
+                    //自定义头工具栏右侧图标 - 提示
+                    case 'LAYTABLE_TIPS':
+                        layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                        break;
+                }
+                ;
+            });
+
+            //监听行工具事件
+            table.on('tool(test)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'del') {
+                    layer.confirm('确认删除该文件?', function (index) {
+                        let user_name = sessionStorage.username;
+                        console.log(obj.data);
+                        if (obj.data.author == user_name) {
+                            obj.del();
+                            layer.close(index);
+                            $.ajax({
+                                url: '/audio/file/' + obj.data.pk,
+                                dataType: "json",
+                                type: "delete",
+                                success: function (result) {
+                                    console.log(result);
+                                    if (result.status == true) {
+                                        layer.msg('删除成功!', {icon: 6, time: 2000})
+                                    } else {
+                                        layer.msg('删除失败,请联系管理员!', {icon: 6, time: 2000})
+                                    }
+                                }
+                            });
+                        } else {
+                            layer.msg('非本人数据，无删除权限!', {icon: 6, time: 2000})
+                        }
+                    });
+                } else if (obj.event === 'edit') {
+                    let file_info = JSON.stringify(obj.data);
+                    sessionStorage.setItem("file_info", file_info);
+                    window.open('/audio/detail/');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        var table_data = '';
+
+        function handleChange() {
+            var ph2 = document.getElementsByClassName("el-input__inner");
+        }
+
+        function treereload() {
+            layui.use(['table'], function () {
+                var table = layui.table;
+
+                table.render({
+                    elem: '#test'
+                    , data: table_data
+                    , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                    , defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                        title: '提示'
+                        , layEvent: 'LAYTABLE_TIPS'
+                        , icon: 'layui-icon-tips'
+                    }]
+                    , title: '用户数据表'
+                    , cols: [[
+                        {field: 'car_modal', title: '车型', width: 160, fixed: 'left', unresize: true, sort: true}
+                        , {field: 'car_engine', title: '发动机', width: 80}
+                        , {field: 'car_gearbox', title: '变速箱', width: 115}
+                        , {field: 'power', title: '功率', width: 90, sort: true}
+                        , {field: 'tire_model', title: '轮胎', width: 100}
+                        , {field: 'details', title: '抱怨详细描述'}
+                        , {field: 'frequency', title: '频率', width: 75}
+                        , {field: 'order', title: '阶次', width: 80}
+                        , {field: 'condition', title: '工况', width: 220}
+                        , {field: 'reason', title: '关键零件或因素', width: 150}
+                        , {field: 'author', title: '上传者', width: 80, hide: true}
+                        , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
+                    ]]
+                    , page: true
+                });
+
+                //头工具栏事件
+                table.on('toolbar(test)', function (obj) {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch (obj.event) {
+                        case 'getCheckData':
+                            var data = checkStatus.data;
+                            layer.alert(JSON.stringify(data));
+                            break;
+                        case 'getCheckLength':
+                            var data = checkStatus.data;
+                            layer.msg('选中了：' + data.length + ' 个');
+                            break;
+                        case 'isAll':
+                            layer.msg(checkStatus.isAll ? '全选' : '未全选');
+                            break;
+
+                        //自定义头工具栏右侧图标 - 提示
+                        case 'LAYTABLE_TIPS':
+                            layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                            break;
+                    }
+                });
+
+                //监听行工具事件
+                table.on('tool(test)', function (obj) {
+                    var data = obj.data;
+                    if (obj.event === 'del') {
+                        layer.confirm('真的删除行么', function (index) {
+                            obj.del();
+                            layer.close(index);
+                        });
+                    } else if (obj.event === 'edit') {
+                        let file_info = JSON.stringify(obj.data);
+                        sessionStorage.setItem("file_info", file_info);
+                        window.open('/audio/detail/');
+                    }
+                });
+            });
+        }
+
+        new Vue({
+            el: '#app',
+            data: function () {
+                return {
+                    car_modal: '',
+                    car_engine: '',
+                    car_gearbox: '',
+                    car_power: '',
+                    source: '',
+                    power: '',
+                    condition: '',
+                    complain_features: 'frequency',
+                    frequency: '',
+                    order: '',
+                    user_name: '',
+                    key_parts: '',
+                    measure: '',
+                    tire_type: '',
+                    detailed_description: '',
+                    fuzzy_word: '',
+                    Frequency_show: true,
+                    Order_show: false,
+                    frequency_range: [],
+                    gearbox: [],
+                    car_condition: [],
+                    carmodal: [],
+                    engine: [],
+                    car_briefDescription: '',
+                    brief_description: '',
+                    tire_pattern: '',
+                    tire_supplier: '',
+                    tire_size: '',
+                    Paramas: {},
+                }
+            },
+            methods: {
+                changefeature() {
+                    if (this.complain_features == "frequency") {
+                        this.Frequency_show = true;
+                        this.Order_show = false
+                    } else {
+                        this.Frequency_show = false;
+                        this.Order_show = true;
+                    }
+                },
+                search_complain() {
+                    if (this.brief_description !== '' && this.brief_description !== 9999) {
+                        this.Paramas['brief_description'] = this.brief_description;
+                    }
+                    if (this.frequency !== '' && this.frequency !== 9999) {
+                        this.Paramas['frequency_range'] = this.frequency;
+                    }
+                    if (this.order !== '') {
+                        this.Paramas['order'] = this.order
+                    }
+                    if (this.key_parts !== '') {
+                        this.Paramas['key_parts'] = this.key_parts
+                    }
+                    if (this.car_modal !== '' && this.car_modal !== 9999) {
+                        this.Paramas['car_modal'] = this.car_modal
+                    }
+                    if (this.car_engine !== '' && this.car_engine !== "请选择") {
+                        this.Paramas['car_engine'] = this.car_engine
+                    }
+                    if (this.car_gearbox !== '' && this.car_engine !== 9999) {
+                        this.Paramas['car_gearbox'] = this.car_gearbox
+                    }
+                    if (this.car_power !== '' && this.car_power !== "请选择") {
+                        this.Paramas['power'] = this.car_power
+                    }
+                    if (this.car_condition !== '' && this.car_condition !== 9999) {
+                        this.Paramas['condition'] = this.car_condition
+                    }
+                    if (this.fuzzy_word !== '') {
+                        this.Paramas['key_word'] = this.fuzzy_word
+                    }
+                    if (this.tire_supplier !== '') {
+                        this.Paramas['tire'] = this.tire_supplier
+                    }
+
+
+                    axios({
+                        method: 'get',
+                        url: '/audio/file/',
+                        params: this.Paramas
+                    }).then(function (response) {
+                        table_data = response.data.data;
+                        treereload();
+                    })
+
+
+                },
+            },
+
+            created: function () {
+                var self = this;
+                $.ajax({
+                    url: '/audio/wait/',
+                    dataType: "json",
+                    type: "get",
+                    success: function (result) {
+                        self.car_briefDescription = result.brief_description;
+                        self.car_briefDescription.unshift({name: '请选择', id: 9999});
+                        self.frequency_range = result.frequency_range;
+                        self.frequency_range.unshift({name: '请选择', id: 9999});
+                        self.condition = result.condition;
+                        self.condition.unshift({name: '请选择', id: 9999});
+                        self.carmodal = result.car_modal;
+                        self.carmodal.unshift({name: '请选择', id: 9999});
+                        self.engine = result.car_engine;
+                        self.engine.unshift("请选择");
+                        self.gearbox = result.car_gearbox;
+                        self.gearbox.unshift({name: '请选择', id: 9999});
+                        self.power = result.power;
+                        self.power.unshift("请选择");
+                    }
+                });
+            }
+        })
+    </script>
+{% endblock %}

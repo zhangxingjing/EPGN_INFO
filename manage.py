@@ -4,7 +4,7 @@ import sys
 import socket
 
 if __name__ == "__main__":
-    if socket.gethostname() == "master":
+    if socket.gethostname() == "PC":
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
     else:
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.pro")

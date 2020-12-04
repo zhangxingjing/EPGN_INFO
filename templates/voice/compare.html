@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% load static %}
+
+{% block title %}
+    DETAIL
+{% endblock %}
+
+{% block link %}
+
+    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
+    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
+    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="layui-fluid" id="complain_upload">
+        <div class="layui-card" style="padding: 10px">
+            NVH音频对比
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script src="{% static 'js/vue_2.6.10.js' %}"></script>
+    <script src="{% static 'ele/index.js' %}"></script>
+    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
+    <script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+    <script>
+        layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
+            var form = layui.form,
+                layer = layui.layer,
+                layedit = layui.layedit,
+                laydate = layui.laydate,
+                $ = layui.jquery,
+                upload = layui.upload;
+        });
+    </script>
+{% endblock %}

@@ -192,7 +192,7 @@
                     <div v-show="Uniform_speed">
                         <div><span></span></div>
                         <el-input v-model="uniform_speed" clearable placeholder="填写车速"
-                        ></el-input>
+                        ></el-input>6
                     </div>
 
 
@@ -252,9 +252,9 @@
                         <div><span>发动机：</span></div>
                         <el-select v-model="car_engine" placeholder="请选择">
                             <el-option v-for="item in engine"
-                                       :key="item.id"
-                                       :label="item.num"
-                                       :value="item.id"></el-option>
+                                       :key="item"
+                                       :label="item"
+                                       :value="item"></el-option>
                         </el-select>
                     </div>
                     <div>
@@ -270,9 +270,9 @@
                         <div><span>功率：</span></div>
                         <el-select v-model="car_power" placeholder="请选择">
                             <el-option v-for="item in power"
-                                       :key="item.id"
-                                       :label="item.num"
-                                       :value="item.id"></el-option>
+                                       :key="item"
+                                       :label="item"
+                                       :value="item"></el-option>
                         </el-select>
                     </div>
                     <div>
@@ -396,9 +396,6 @@
 
         function handleChange() {
             var ph2 = document.getElementsByClassName("el-input__inner");
-            console.log(ph2[0].value);
-            console.log(ph2[0].text);
-            console.log(zhi1);
         }
 
         new Vue(
@@ -450,75 +447,14 @@
                         filelist_ppt: [],
                         loading: false,
 
-
-                        accelerate_list: [{
-                            name: "VZ"
-                        }, {
-                            name: "VS"
-                        }, {
-                            name: "TZ"
-                        }, {
-                            name: "TS"
-                        }, {
-                            name: "加减速均有"
-                        }, {
-                            name: "不清楚"
-                        }],
-                        accelerate_gear: [{
-                            name: "1"
-                        }, {
-                            name: "2"
-                        }, {
-                            name: "3"
-                        }, {
-                            name: "4"
-                        }, {
-                            name: "5"
-                        }, {
-                            name: "6"
-                        }, {
-                            name: "7"
-                        }, {
-                            name: "D"
-                        }, {
-                            name: "B"
-                        }, {
-                            name: "档位无关"
-                        }],
-                        roll_condition_list: [{
-                            name: "Stuckern"
-                        }, {
-                            name: "Kleinpflaster"
-                        }, {
-                            name: "Kerben"
-                        }, {
-                            name: "Rauhasphalt"
-                        }, {
-                            name: "Glatteasphalt"
-                        }, {
-                            name: "其他"
-                        }],
-                        comfort_condition_list: [{
-                            name: "减速带"
-                        }, {
-                            name: "Stuckern"
-                        }, {
-                            name: "负坎"
-                        }, {
-                            name: "沟槽路"
-                        }, {
-                            name: "金属横档条"
-                        }, {
-                            name: "随机水泥路面"
-                        }, {
-                            name: "其他"
-                        }],
+                        accelerate_list: [{name: "VZ"}, {name: "VS"}, {name: "TZ"}, {name: "TS"}, {name: "加减速均有"}, {name: "不清楚"}],
+                        accelerate_gear: [{name: "1"}, {name: "2"}, {name: "3"}, {name: "4"}, {name: "5"}, {name: "6"}, {name: "7"}, {name: "D"}, {name: "B"}, {name: "档位无关"}],
+                        roll_condition_list: [{name: "Stuckern"}, {name: "Kleinpflaster"}, {name: "Kerben"}, {name: "Rauhasphalt"}, {name: "Glatteasphalt"}, {name: "其他"}],
+                        comfort_condition_list: [{name: "减速带"}, {name: "Stuckern"}, {name: "负坎"}, {name: "沟槽路"}, {name: "金属横档条"}, {name: "随机水泥路面"}, {name: "其他"}],
                         complain_report: [],
                         complain_audio: [],
                         complain_filelist: [],
                         complain_photo: [],
-
-
                     }
                 },
                 methods: {
@@ -553,7 +489,7 @@
                             this.Rolling_noise = false;
                             this.Chassis_comfort = true;
                         } else if (this.condition == "其他") {
-                           this.Accelerate_show = false;
+                            this.Accelerate_show = false;
                             this.Uniform_speed = true;
                             this.Rolling_noise = false;
                             this.Chassis_comfort = false;
@@ -601,55 +537,6 @@
                             })
                             return false
                         }
-                        /*if (this.car_engine == '') {
-                            this.$message({
-                                message: '请选择发动机信息!',
-                                type: 'warning'
-                            })
-                            return false
-                        }
-                        if (this.car_gearbox == '') {
-                            this.$message({
-                                message: '请选择变速箱信息!',
-                                type: 'warning'
-                            })
-                            return false
-                        }
-                        if (this.car_gearbox == '') {
-                            this.$message({
-                                message: '请选择变速箱信息!',
-                                type: 'warning'
-                            })
-                            return false
-                        }
-                        if (this.car_power == '') {
-                            this.$message({
-                                message: '请选择功率信息!',
-                                type: 'warning'
-                            })
-                            return false
-                        }*/
-                        /*if (this.filelist_hdf.length == 0) {
-                            this.$message({
-                                message: '请上传抱怨原始数据!',
-                                type: 'warning'
-                            })
-                            return false
-                        }
-                        if (this.filelist_pic.length == 0) {
-                            this.$message({
-                                message: '请上传抱怨特征图!',
-                                type: 'warning'
-                            })
-                            return false
-                        }
-                        if (this.filelist_audio.length == 0) {
-                            this.$message({
-                                message: '请上传抱怨音频!',
-                                type: 'warning'
-                            })
-                            return false
-                        }*/
 
                         this.loading = true;
                         let formData = new FormData();
@@ -680,21 +567,17 @@
                         } else if (this.condition == "底盘舒适性") {
                             let condition_list = this.condition + "-" + this.comfort_road_condition + "-" + this.comfort_speed + "km/h";
                             formData.append('condition', condition_list);
-                        }
-                        else if (this.condition == "其他") {
+                        } else if (this.condition == "其他") {
                             let condition_list = this.condition + "-" + this.uniform_speed + "km/h";
                             formData.append('condition', condition_list);
                         } else {
                             formData.append('condition', this.condition);
                         }
-                        {#this.complain_filelist[0].forEach((file) => {#}
-                        {#    formData.append('complain_file', file.raw);});#}
+
                         formData.append('conplain_file', this.filelist_hdf);
                         formData.append('conplain_pic', this.filelist_pic);
                         formData.append('conplain_report', this.filelist_ppt);
                         formData.append('conplain_audio', this.filelist_audio);
-                        {#let token = sessionStorage.token || localStorage.token;#}
-                        {#formData.append('X-CSRFToken', token);#}
 
                         axios({
                             url: "/audio/file/",
@@ -705,11 +588,8 @@
                             data: formData,
                         }).then((response) => {
                             if (response.data.code == 1) {
-                                console.log(this.loading);
                                 this.loading = false;
-                                {#window.Vue.$message({#}
-                                {#    message: '文件上传成功!',#}
-                                {#    type: 'success'#}
+
                                 //需要用message的地方
                                 Vue.prototype.$message({
                                     message: '文件上传成功!',
@@ -725,7 +605,6 @@
 
                         }).catch((error) => {
                             this.loading = false;
-                            //需要用message的地方
                             Vue.prototype.$message({
                                 message: '文件上传失败,请联系管理员!',
                                 type: 'error'
@@ -734,32 +613,15 @@
                     },
 
                     handleRemove(file, fileList) {
-                        console.log(file, fileList);
-                        /*if (fileList[0].name.toLowerCase().indexOf('.hdf') != -1) {
-                            this.filelist_hdf = []
-                        } else if (fileList[0].name.toLowerCase().indexOf('.jpg') != -1) {
-                            this.filelist_pic = []
-                        } else if (fileList[0].name.toLowerCase().indexOf('.png') != -1) {
-                            this.filelist_pic = []
-                        } else if (fileList[0].name.toLowerCase().indexOf('.mp3') != -1) {
-                            this.filelist_audio = []
-                        } else if (fileList[0].name.toLowerCase().indexOf('.wav') != -1) {
-                            this.filelist_audio = []
-                        } else if (fileList[0].name.toLowerCase().indexOf('.ppt') != -1) {
-                            this.filelist_ppt = []
-                        } else {
-                        }*/
                     },
                     hanlesuccess(file) {
-                        console.log("success" + file);
                     },
                     changefile(file, filelist) {
                         if (filelist[0].name.toLowerCase().indexOf('.hdf') != -1) {
                             this.filelist_hdf = filelist[0].raw;
-                            {#this.filelist_hdf = filelist#}
                         } else if (filelist[0].name.toLowerCase().indexOf('.dat') != -1) {
                             this.filelist_hdf = filelist[0].raw;
-                        }  else if (filelist[0].name.toLowerCase().indexOf('.jpg') != -1) {
+                        } else if (filelist[0].name.toLowerCase().indexOf('.jpg') != -1) {
                             this.filelist_pic = filelist[0].raw
                         } else if (filelist[0].name.toLowerCase().indexOf('.jpeg') != -1) {
                             this.filelist_pic = filelist[0].raw
@@ -775,11 +637,8 @@
                             this.filelist_ppt = filelist[0].raw
                         } else {
                         }
-
-
                     },
                     handlePreview(file) {
-                        console.log(file);
                     },
                     handleExceed(files, fileList) {
                         this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
@@ -808,7 +667,6 @@
                         }
                     });
                 }
-
             })
     </script>
 {% endblock %}

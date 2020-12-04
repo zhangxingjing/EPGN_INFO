@@ -5,6 +5,14 @@ import time
 
 from utils import log_theme
 
+########################################################## Docker默认配置 ############################################################
+# DOCKER_SERVER = "192.168.43.230"
+# REDIS_PORT = 16379
+# MYSQL_PORT = 13306
+DOCKER_SERVER = "127.0.0.1"
+REDIS_PORT = 6379
+MYSQL_PORT = 3306
+
 ############################################################ Django默认配置 ############################################################
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -58,8 +66,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # 关闭csrf自动校验
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -89,8 +97,8 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',  # 数据库主机
-        'PORT': 3306,  # 数据库端口
+        'HOST': DOCKER_SERVER,  # 数据库主机--> 使用Docker化的MySQL数据库
+        'PORT': MYSQL_PORT,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
         'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
@@ -150,7 +158,7 @@ LOGGING = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/0",  # 修改redis数据库配置
+        "LOCATION": "redis://{}:{}/0".format(DOCKER_SERVER, REDIS_PORT),  # 修改redis数据库配置
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             # "PASSWORD": "root"  # redis密码
@@ -158,7 +166,7 @@ CACHES = {
     },
     "session": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
+        "LOCATION": "redis://{}:{}/1".format(DOCKER_SERVER, REDIS_PORT),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
             # "PASSWORD": "root"  # redis密码
@@ -307,10 +315,37 @@ SIMPLEUI_ICON = {'Users': 'fab fa-apple', '任务信息': 'fas fa-user-tie'}  # 
 
 # SIMPLEUI_CONFIG = {
 #     'system_keep': False,
-#     'menu_display': ['Audio', 'Bug', 'Fileinfo', 'Users', 'Worktime', "Voice"],
+#     'menu_display': ['Users', 'Fileinfo', 'Bug', 'Audio', 'Worktime', "Voice"],
 #     'dynamic': True,
 #     'menus': [
 #         {
+#             'name': 'Users',
+#             'icon': 'fa fa-user',
+#             'models': [
+#                 {'name': '任务信息', 'icon': 'fa fa-list', 'url': 'users/task/'},
+#                 {'name': '用户信息', 'icon': 'fa fa-user-plus', 'url': 'users/user/'},
+#                 {'name': '部门信息', 'icon': 'fa fa-users', 'url': 'users/section/'},
+#             ]
+#         }, {
+#             'name': 'Fileinfo',
+#             'icon': 'fa fa-car',
+#             'models': [
+#                 {'name': '专业-工况', 'icon': 'fa fa-user-secret', 'url': 'fileinfo/direction/'},
+#                 {'name': '动力-功率', 'icon': 'fa fa-certificate', 'url': 'fileinfo/propulsionpower/'},
+#                 {'name': '变速箱', 'icon': 'fa fa-certificate', 'url': 'fileinfo/gearbox/'},
+#                 {'name': '平台-车型', 'icon': 'fa fa-th', 'url': 'fileinfo/platform/'},
+#                 {'name': '测试信息', 'icon': 'fa fa-th', 'url': 'fileinfo/fileinfo/'},
+#                 {'name': '通道-写法', 'icon': 'fa fa-th', 'url': 'fileinfo/channel/'},
+#             ]
+#         }, {
+#             'app': 'Bug',
+#             'name': 'Bug',
+#             'icon': 'fa fa-bug',
+#             'models': [
+#                 {'name': '错误信息', 'icon': 'far fa fa-info-circle', 'url': 'bug/bug/'},
+#                 {'name': '错误分类', 'icon': 'far fa fa-barcode', 'url': 'bug/category/'},
+#             ]
+#         }, {
 #             'app': 'Audio',
 #             'name': 'Audio',
 #             'icon': 'fa fa-audio-description',
@@ -319,33 +354,6 @@ SIMPLEUI_ICON = {'Users': 'fab fa-apple', '任务信息': 'fas fa-user-tie'}  # 
 #                 {'name': '抱怨描述', 'icon': 'far fa-circle', 'url': 'audio/description/'},
 #                 {'name': '抱怨音频', 'icon': 'far fa-circle', 'url': 'audio/audio/'},
 #                 {'name': '抱怨频率', 'icon': 'far fa-circle', 'url': 'audio/frequency/'},
-#             ]
-#         }, {
-#             'app': 'Bug',
-#             'name': 'Bug',
-#             'icon': 'fa fa-bug',
-#             'models': [
-#                 {'name': '错误信息', 'icon': 'far fa-circle', 'url': 'bug/bug/'},
-#                 {'name': '错误分类', 'icon': 'far fa-circle', 'url': 'bug/category/'},
-#             ]
-#         }, {
-#             'name': 'Fileinfo',
-#             'icon': 'fa fa-car',
-#             'models': [
-#                 {'name': '专业方向-工况', 'icon': 'far fa-circle', 'url': 'fileinfo/direction/'},
-#                 {'name': '动力总成-功率', 'icon': 'far fa-circle', 'url': 'fileinfo/propulsionpower/'},
-#                 {'name': '变速箱信息', 'icon': 'far fa-circle', 'url': 'fileinfo/gearbox/'},
-#                 {'name': '平台-车型', 'icon': 'far fa-circle', 'url': 'fileinfo/platform/'},
-#                 {'name': '汽车数据信息', 'icon': 'far fa-circle', 'url': 'fileinfo/fileinfo/'},
-#                 {'name': '通道-其他写法', 'icon': 'far fa-circle', 'url': 'fileinfo/channel/'},
-#             ]
-#         }, {
-#             'name': 'Users',
-#             'icon': 'fa fa-user',
-#             'models': [
-#                 {'name': '任务信息', 'icon': 'far fa-circle', 'url': 'users/task/'},
-#                 {'name': '用户信息', 'icon': 'far fa-circle', 'url': 'users/user/'},
-#                 {'name': '部门信息', 'icon': 'far fa-circle', 'url': 'users/section/'},
 #             ]
 #         }, {
 #             'name': 'Worktime',
@@ -366,3 +374,7 @@ SIMPLEUI_ICON = {'Users': 'fab fa-apple', '任务信息': 'fas fa-user-tie'}  # 
 #         }
 #     ]
 # }
+
+########################################################## Celery 配置 ##########################################################
+# CELERY_URL = redis://127.0.0.1:6379/1   # redis 1作为消息代理
+# CELERY_RESULT_BACKEND = redis://127.0.0.1:6379/2    # 把任务结果存在redis 2

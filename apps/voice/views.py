@@ -1,21 +1,20 @@
-# Create your views here.
-import difflib
 import json
 import os
 import re
 import shutil
+import time
 
-from django.core import serializers  # 这个必须放在最后
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.core.serializers import serialize
 from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.shortcuts import render
 from django.utils.http import urlquote
+from pypinyin import lazy_pinyin
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-# from audio.serializers import *
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from fileinfo.serializers import CarModelSerializer, PropulsionSerializer, GearBoxSerializer
 from scripts import zip_file
@@ -32,7 +31,7 @@ class VoiceViewSet(ModelViewSet):
     # 上传
     def create(self, request, *args, **kwargs):
         # 不再验证前端发送的数据
-        author = User.objects.filter(username=request.POST.get("username")).fitrst()
+        author = User.objects.get(username=request.POST.get("username"))
         car_model = Platform.objects.filter(id=request.POST.get("car_model")).first()
         status = request.POST.get("status")
         source = request.POST.get("source")
@@ -49,22 +48,15 @@ class VoiceViewSet(ModelViewSet):
         img_name = str(img)  # 文件名
         mp3_name = str(mp3)  # 文件名
 
-        directory_path = VOICE_FILE_PATH + car_model.name + "_" + source + "/"
-        file_num = difflib.get_close_matches(car_model.name + "_" + source, os.walk(VOICE_FILE_PATH))
-        if len(file_num) > 1:
-            print(int(len(file_num) + 1))
+        now_time = str(round(time.time() * 1000))
+        directory_path = VOICE_FILE_PATH + car_model.name + "_" + source + "_" + now_time + "/"
+        # file_num = difflib.get_close_matches(directory_path, os.walk(VOICE_FILE_PATH))
+        # if len(file_num) > 1:
+        #     print(int(len(file_num) + 1))
 
         # 无--新建文件夹，添加文件 -->> 保存文件的时候，文件名+1
         if not os.path.exists(directory_path):
             os.mkdir(directory_path)
-        else:
-            file_num = difflib.get_close_matches(
-                car_model.name + "_" + car_model,
-                os.listdir(VOICE_FILE_PATH),
-                cutoff=0.94
-            )  # /0.94
-            if len(file_num) > 0:
-                os.mkdir(VOICE_FILE_PATH + car_model.name + "_" + source + "_" + str(len(file_num)))
 
         # 有 --添加到之前的文件夹中
         try:
@@ -112,9 +104,9 @@ class VoiceViewSet(ModelViewSet):
                     power=power,
                     depict=depict,
                     remark=remark,
-                    hdf=new_hdf_info,
-                    img=new_img_info,
-                    mp3=new_mp3_info
+                    # hdf=new_hdf_info,
+                    # img=new_img_info,
+                    # mp3=new_mp3_info
                 )
 
                 return Response(data={"code": 1, "msg": "文件上传成功！"})
@@ -148,37 +140,38 @@ class VoiceViewSet(ModelViewSet):
 
         # 如果用户搜索了，先获取上面几个的查询集 ==> 有没有key_word
         if car_model:
-            search_dict["car_model"] = Platform.objects.get(id=car_model).name
+            search_dict["car_model"] = Platform.objects.get(id=car_model)
         if propulsion:
-            search_dict["propulsion"] = propulsion
+            search_dict["propulsion"] = PropulsionPower.objects.get(num=propulsion)
         if gearbox:
-            search_dict["gearbox"] = GearBox.objects.get(id=gearbox).name
+            search_dict["gearbox"] = GearBox.objects.get(id=gearbox)
         if power:
-            search_dict["power"] = power
+            search_dict["power"] = PropulsionPower.objects.get(num=power)
         if depict:
             search_dict["depict"] = depict
         if remark:
             search_dict["remark"] = remark
-        if source:
-            search_dict["source"] = GearBox.objects.get(id=source).name
 
         result_items = items.filter(**search_dict).order_by('-id')
+
         if status:
             result_items = result_items.filter(status__icontains=status)
+        if source:
+            result_items = result_items.filter(source__icontains=source)
 
         # 对搜索关键字的检索
         if key_word:
-            key_word = (key_word.replace(' ', '')).encode()
+            # key_word = (key_word.replace(' ', '')).encode()
+            key_word = (key_word.replace(' ', ''))
             items = result_items.filter(
-                Q(description__name__icontains=key_word) |
-                Q(status__icontains=key_word) |
-                Q(car_model__icontains=key_word) |
-                Q(propulsion__icontains=key_word) |
-                Q(gearbox__icontains=key_word) |
-                Q(power__icontains=key_word) |
-                Q(source__icontains=key_word) |
+                Q(car_model__name__icontains=key_word) |
+                Q(propulsion__num__icontains=key_word) |
+                Q(gearbox__name__icontains=key_word) |
+                Q(power__num__icontains=key_word) |
                 Q(depict__icontains=key_word) |
-                Q(remark__icontains=key_word)
+                Q(remark__icontains=key_word) |
+                Q(status__icontains=key_word) |
+                Q(source__icontains=key_word)
             ).order_by('-id')
         else:
             items = result_items
@@ -191,7 +184,7 @@ class VoiceViewSet(ModelViewSet):
             page_item = paginator.page(1)
         except EmptyPage:
             page_item = paginator.page(paginator.num_pages)
-        items = json.loads(serializers.serialize("json", page_item))
+        items = json.loads(serialize("json", page_item))
 
         # 构建数据列表
         res_list = []
@@ -211,9 +204,13 @@ class VoiceViewSet(ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         try:
-            folder_path = VOICE_FILE_PATH + instance.car_model.name + "_" + instance.source.name
+            now_time = str(round(time.time() * 1000))
+            folder_path = VOICE_FILE_PATH + instance.car_model.name + "_" + instance.source + "_" + now_time + "/"
             if os.path.isdir(folder_path):
-                shutil.rmtree(folder_path)  # 删除磁盘文件
+                try:
+                    shutil.rmtree(folder_path)  # 删除磁盘文件
+                except:
+                    pass
             self.perform_destroy(instance)  # 删除数据库中的数据
             return JsonResponse({"status": True})
         except Exception as e:
@@ -243,8 +240,21 @@ class Detail(ViewSet):
 class Wait(ViewSet):
     @staticmethod
     def get_items(request):
+
+        # TODO: 车型分类数据 - 分类聚合查询
+        # from fileinfo.models import Fileinfo
+        # from django.db.models import Sum, Count
+        #
+        # try:
+        #     xx = Fileinfo.objects.all().annotate(cateory_count=Count("carmodel")).values_list("carmodel", "cateory_count")
+        #     for x in xx:
+        #         print(x)
+        # except Exception as e:
+        #     print(e)
+        #     pass
+
         # 车型
-        car = Platform.objects.filter(parent_id__gte=100)  # 大于等于
+        car = Platform.objects.values("id", "name").filter(parent_id__gte=100)  # 大于等于
         car_model = CarModelSerializer(car, many=True)
 
         # 发动机
@@ -261,11 +271,13 @@ class Wait(ViewSet):
 
         # 工况
         status = Status.objects.all()
-        condition = StatusSerializer(status, many=True)
+        status_list = StatusSerializer(status, many=True).data
+        status_list.sort(key=lambda char: lazy_pinyin(char["name"][0])[0][0])
 
         # 声源
         source = Source.objects.all()
-        source_list = SourceSerializer(source, many=True)
+        source_list = SourceSerializer(source, many=True).data
+        source_list.sort(key=lambda char: lazy_pinyin(char["name"][0])[0][0])
 
         # 功率排序
         power_list = sorted(power.data, key=lambda i: int(re.search(r'\d+', i["num"]).group()))
@@ -287,8 +299,8 @@ class Wait(ViewSet):
             "car_engine": sort_car_engine_list,
             "car_gearbox": sorted(car_gearbox.data, key=lambda i: i["name"][0]),
             "power": new_sort_power_list,
-            "condition": condition.data,
-            "source": source_list.data
+            "condition": status_list,
+            "source": source_list
         }
         return Response(data=data)
 
@@ -301,8 +313,13 @@ class Wait(ViewSet):
         return render(request, 'voice/upload.html')
 
     @staticmethod
-    def detail(request):
-        return render(request, 'voice/detail.html')
+    def compare(request):
+        return render(request, 'voice/compare.html')
+
+    @staticmethod
+    def voice_detail(request):
+        return Response("当前是Detail页面！")
+        # return render(request, 'voice/detail.html')
 
 
 def download(request):

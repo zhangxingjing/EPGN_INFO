@@ -78,6 +78,7 @@ class WaitViewSet(ViewSet):
             }
             """
             返回json
+            try:
                 return JsonResponse({"status": True, "msg": data})
             except Exception as e:
                 return JsonResponse({"status": False, "msg": "数据请求失败：{}".format(e)})

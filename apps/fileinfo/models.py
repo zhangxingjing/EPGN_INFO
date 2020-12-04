@@ -30,8 +30,7 @@ class Fileinfo(models.Model):
 # powertrain - power
 class PropulsionPower(models.Model):
     num = models.CharField(max_length=20, verbose_name='功率')
-    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True,
-                               verbose_name='动力总成')
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='subs', null=True, blank=True, verbose_name='动力总成')
 
     class Meta:
         db_table = 'tb_car_power'

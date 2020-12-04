@@ -63,8 +63,7 @@ class FileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Fileinfo  # 绑定对应的模型类
-        fields = ["id", "carmodel", "author", "file_name", "platform", "produce", "parts", "status", "car_num",
-                  "propulsion", "power", "other_need"]
+        fields = ["id", "carmodel", "author", "file_name", "platform", "produce", "parts", "status", "car_num", "propulsion", "power", "other_need"]
 
 
 # 用户数据的序列化器

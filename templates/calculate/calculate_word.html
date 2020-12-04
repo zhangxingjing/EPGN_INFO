@@ -649,12 +649,13 @@
 
     function uploadbase64() {
         $.ajax({
-            url: /parse_ppt/,
+            url: "/calculate/parse_ppt/",
             dataType: "json",
             data: JSON.stringify({"items": uploadfilebase64list}),
             type: "post",
             success: function (result) {
-                document.getElementById("downloadppt").href = '/parse_ppt/?path=' + result.path;
+                document.getElementById("downloadppt").href = '/calculate/            type: "post",
+_ppt/?path=' + result.path;
             },
             error: function (result) {
                 console.log(result)
@@ -673,8 +674,6 @@
             bb--;
             $('#page2').css('display', 'block');
             $("#content_list2").append("<div id='test_section8'><h2> IV.&nbsp  试验进行 <b>Durchfuehrung</b></h2> <div contenteditable='true' id='box3' style='font-size:20px'></div></div>");
-
-
         }
         if ($("#box1").get(0).offsetHeight + $("#box2").get(0).offsetHeight > 480 && cc == 1) {
             let div4 = document.getElementById('test_section3');

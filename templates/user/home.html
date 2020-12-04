@@ -46,7 +46,6 @@
 
         .tips-block-all-data {
             font-size: 14px;
-            /* border-bottom: 1px solid #f6f6f6; */
             color: #333;
             border-radius: 2px 2px 0 0;
             line-height: 42px;
@@ -161,8 +160,6 @@
             white-space: nowrap;
             font-size: 20px;
             margin-bottom: 5px;
-            /* padding-right: 20px; */
-            /* background: rgb(57, 170, 226) url("../image/close.gif") right 9px no-repeat */
         }
     </style>
 {% endblock %}
@@ -290,11 +287,10 @@
         var user_id = sessionStorage.user_id;
         var userName = sessionStorage.username;
         var isManager = isInArray(userList, user_id);
-        var saveManager=["束元","官明超"];
-        if(saveManager.includes(username)){
-            document.getElementById('timeWork_save').style.display='block';
-        }
-        else{
+        var saveManager = ["束元", "官明超"];
+        if (saveManager.includes(username)) {
+            document.getElementById('timeWork_save').style.display = 'block';
+        } else {
 
         }
 
@@ -318,11 +314,6 @@
                         $("#task_list").append("<div ><a href='/time/check_/' style='color:red'>" + "1. " + "工时审核" + " -- " + vtask.length + "条</a> </div>");
                     }
                 }
-
-                /*for (let j = 0; j < vtask.length; j++) {
-                    let k = j + 1;
-                    $("#task_list").append("<div> " + k + ". " + vtask[j] + " </div>");
-                }*/
             }
         });
 
@@ -335,27 +326,26 @@
             },
             tooltip: {},
             legend: {
-                // data: ['Upload data volume', 'Download data volume'],
                 data: ['上传量', '下载量'],
                 "textStyle": {
                     "fontSize": 15
                 }
             },
             xAxis: {
-                data: ["KW_14", "KW_15", "KW_16", "KW_17", "KW_18", "KW_19", "KW_20", "KW_21", "KW_22", "KW_23", "KW_24", "KW_25"]
+                data: ["KW_38", "KW_39", "KW_40", "KW_41", "KW_42", "KW_43", "KW_44", "KW_45", "KW_46", "KW_47", "KW_48", "KW_49"]
             },
             yAxis: {},
             series: [{
                 // name: 'Upload data volume',
                 name: '上传量',
                 type: 'line',
-                data: []
+                data: [15, 23, 36, 13, 10, 20, 11, 22, 28, 21, 32, 28]
             },
                 {
                     // name: 'Download data volume',
                     name: '下载量',
                     type: 'line',
-                    data: []
+                    data: [25, 10, 21, 17, 7, 24, 21, 26, 22, 17, 23, 21]
                 }]
         };
 
@@ -376,19 +366,22 @@
                 }
             },
             legend: {
-                // data: ['Vehicle Data Ratio'],
                 data: ['车型数据占比'],
                 "textStyle": {
                     "fontSize": 17
                 }
             },
             series: [{
-                // name: 'Vehicle Data Ratio',
                 name: '车型数据占比',
                 type: 'pie',
                 avoidLabelOverlap: true,
                 minAngle: 5,
-                data: [],
+                data: [
+                    {value: 28, name: "B MPV"},
+                    {value: 10, name: "Octavia A8"},
+                    {value: 37, name: "Lamando NF"},
+                    {value: 25, name: "B SUV"}
+                ],
                 "label": {
                     "normal": {
                         "show": true,

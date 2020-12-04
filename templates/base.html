@@ -98,7 +98,7 @@
         <div class="layui-side layui-side-menu">
             <div class="layui-side-scroll">
                 <div class="layui-logo">
-                    <a href="/user/home/">
+                    <a href="{% url 'users:home' %}">
                         <span>EPGN  3.2</span>
                     </a>
                 </div>
@@ -106,7 +106,7 @@
                 <ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu"
                     lay-filter="layadmin-system-side-menu">
                     <li data-name="get" class="layui-nav-item">
-                        <a href="/user/home/" lay-tips="主页" lay-direction="2">
+                        <a href="{% url 'users:home' %}" lay-tips="主页" lay-direction="2">
                             <i class="layui-icon layui-icon-home"></i>
                             <cite>&nbsp;&nbsp;&nbsp;主页</cite>
                         </a>
@@ -144,27 +144,26 @@
 
                     <li class="layui-nav-item">
                         <a href="javascript:;">
-                            <i class="layui-icon  layui-icon-notice"></i>
+                            <i class="layui-icon layui-icon-service"></i>
                             &nbsp;&nbsp;&nbsp;抱怨
                         </a>
                         <dl class="layui-nav-child">
-                            <dd><a href="/audio/upload/">&nbsp;&nbsp;&nbsp;数据上传</a></dd>
-                            <dd><a href="/audio/search/">&nbsp;&nbsp;&nbsp;文件检索</a></dd>
+                            <dd><a href="/audio/upload/">&nbsp;&nbsp;&nbsp;上传</a></dd>
+                            <dd><a href="/audio/search/">&nbsp;&nbsp;&nbsp;检索</a></dd>
                         </dl>
                     </li>
 
-                    <!--
                     <li class="layui-nav-item">
                         <a href="javascript:;">
-                            <i class="layui-icon layui-icon-headset"></i>
+                            <i class="layui-icon layui-icon-speaker"></i>
                             &nbsp;&nbsp;&nbsp;音频
                         </a>
                         <dl class="layui-nav-child">
-                            <dd><a href="{% url "time:upload" %}">&nbsp;&nbsp;&nbsp;数据上传</a></dd>
-                            <dd><a href="{% url "time:search" %}">&nbsp;&nbsp;&nbsp;文件检索</a></dd>
+                            <dd><a href="/voice/upload/">&nbsp;&nbsp;&nbsp;上传</a></dd>
+                            <dd><a href="/voice/search/">&nbsp;&nbsp;&nbsp;检索</a></dd>
+                            <dd><a href="/voice/compare/">&nbsp;&nbsp;&nbsp;对比</a></dd>
                         </dl>
                     </li>
-                    -->
 
                     <!-- 只有指定用户可以查看到 -->
                     <li data-name="get" class="layui-nav-item" id="workTime" style="display: none">
@@ -187,7 +186,7 @@
 
                     <li data-name="get" class="layui-nav-item">
                         <a href="/bug/page/" lay-tips="算法" lay-direction="2">
-                            <i class="layui-icon layui-icon-service"></i>
+                            <i class="layui-icon layui-icon-addition"></i>
                             <cite>&nbsp;&nbsp;&nbsp;需求</cite>
                         </a>
                     </li>

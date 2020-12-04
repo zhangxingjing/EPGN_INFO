@@ -154,7 +154,9 @@ class PPTParse(View):
         body = request.body.decode()
         items = json.loads(body)
         try:
+            # TODO： 处理PPT的时候，需要用户选择 所有 正确的 文件
             ppt_path = ParsePPT(items).run()
+            pprint(ppt_path)
             return JsonResponse({"status": 200, "path": ppt_path})
         except Exception as e:
             return JsonResponse({"status": 404, "msg": "当前访问出错，请联系超级管理员！"})
@@ -162,7 +164,7 @@ class PPTParse(View):
     # 接受需要下载的文件地址，返回文件信息
     def get(self, request):
         ppt_path = request.GET.get("path")
-        file_name = re.search(r'.*/(.*\.pptx)', ppt_path).group(1)
+        file_name = re.search(r'.*/PPTModel/(.*\.pptx)', ppt_path).group(1)
 
         def file_iterator(file_path, chunk_size=512):
             """
@@ -304,7 +306,7 @@ class PPTParse(View):
         return JsonResponse({"code": 0, "result": result_list})
 
     # 算法处理 ==> 处理kp文件分段采集的数据量
-    def parse_calculate(self, request):
+    def parse_calculate(self, request, refer_channel="data_time"):
         """
         从前端获取文件名，后台通过算法，返回当前文件列表中的所有文件的XY坐标信息
         :param request: Request请求对象
@@ -314,7 +316,9 @@ class PPTParse(View):
         return_items = []
         body = request.body.decode()
         file_list = json.loads(body)["fileList"]
-        refer_channel = json.loads(body)["refer_channel"]
+
+        # 这里不需要选择参考通道，默认都是时间，需要修改的时候，在使用用户选择的值
+        # refer_channel = json.loads(body)["refer_channel"]
 
         for file in list(set(file_list)):
             status = Fileinfo.objects.filter(file_name=file)

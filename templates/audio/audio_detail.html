@@ -127,7 +127,7 @@
                     <div>
                         <div>抱怨音频：</div>
                         <div>
-                            <audio  id="audio_mp3" controls="controls">
+                            <audio id="audio_mp3" controls="controls">
                                 Your browser does not support the audio element.
                             </audio>
                         </div>
@@ -136,7 +136,7 @@
                     <div>
                         <div>抱怨原始数据：</div>
                         <div style="padding-left: 180px">
-                            <a  id="audio_hdf" >
+                            <a id="audio_hdf">
                                 <button href="" style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                     下载
                                 </button>
@@ -147,19 +147,19 @@
                     <div>
                         <div>分析报告：</div>
                         <div style="padding-left: 180px">
-                            <a id="audio_report" >
-                            <button style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
-                                下载
-                            </button>
+                            <a id="audio_report">
+                                <button style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
+                                    下载
+                                </button>
                             </a>
                         </div>
                     </div>
                 </div>
                 <div id="download-right">
                     <a id="audio_all">
-                    <button style="background:#3a8ee6;color: white;width: 120px;text-align: center;line-height: 60px;height: 60px;border: 0px;font-size: 20px;border-radius: 2px">
-                        打包下载
-                    </button>
+                        <button style="background:#3a8ee6;color: white;width: 120px;text-align: center;line-height: 60px;height: 60px;border: 0px;font-size: 20px;border-radius: 2px">
+                            打包下载
+                        </button>
                     </a>
                 </div>
             </div>
@@ -187,29 +187,24 @@
                 return {
                     file_info: '',
                     img_href: '',
-                    complainsource: '112321323',
-                    ittt1: '213123sdad',
                 }
             },
             methods: {},
             mounted() {
-
                 let file_info = JSON.parse(sessionStorage.getItem("file_info"));
-
-                console.log(file_info);
-
                 this.complain_source = file_info.detail_from;
+
                 document.getElementById("source").innerHTML = this.complain_source;
                 document.getElementById("frequency").innerHTML = file_info.frequency;
                 document.getElementById("condition").innerHTML = file_info.condition;
                 document.getElementById("measure").innerHTML = file_info.measures;
                 document.getElementById("key_part").innerHTML = file_info.reason;
-                console.log(this.complain_source);
-                document.getElementById("audio_img").src = "/audio/img/?id="+file_info.pk;
-                document.getElementById("audio_mp3").src = "/audio/mp3/?id="+file_info.pk;
-                document.getElementById("audio_hdf").href = "/audio/download/?id="+file_info.pk+"&type=hdf";
-                document.getElementById("audio_report").href = "/audio/download/?id="+file_info.pk+"&type=ppt";
-                document.getElementById("audio_all").href = "/audio/download/?id="+file_info.pk+"&type=all";
+
+                document.getElementById("audio_img").src = "/audio/img/?id=" + file_info.pk;
+                document.getElementById("audio_mp3").src = "/audio/mp3/?id=" + file_info.pk;
+                document.getElementById("audio_hdf").href = "/audio/download/?id=" + file_info.pk + "&type=hdf";
+                document.getElementById("audio_report").href = "/audio/download/?id=" + file_info.pk + "&type=ppt";
+                document.getElementById("audio_all").href = "/audio/download/?id=" + file_info.pk + "&type=all";
             },
         })
     </script>

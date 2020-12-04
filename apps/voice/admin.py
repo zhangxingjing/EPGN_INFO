@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from voice.models import Source, Status, Voice
+from voice.models import Source, Status, Voice, FileSave
 
 
 # Register your models here.
@@ -30,6 +30,13 @@ class StatusAdmin(admin.ModelAdmin):
     ]
 
 
+class FileSaveAdmin(admin.ModelAdmin):
+    list_display = [
+        "id",
+        "path"
+    ]
+
+
 class VoiceAdmin(admin.ModelAdmin):
     list_display = [
         "id",
@@ -42,12 +49,14 @@ class VoiceAdmin(admin.ModelAdmin):
         "source",
         "depict",
         "remark",
-        "hdf",
-        "img",
-        "mp3"
+        # "hdf",
+        # "img",
+        # "mp3"
+        # "file",
     ]
 
 
 admin.site.register(Source, SourceAdmin)
-admin.site.register(Voice, VoiceAdmin)
 admin.site.register(Status, StatusAdmin)
+admin.site.register(FileSave, FileSaveAdmin)
+admin.site.register(Voice, VoiceAdmin)

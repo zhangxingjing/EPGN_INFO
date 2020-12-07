@@ -654,8 +654,7 @@
             data: JSON.stringify({"items": uploadfilebase64list}),
             type: "post",
             success: function (result) {
-                document.getElementById("downloadppt").href = '/calculate/            type: "post",
-_ppt/?path=' + result.path;
+                document.getElementById("downloadppt").href = '/calculate/parse_ppt/?path=' + result.path;
             },
             error: function (result) {
                 console.log(result)

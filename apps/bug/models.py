@@ -30,7 +30,7 @@ class Category(models.Model):
 
 class Bug(models.Model):
     id = models.AutoField(primary_key=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None, verbose_name="提交者")
+    updater = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=None, verbose_name="提交者")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, default=None, verbose_name="Bug类别")
     developer = models.SmallIntegerField(choices=DEVELOPER_CHOICE, default=1, verbose_name="DeBug人员")
     content = models.TextField(blank=True, null=True, verbose_name="Bug信息")

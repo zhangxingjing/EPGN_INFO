@@ -9,9 +9,10 @@ from utils import log_theme
 # DOCKER_SERVER = "192.168.43.230"
 # REDIS_PORT = 16379
 # MYSQL_PORT = 13306
-DOCKER_SERVER = "127.0.0.1"
 REDIS_PORT = 6379
 MYSQL_PORT = 3306
+MYSQL_NAME = "EPGN_INFO_3"
+DOCKER_SERVER = "127.0.0.1"
 
 ############################################################ Django默认配置 ############################################################
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -101,7 +102,7 @@ DATABASES = {
         'PORT': MYSQL_PORT,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'root',  # 数据库用户密码
-        'NAME': 'EPGN_INFO',  # 43新建数据库==> 使用xadmin
+        'NAME': MYSQL_NAME,  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES,"

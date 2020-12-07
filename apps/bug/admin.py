@@ -17,7 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class BugAdmin(admin.ModelAdmin):
-    list_display = ["id", "author", "level", "category", "developer", "content", "status"]
+    list_display = ["id", "updater", "level", "category", "developer", "content", "status"]
     search_fields = ["author", "category", "content", "status"]
     list_display_links = ["status"]
 

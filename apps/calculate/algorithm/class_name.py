@@ -4,12 +4,12 @@
 # File      : class_name.py
 # Datetime  : 2020/5/19 下午3:54
 
-
+# 用户使用自动报告的时候，后台根据工况，选择不同的算法
 CalculateNameDict = {
-    # 自动报告-工况信息
     "(N)G3 VZ": "LevelVsTime",
     "(N)G3 VS": "OrderVsVfft",
     "(N)G5 VZ": "OrderVsVfft",
+    "KP 80-20": "FftCalculate",
     "(Square&Lab)Leerlauf D Gang mit AC": "LevelVsTime",
     "(Square&Lab)Leerlauf P Gang mit AC": "LevelVsTime",
     "(Square&Lab)Leerlauf R Gang mit AC": "LevelVsTime",

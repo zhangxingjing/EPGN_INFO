@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="EPGN_INFO" uuid="849ef76a-87d8-415e-a525-60dc42ed53cc">
+    <data-source source="LOCAL" name="Local_MySQL" uuid="849ef76a-87d8-415e-a525-60dc42ed53cc">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
@@ -10,19 +10,24 @@
         <property name="autoReconnect" value="true" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="Django default" uuid="720dfbc3-97d8-4bbf-9c12-3f056f287eb0">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <imported>true</imported>
-      <remarks>$PROJECT_DIR$/settings/dev.py</remarks>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://127.0.0.1:3306/EPGN_INFO</jdbc-url>
-    </data-source>
     <data-source source="LOCAL" name="Docker MySQL" uuid="a8ac3dfb-d37b-4970-b25d-69538e6d36bf">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://192.168.43.230:13306/EPGN_INFO</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="Server_MySQL" uuid="2b8b5fe6-7d01-459a-94c8-61d5d746c7b2">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO_2</jdbc-url>
+    </data-source>
+    <data-source source="LOCAL" name="Test_MySQL" uuid="1dcbe4d7-a4d0-4af3-b814-a4815c2db0c5">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO_3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

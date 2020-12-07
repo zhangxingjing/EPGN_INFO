@@ -50,8 +50,6 @@ User.objects.create(id=31, username="黄立新", password=make_password("61306")
 User.objects.create(id=32, username="林君", password=make_password("58422"), phone="53817", job_number="58422", section=Section.objects.get(id=4))
 User.objects.create(id=33, username="张琼琼", password=make_password("DZJLB0945"), phone="53817", job_number="DZJLB0945", section=Section.objects.get(id=4))
 
-# TODO: new
-User.objects.create(id=33, username="曾梦媛", password=make_password("16387"), phone="", job_number="16387", section=Section.objects.get(id=4))
 
 ########## EPGN-4
 User.objects.create(id=34, username="张孟浩", password=make_password("68447"), phone="53838", job_number="68447", section=Section.objects.get(id=5))
@@ -78,3 +76,6 @@ User.objects.create(id=50, username="杜海峰", password=make_password("201715"
 User.objects.create(id=51, username="唐卫强", password=make_password("201713"), phone="53813", job_number="201713", section=Section.objects.get(id=7))
 User.objects.create(id=52, username="张月明", password=make_password("201714"), phone="53813", job_number="201714", section=Section.objects.get(id=7))
 User.objects.create(id=53, username="黄雷鸣", password=make_password("201644"), phone="18018668886", job_number="201644", section=Section.objects.get(id=7))
+
+# TODO: new
+User.objects.create(id=54, username="曾梦媛", password=make_password("16387"), phone="", job_number="16387", section=Section.objects.get(id=4))

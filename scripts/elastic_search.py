@@ -5,9 +5,9 @@
 # Datetime : 2020/8/18 下午2:39
 
 
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import JsonResponse
 from drf_haystack.viewsets import HaystackViewSet
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 
 class ElasticSearchReturn(HaystackViewSet):

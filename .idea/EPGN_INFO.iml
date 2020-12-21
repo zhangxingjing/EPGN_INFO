@@ -23,7 +23,7 @@
       <sourceFolder url="file://$MODULE_DIR$/static" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/insert/python_file" isTestSource="false" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.7 (EPGN)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="EPGN" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">

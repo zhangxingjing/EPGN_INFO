@@ -6,12 +6,10 @@ import time
 from utils import log_theme
 
 ########################################################## Docker默认配置 ############################################################
-# DOCKER_SERVER = "192.168.43.230"
-# REDIS_PORT = 16379
-# MYSQL_PORT = 13306
+
 REDIS_PORT = 6379
 MYSQL_PORT = 3306
-MYSQL_NAME = "EPGN_INFO_3"
+MYSQL_NAME = "EPGN_INFO"
 DOCKER_SERVER = "127.0.0.1"
 
 ############################################################ Django默认配置 ############################################################
@@ -105,10 +103,7 @@ DATABASES = {
         'NAME': MYSQL_NAME,  # 43新建数据库==> 使用xadmin
         'OPTIONS': {
             'read_default_file': os.path.dirname(os.path.abspath(__file__)) + '/my.cnf',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES,"
-                            "NO_ZERO_IN_DATE,NO_ZERO_DATE,"
-                            "ERROR_FOR_DIVISION_BY_ZERO,"
-                            "NO_AUTO_CREATE_USER'",
+            # 'init_command': "SET sql_mode='STRICT_TRANS_TABLES, NO_ZERO_IN_DATE,NO_ZERO_DATE, ERROR_FOR_DIVISION_BY_ZERO, NO_AUTO_CREATE_USER'",
         },
     }
 }
@@ -216,7 +211,8 @@ CORS_ORIGIN_WHITELIST = (
     'https://localhost:8000',
     'https://127.0.0.1:8899',
     'http://localhost:8899',
-    'http://192.168.43.230:8899'
+    'http://192.168.43.230:8899',
+    'http://192.168.43.111:8000'
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
@@ -257,10 +253,10 @@ JWT_AUTH = {
 ############################################################ EPGN项目配置 ############################################################
 CHANNEL_LIST = ["VR", "VL", "HR", "HL", "vorn rechits", "vorn links", "hinten rechits", "hinten links"]
 
-FILE_HEAD_PATH = "/home/zheng/Documents/WorkFile/H_HDF/"
-FILE_READ_PATH = "/home/zheng/Documents/WorkFile/R_HDF/"
-AUDIO_FILE_PATH = "/home/zheng/Documents/WorkFile/Audio/"
-VOICE_FILE_PATH = "/home/zheng/Documents/WorkFile/Voice/"
+FILE_HEAD_PATH = "/root/file/database/R_HDF"
+FILE_READ_PATH = "/root/file/database/R_HDF/"
+AUDIO_FILE_PATH = "/root/file/database/Audio/"
+VOICE_FILE_PATH = "/root/file/database/Voice/"
 
 CALCULATE_RULE = {
     # "(N)G3 VZ": "Level VS RPM",

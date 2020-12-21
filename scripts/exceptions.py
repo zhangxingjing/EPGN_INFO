@@ -1,4 +1,5 @@
 import logging
+
 from django.db import DatabaseError
 from redis.exceptions import RedisError
 from rest_framework.response import Response

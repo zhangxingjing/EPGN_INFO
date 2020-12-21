@@ -49,7 +49,6 @@ class PropulsionPowerView(ViewSet):
 
         return Response(item)
 
-
 # 前端访问到页面的时候就发送查询`平台`的请求, 选择平台之后在发送`车型`的请求
 class PlatformCarModelView(ViewSet):
     def every_platform(self, request):
@@ -61,7 +60,7 @@ class PlatformCarModelView(ViewSet):
                 item["id"] = i.id
                 item["name"] = i.name
                 data.append(item)
-        return Response(data)
+        return Response(sorted(data, key=lambda i: i["name"][0]))
 
     def platform(self, request):
         platform = Platform.objects.filter(parent=None)
@@ -91,7 +90,7 @@ class GearBoxView(ViewSet):
     def get_gearbox(self, request):
         gearbox = GearBox.objects.all()
         gearbox_info = GearBoxSerializer(gearbox, many=True)
-        return Response(gearbox_info.data)
+        return Response(sorted(gearbox_info.data, key=lambda i: i["name"][0]))
 
 
 # 模板渲染: url(r'^datainfo/(?P<pk>\d+)/$', DataInfo.as_view()),
@@ -441,6 +440,8 @@ class ChannelViewSet(ModelViewSet):
         # 从前端数据中, 获取文件对应的通道信息
         text = request.body.decode()
         body_json = json.loads(text)
+
+        # TODO: 这里的data有时有，有时没有
         file_dict = body_json["data"]
 
         # 对比数据库, 没有的添加得到数据库中

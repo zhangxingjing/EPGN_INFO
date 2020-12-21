@@ -1,4 +1,5 @@
 import h5py
+
 from settings.dev import FILE_READ_PATH
 
 
@@ -9,6 +10,9 @@ def read_hdf(file_name):
     :return: 当前文件中的所有数据
     """
     file_path = FILE_READ_PATH + file_name
+
+    print(file_path)
+
     read_info = h5py.File(file_path, 'r')
     items = []
     channel_dict = {}
@@ -17,4 +21,5 @@ def read_hdf(file_name):
         items.append(read_info[key][:])
         channel_dict["Channel " + str(i)] = key
         i += 1
+    print(channel_dict, items)
     return channel_dict, items

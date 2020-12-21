@@ -2,8 +2,6 @@ import json
 import os
 import re
 import shutil
-import time
-
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.core.serializers import serialize
 from django.db import transaction
@@ -12,13 +10,14 @@ from django.http import HttpResponse, StreamingHttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.http import urlquote
 from pypinyin import lazy_pinyin
-from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+import time
 from audio.serializers import *
 from fileinfo.models import Platform, PropulsionPower, GearBox
 from fileinfo.serializers import GearBoxSerializer, PropulsionSerializer, CarModelSerializer
+from rest_framework import viewsets
 from scripts import zip_file, judge_frequency
 from settings.dev import AUDIO_FILE_PATH
 
@@ -344,8 +343,7 @@ class Wait(ViewSet):
                 int_list.append(ce["num"])
             else:
                 str_list.append(ce["num"])
-        sort_car_engine_list = sorted(int_list, key=lambda i: float(re.search(r'\d(\.\d+)?', i).group())) + sorted(
-            str_list)
+        sort_car_engine_list = sorted(int_list, key=lambda i: float(re.search(r'\d(\.\d+)?', i).group())) + sorted(str_list)
 
         data = {
             "brief_description": sorted(brief_description.data, key=lambda i: i["name"][0]),

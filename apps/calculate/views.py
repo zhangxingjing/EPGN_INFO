@@ -146,6 +146,9 @@ class PPTParse(View):
 
     # 接收文件名，返回算法数据
     def put(self, request):
+
+        print("我开始进行计算了！")
+
         return_items = self.parse_calculate(request)
         return JsonResponse({"status": 200, "msg": "OK！", "data": return_items})
 

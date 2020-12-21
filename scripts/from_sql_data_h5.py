@@ -1,9 +1,11 @@
 import os
 import re
+
 import h5py
 import pymysql
-from settings.dev import FILE_READ_PATH
+
 from apps.calculate.algorithm.acousvw_v03_1 import *
+from settings.dev import FILE_READ_PATH
 
 # 前端选择的文件名，对应算法名
 CalculateNameDict = {
@@ -19,6 +21,7 @@ CalculateNameDict = {
 
 # 发送给前端的算法名称
 CalculateNameList = ['write_result', 'fft_average', 'octave_fft', ]
+
 
 class FileArrayInfo():
     """
@@ -204,7 +207,7 @@ class FileArrayInfo():
                         raw_rpm = item[10000:-10000, int(RPM_NUM)]
 
                         l_v_t = level_time(raw_time, raw_data)
-                        self.write_result(value+ '--' + "level_time", l_v_t, save_json_path)
+                        self.write_result(value + '--' + "level_time", l_v_t, save_json_path)
 
                         # l_v_r = level_rpm(raw_time, raw_data, raw_rpm)
                         # self.write_result(value+ '--' + "level_rpm", l_v_r, save_json_path)
@@ -212,15 +215,14 @@ class FileArrayInfo():
                         # self.write_result(value+ '--' + "order_vfft", o_v, save_json_path)
 
                         f_f_t = fft_average(raw_time, raw_data)
-                        self.write_result(value+ '--' + "fft_average", f_f_t, save_json_path)
+                        self.write_result(value + '--' + "fft_average", f_f_t, save_json_path)
 
                         o_f = octave_fft(raw_time, raw_data)
-                        self.write_result(value+ '--' + "octave_fft", o_f, save_json_path)
+                        self.write_result(value + '--' + "octave_fft", o_f, save_json_path)
                 self.save_to_sql(file_path, save_json_path)
             else:
                 print(file_name, "中没有指定RPM项！")
             break
-
 
 # FileArrayInfo().run()
 # FileArrayInfo().get_from_sql("LR_Oberende_Z--level_time", "/home/zheng/Documents/EPGN/700021 ( 0.00-30.00 s).asc")

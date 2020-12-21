@@ -4,10 +4,11 @@ import sys
 import socket
 
 if __name__ == "__main__":
-    if socket.gethostname() == "PC":
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
-    else:
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.pro")
+    # if socket.gethostname() == "PC":
+    #     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
+    # else:
+    #     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.pro")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings.dev")
 
     try:
         from django.core.management import execute_from_command_line

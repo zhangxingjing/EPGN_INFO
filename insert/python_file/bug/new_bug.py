@@ -11,7 +11,7 @@ from users.models import User
 from bug.models import Bug, Category
 
 Bug.objects.create(
-    author=User.objects.get(username="郑兴涛"),
+    updater=User.objects.get(username="郑兴涛"),
     level=1,
     category=Category.objects.get(name="逻辑错误"),
     status=1,

@@ -1,8 +1,10 @@
-import re
 import base64
+import re
 import time
+
 from pptx import Presentation
 from pptx.util import Inches, Pt
+
 from settings.dev import BASE_DIR
 
 PPT_MODEL_PATH = BASE_DIR + '/apps/calculate/PPTModel/'

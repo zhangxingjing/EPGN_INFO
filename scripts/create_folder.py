@@ -12,4 +12,3 @@ def check_folder_name(folder_name, path):
     :return: bool
     """
     ...
-

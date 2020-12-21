@@ -5,29 +5,10 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO</jdbc-url>
+      <jdbc-url>jdbc:mysql://192.168.43.111:3306/EPGN_INFO</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
       </driver-properties>
-    </data-source>
-    <data-source source="LOCAL" name="Docker MySQL" uuid="a8ac3dfb-d37b-4970-b25d-69538e6d36bf">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://192.168.43.230:13306/EPGN_INFO</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="Server_MySQL" uuid="2b8b5fe6-7d01-459a-94c8-61d5d746c7b2">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO_2</jdbc-url>
-    </data-source>
-    <data-source source="LOCAL" name="Test_MySQL" uuid="1dcbe4d7-a4d0-4af3-b814-a4815c2db0c5">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/EPGN_INFO_3</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
 </project>

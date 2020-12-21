@@ -1,11 +1,9 @@
 import re
-
-from django.http import JsonResponse
-
-from scripts.readHDF import read_hdf
-from apps.calculate.algorithm.calculate import *
 from multiprocessing import cpu_count, Pool, Manager
+from pprint import pprint
+from apps.calculate.algorithm.calculate import *
 from apps.calculate.algorithm.class_name import CalculateNameDict
+from scripts.readHDF import read_hdf
 
 
 class ParseTask(object):
@@ -57,9 +55,7 @@ class ParseTask(object):
                 except:
                     channel_rpm_num = 2
 
-                if channel_rpm_num !=channel_data_num:
-                    # print(channel_time_num, "\r\n", channel_data_num, "\r\n",  channel_rpm_num,"\r\n",  channel_file_list)
-                    # print(channel_data)
+                if channel_rpm_num != channel_data_num:
                     """异步返回 ==> 使用队列接受多进程中的数据返回值"""
                     pool.apply_async(
                         self.calculate_process, args=(
@@ -68,8 +64,6 @@ class ParseTask(object):
                             filename,
                             channel_data,
                             self.rpm_type,
-                            # "falling",
-                            # "raising",
                             channel["title"],
                             int(channel_time_num) - 1,  # time
                             int(channel_data_num) - 1,  # data
@@ -89,7 +83,8 @@ class ParseTask(object):
             X, Y = eval(calculate_class_name)(file_name, channel_data, rpm_type, channel_name, raw_time_num, raw_data_num, raw_rpm_num).run()
             queue.put({"filename": file_name, "data": {"X": X, "Y": Y}, "channel": channel_name})
         except:
-            pass  # print("ParseTask >> calculate_process() 计算出错！")
+            print("ParseTask >> calculate_process() 计算出错！")
+            pass
 
     def run(self):
         # 使用进程间通信 返回多个数据的返回

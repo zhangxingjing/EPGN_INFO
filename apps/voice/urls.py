@@ -20,7 +20,8 @@ urlpatterns = [
     url(r'^compare/$', Wait.as_view({"get": "compare"}), name="compare"),
     url(r'^detail/$', Wait.as_view({"get": "voice_detail"}), name="detail"),
 
-    url(r'^img/$', Detail.as_view({"get": "img"}), name="img"),
+    url(r'^img_1/$', Detail.as_view({"get": "img_1"}), name="img"),
+    url(r'^img_2/$', Detail.as_view({"get": "img_2"}), name="img"),
     url(r'^mp3/$', Detail.as_view({"get": "mp3"}), name="mp3"),
 ]
 

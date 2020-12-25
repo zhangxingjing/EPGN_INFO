@@ -23,12 +23,19 @@ class StatusSerializer(ModelSerializer):
         fields = "__all__"
 
 
+# class FileSaveSerializer(ModelSerializer):
+#     class Meta:
+#         model = FileSave
+#         fields = ("path",)
+
+
 class VoiceSerializer(ModelSerializer):
     author = serializers.CharField(source="author.username")
     car_model = serializers.CharField(source="car_model.name")
     gearbox = serializers.CharField(source="gearbox.name")
     propulsion = serializers.CharField(source="propulsion.num")
     power = serializers.CharField(source="power.num")
+    # file = FileSaveSerializer(many=True, read_only=True)
 
     class Meta:
         model = Voice

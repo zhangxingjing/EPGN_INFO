@@ -7,11 +7,38 @@
 {% endblock %}
 
 {% block link %}
+    <style>
+        .layui-form-label {
+            font-size: 16px;
+            font-weight: bold;
+        }
 
-    <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}" media="all">
-    <link rel="stylesheet" href="{% static 'layui/css/admin.css' %}" media="all">
-    <link rel="stylesheet" href="{% static 'layui/css/modules/layer/default/layer.css' %}">
-    <link rel="stylesheet" href="{% static 'ele/index.css' %}">
+        .layui-elem-field legend {
+            font-weight: bold;
+        }
+
+        .layui-table td, .layui-table th {
+            font-weight: bold;
+        }
+
+        .list-data {
+            font-size: 18px;
+            padding: 3px;
+            height: 35px;
+            line-height: 35px
+        }
+
+        .list-data img {
+            height: 50%;
+            padding-top: 2px;
+            width: auto
+        }
+
+    </style>
+    <link rel="stylesheet" href="../../static/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../static/layui/css/admin.css" media="all">
+    <link rel="stylesheet" href="../../static/layui/css/modules/layer/default/layer.css">
+    <link rel="stylesheet" href="../../static/ele/index.css">
     <style>
         #app {
             margin-top: 10px;
@@ -22,31 +49,30 @@
         }
 
         #content1 {
-            width: 45%;
-            padding-right: 3%;
+            width: 50%;
+            padding-right: 1%;
             line-height: 45px;
             padding-left: 2%;
             font-size: 19px;
         }
 
         #content1 div {
-            width: 100%;
+            width: 98%;
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-start;
             margin-bottom: 5px;
             margin-right: 10px;
-
+            padding-left: 5%;
         }
 
         #content1 div div {
-            width: 50%;
+            width: 30%;
         }
 
         #content1 div:nth-child(2) {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
         }
-
         #download-content {
             display: flex;
             justify-content: space-between;
@@ -82,39 +108,44 @@
     </style>
 {% endblock %}
 
+
 {% block content %}
     <div class="layui-fluid" id="complain_upload">
         <div class="layui-card" style="padding: 10px">
             <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-                <legend>抱怨信息</legend>
+                <legend>音频信息</legend>
             </fieldset>
             <div id="app">
                 <div id="detail_content">
                     <div id="content1">
                         <div>
-                            <div>抱怨来源：</div>
-                            <div id="source"></div>
+                            <div>车辆信息：</div>
+                            <div id="car_info"></div>
                         </div>
                         <div>
-                            <div style="width: 50%">抱怨频率：</div>
-                            <div id="frequency">400-500Hz</div>
+                            <div>工况信息：</div>
+                            <div id="frequency"></div>
                         </div>
                         <div>
-                            <div>关键零件或因素：</div>
-                            <div id="key_part"></div>
+                            <div>声源信息：</div>
+                            <div id="sound_source"></div>
                         </div>
                         <div>
-                            <div>措施：</div>
-                            <div id="measure"></div>
+                            <div>声音描述：</div>
+                            <div id="depict"></div>
                         </div>
                         <div>
-                            <div>工况：</div>
-                            <div id="condition"></div>
+                            <div>备注信息：</div>
+                            <div id="remark"></div>
                         </div>
                     </div>
-                    <div id="content2" style="display: flex;margin-left: 8%;font-size: 19px">
-                        <div>抱怨特征图：</div>
-                        <div><img id="audio_img" style="width: 70%"></div>
+                    <div id="content2" style="display: flex;margin-left: 1%;font-size: 19px;width: 40%">
+                        <div style="width:20%;margin-right: 10px">特征图：</div>
+                        <div style="width: 80%">
+                            <div><img id="audio_img" style="width: 90%"></div>
+                            <div><img id="audio_img2" style="width: 90%;margin-top: 10px"></div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -125,7 +156,7 @@
             <div id="download-content">
                 <div id="download-left">
                     <div>
-                        <div>抱怨音频：</div>
+                        <div>原始音频：</div>
                         <div>
                             <audio id="audio_mp3" controls="controls">
                                 Your browser does not support the audio element.
@@ -134,21 +165,10 @@
                     </div>
 
                     <div>
-                        <div>抱怨原始数据：</div>
+                        <div>原始数据：</div>
                         <div style="padding-left: 180px">
                             <a id="audio_hdf">
                                 <button href="" style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
-                                    下载
-                                </button>
-                            </a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div>分析报告：</div>
-                        <div style="padding-left: 180px">
-                            <a id="audio_report">
-                                <button style="background:#3a8ee6;color: white;width: 80px;text-align: center;line-height: 30px;height: 45px;border: 0px;font-size: 18px;border-radius: 2px">
                                     下载
                                 </button>
                             </a>
@@ -168,10 +188,11 @@
 {% endblock %}
 
 {% block javascript %}
-    <script src="{% static 'js/vue_2.6.10.js' %}"></script>
-    <script src="{% static 'ele/index.js' %}"></script>
-    <script src="{% static 'js/jquery-3.4.1.js' %}"></script>
-    <script src="{% static 'layui/layui.js' %}" charset="utf-8"></script>
+    <script type="text/javascript" src="../../static/js/vue_2.6.10.js"></script>
+    <script type="text/javascript" src="../../static/js/axios-0.18.0.min.js"></script>
+    <script type="text/javascript" src="../../static/ele/index.js"></script>
+    <script type="text/javascript" src="../../static/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../../static/layui/layui.js"></script>
     <script>
         layui.use(['upload', 'form', 'layedit', 'laydate', 'element'], function () {
             var form = layui.form,
@@ -192,19 +213,26 @@
             methods: {},
             mounted() {
                 let file_info = JSON.parse(sessionStorage.getItem("file_info"));
-                this.complain_source = file_info.detail_from;
+                document.getElementById("car_info").innerHTML = file_info.car_model + "-" + file_info.propulsion + "-" + file_info.power;
+                document.getElementById("frequency").innerHTML = file_info.status;
+                document.getElementById("sound_source").innerHTML = file_info.source;
+                document.getElementById("depict").innerHTML = file_info.remark;
+                document.getElementById("remark").innerHTML = file_info.depict;
+                if (file_info.img_1 == null) {
+                    document.getElementById("audio_img").innerHTML = "无";
+                } else {
+                    document.getElementById("audio_img").src = "/voice/img_1/?id=" + file_info.id;
+                    if (file_info.img_2 == null) {
 
-                document.getElementById("source").innerHTML = this.complain_source;
-                document.getElementById("frequency").innerHTML = file_info.frequency;
-                document.getElementById("condition").innerHTML = file_info.condition;
-                document.getElementById("measure").innerHTML = file_info.measures;
-                document.getElementById("key_part").innerHTML = file_info.reason;
-
-                document.getElementById("audio_img").src = "/audio/img/?id=" + file_info.pk;
-                document.getElementById("audio_mp3").src = "/audio/mp3/?id=" + file_info.pk;
-                document.getElementById("audio_hdf").href = "/audio/download/?id=" + file_info.pk + "&type=hdf";
-                document.getElementById("audio_report").href = "/audio/download/?id=" + file_info.pk + "&type=ppt";
-                document.getElementById("audio_all").href = "/audio/download/?id=" + file_info.pk + "&type=all";
+                    } else {
+                        document.getElementById("audio_img2").src = "/voice/img_2/?id=" + file_info.id;
+                    }
+                }
+                // document.getElementById("audio_img").src = "/voice/img_1/?id="+file_info.id;
+                // new
+                document.getElementById("audio_mp3").src = "/voice/download/?id=" + file_info.id + "&type=mp3";
+                document.getElementById("audio_hdf").href = "/voice/download/?id=" + file_info.id + "&type=hdf";
+                document.getElementById("audio_all").href = "/voice/download/?id=" + file_info.id + "&type=all";
             },
         })
     </script>

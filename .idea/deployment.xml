@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Database" promptOnLocalOverwrite="false" showAutoUploadSettingsWarning="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="EPGN" promptOnLocalOverwrite="false" showAutoUploadSettingsWarning="false">
     <serverData>
       <paths name="Ali">
         <serverdata>
@@ -12,7 +12,7 @@
       <paths name="EPGN">
         <serverdata>
           <mappings>
-            <mapping deploy="/root/project/EPGN_INFO" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/project/EPGN_INFO" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

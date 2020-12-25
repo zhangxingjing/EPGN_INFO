@@ -8,26 +8,7 @@ from insert_base import *
 from users.models import User
 from worktime.models import Laboratory, TaskDetail
 
-# 线上用户
-# manage_id_list_all = [8, 12, 20, 2, 26, 31, 35, 39, 41, 42, 44, 45, 4]
-
-# manage_id_list_all = [4, 6, 13, 14, 17, 20, 24, 28, 31, 35, 36, 37, 38, 39]
-manage_id_list_all = [
-    "杨怡",
-    "高超",
-    "石建策",
-    "胡冬枚",
-    "费标求",
-    "韩国华",
-    "吴春军",
-    "杨飞",
-    "黄立新",
-    "赵野",
-    "束元",
-    "陈远",
-    "李献",
-    "官明超"
-]
+manage_id_list_all = ["杨怡", "高超", "石建策", "胡冬枚", "费标求", "韩国华", "吴春军", "杨飞", "黄立新", "赵野", "束元", "陈远", "李献", "官明超"]
 
 # 四驱转鼓试验室
 try:

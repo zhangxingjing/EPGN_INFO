@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from voice.models import Source, Status, Voice, FileSave
+from voice.models import Source, Status, Voice
 
 
 # Register your models here.
@@ -58,5 +58,5 @@ class VoiceAdmin(admin.ModelAdmin):
 
 admin.site.register(Source, SourceAdmin)
 admin.site.register(Status, StatusAdmin)
-admin.site.register(FileSave, FileSaveAdmin)
+# admin.site.register(FileSave, FileSaveAdmin)
 admin.site.register(Voice, VoiceAdmin)

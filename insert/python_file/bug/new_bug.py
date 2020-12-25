@@ -16,6 +16,5 @@ Bug.objects.create(
     category=Category.objects.get(name="逻辑错误"),
     status=1,
     content="BUG",
-    developer=1,
     create_time=time.strftime('%Y-%m-%d', time.localtime(time.time()))
 )

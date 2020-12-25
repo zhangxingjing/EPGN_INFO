@@ -41,11 +41,13 @@ class VoiceViewSet(ModelViewSet):
         depict = request.POST.get("depict", None)
         remark = request.POST.get("remark", None)
         hdf = request.FILES.get("conplain_file", None)  # 原始数据
-        img = request.FILES.get("conplain_pic", None)  # 特征图
+        img_1 = request.FILES.get("conplain_pic_1", None)  # 特征图
+        img_2 = request.FILES.get("conplain_pic_2", None)  # 特征图
         mp3 = request.FILES.get("conplain_audio", None)  # 音频
 
         hdf_name = str(hdf)  # 文件名
-        img_name = str(img)  # 文件名
+        img_1_name = str(img_1)  # 文件名
+        img_2_name = str(img_2)  # 文件名
         mp3_name = str(mp3)  # 文件名
 
         now_time = str(round(time.time() * 1000))
@@ -74,13 +76,23 @@ class VoiceViewSet(ModelViewSet):
 
                     try:
                         # img
-                        new_img = open(directory_path + img_name, 'wb+')
-                        for chunk in img.chunks():
+                        new_img = open(directory_path + img_1_name, 'wb+')
+                        for chunk in img_1.chunks():
                             new_img.write(chunk)
                         new_img.close()
-                        new_img_info = directory_path + img_name
+                        new_img_1_info = directory_path + img_1_name
                     except Exception as e:
-                        new_img_info = None
+                        new_img_1_info = None
+
+                    try:
+                        # img
+                        new_img = open(directory_path + img_2_name, 'wb+')
+                        for chunk in img_2.chunks():
+                            new_img.write(chunk)
+                        new_img.close()
+                        new_img_2_info = directory_path + img_2_name
+                    except Exception as e:
+                        new_img_2_info = None
 
                     try:
                         # complain_mp3_name
@@ -94,7 +106,7 @@ class VoiceViewSet(ModelViewSet):
                 except OSError:
                     return Response(data={"code": 0, "msg": "文件不存在！"})
 
-                Voice.objects.create(
+                voice_obj = Voice(
                     author=author,
                     car_model=car_model,
                     status=status,
@@ -104,16 +116,18 @@ class VoiceViewSet(ModelViewSet):
                     power=power,
                     depict=depict,
                     remark=remark,
-                    # hdf=new_hdf_info,
-                    # img=new_img_info,
-                    # mp3=new_mp3_info
+                    hdf=new_hdf_info,
+                    img_1=new_img_1_info,
+                    img_2=new_img_2_info,
+                    mp3=new_mp3_info
                 )
-
+                voice_obj.save()
                 return Response(data={"code": 1, "msg": "文件上传成功！"})
         except FileExistsError as error:  # 文件操作失败是, 数据库回滚, 同时删除网盘中已上传的文件
             os.remove(directory_path + hdf_name)
             os.remove(directory_path + mp3_name)
-            os.remove(directory_path + img_name)
+            os.remove(directory_path + img_1_name)
+            os.remove(directory_path + img_2_name)
             return Response(data={"code": 0, "msg": error})
 
     # 检索
@@ -210,31 +224,46 @@ class VoiceViewSet(ModelViewSet):
                 try:
                     shutil.rmtree(folder_path)  # 删除磁盘文件
                 except:
-                    pass
+                    return JsonResponse({"status": False, "msg": "磁盘文件删除失败！"})
             self.perform_destroy(instance)  # 删除数据库中的数据
             return JsonResponse({"status": True})
         except Exception as e:
-            return JsonResponse({"status": False, "msg": "文件删除失败"})
+            return JsonResponse({"status": False, "msg": "文件信息删除失败！"})
 
 
 class Detail(ViewSet):
     @staticmethod
-    def img(request):
+    def img_1(request):
         id = request.GET.get("id")
-        img_path = Voice.objects.get(id=id).img
+        img_path = Voice.objects.get(id=id).img_1
 
         with open(img_path, 'rb') as r:
             img = r.read()
         return HttpResponse(img, content_type='image/png')
 
     @staticmethod
+    def img_2(request):
+        id = request.GET.get("id")
+        img_path = Voice.objects.get(id=id).img_2
+
+        if img_path is not None:
+            with open(img_path, 'rb') as r:
+                img = r.read()
+            return HttpResponse(img, content_type='image/png')
+        else:
+            return JsonResponse({"status": False})
+
+    @staticmethod
     def mp3(request):
         id = request.GET.get("id")
         mp3_path = Voice.objects.get(id=id).mp3
 
-        with open(mp3_path, 'rb') as r:
-            mp3 = r.read()
-        return HttpResponse(mp3, content_type='audio/mp3')
+        if mp3_path is not None:
+            with open(mp3_path, 'rb') as r:
+                mp3 = r.read()
+            return HttpResponse(mp3, content_type='audio/mp3')
+        else:
+            return JsonResponse({"status": False})
 
 
 class Wait(ViewSet):
@@ -318,8 +347,7 @@ class Wait(ViewSet):
 
     @staticmethod
     def voice_detail(request):
-        return Response("当前是Detail页面！")
-        # return render(request, 'voice/detail.html')
+        return render(request, 'voice/detail.html')
 
 
 def download(request):

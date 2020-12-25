@@ -31,10 +31,9 @@ class Status(models.Model):
         return self.name
 
 
+"""
 class FileSave(models.Model):
-    """
-    借鉴腾讯云的桶存储, 在这里保存当前文件的绝对路径, 每次获取文件对象之后，通过获取对象属性，获取它的文件信息
-    """
+    '''借鉴腾讯云的桶存储, 在这里保存当前文件的绝对路径, 每次获取文件对象之后，通过获取对象属性，获取它的文件信息'''
     # db_index = True ：普通索引； unique = True： 唯一索引；
     id = models.AutoField(primary_key=True, unique=True)
     path = models.CharField(max_length=255, verbose_name="文件")
@@ -46,6 +45,7 @@ class FileSave(models.Model):
 
     def __str__(self):
         return self.path
+"""
 
 
 class Voice(models.Model):
@@ -61,16 +61,11 @@ class Voice(models.Model):
     depict = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name="描述")
     remark = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name="备注")
 
-    # hdf = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='原始数据')
-    # img = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='特征图')
-    # mp3 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='音频')
+    hdf = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='原始数据')
+    img_1 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='特征图')
+    img_2 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='特征图')
+    mp3 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='音频')
 
-    file = models.ManyToManyField(
-        FileSave,
-        verbose_name="文件存储",
-        related_name="voice_file",
-        db_table='tb_voice_and_file',
-    )
 
     class Meta:
         ordering = ['-id']

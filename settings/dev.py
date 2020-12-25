@@ -20,7 +20,7 @@ SECRET_KEY = '&y3!pn!ybfdw84p(9*_vg8gc1ls63dm1-lc74fdl@g$iyt69(#'
 DEBUG = True
 
 # 白名单
-ALLOWED_HOSTS = ['*', 'localhost', '192.168.43.230']
+ALLOWED_HOSTS = ['*']
 
 # 中间件自定义白名单
 WHITE_REGEX_URL_LIST = [
@@ -65,7 +65,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',  # 关闭csrf自动校验
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -211,10 +211,12 @@ CORS_ORIGIN_WHITELIST = (
     'https://localhost:8000',
     'https://127.0.0.1:8899',
     'http://localhost:8899',
-    'http://192.168.43.230:8899',
+    'https://192.168.43.108:8899',
+    'http://192.168.43.108:8899',
+    'http://192.168.43.111:8899',
     'http://192.168.43.111:8000'
 )
-CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
+CORS_ALLOW_CREDENTIALS = True  # 允许白名单中的host可以跨域携带cookie
 
 # django文件存储
 DEFAULT_FILE_STORAGE = 'utils.fastdfs.fdfs_storage.FastDFSStorage'

@@ -42,7 +42,7 @@ class BugViewSet(viewsets.ModelViewSet):
             category=category,
             status=request.data['status'],
             content=request.data['content'],
-            developer=request.data['developer'],
+            # developer=request.data['developer'],
             create_time=time.strftime('%Y-%m-%d', time.localtime(time.time()))
         ).save()
         return JsonResponse({"status": True})

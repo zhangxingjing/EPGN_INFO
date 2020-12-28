@@ -275,7 +275,7 @@
                         <el-input v-model="voiceDescription" placeholder="具体描述" clearable></el-input>
                     </div>
                     <div>
-                        <div><span>备注信息：</span></div>
+                        <div><span><span style="color: red">*</span>备注信息：</span></div>
                         <el-input
                                 type="textarea"
                                 :autosize="{ minRows: 2, maxRows: 4}"
@@ -516,26 +516,36 @@
                     }
                 },
                 submitupload() {
-                    if (this.detailed_description == '') {
-                        this.$message({message: '请填写备注信息!', type: 'warning'})
-                        return false
-                    }
-                    if (this.source == '') {
-                        this.$message({message: '请填写抱怨来源!', type: 'warning'})
-                        return false
-                    }
-                    if (this.condition == '') {
-                        this.$message({message: '请选择工况!', type: 'warning'})
-                        return false
-                    }
-                    if (this.car_modal == '') {
+                     if (this.car_modal == '') {
                         this.$message({message: '请选择车型信息!', type: 'warning'})
                         return false
                     }
+                      if (this.condition == '') {
+                        this.$message({message: '请选择工况!', type: 'warning'})
+                        return false
+                    }
+                    if (this.sound_source == '') {
+                        this.$message({message: '请填写声音来源!', type: 'warning'})
+                        return false
+                    }
+                    if(this.voiceDescription==''){
+                        this.$message({message: '请填写声音描述!', type: 'warning'})
+                        return false
+                    }
+                     if (this.detailed_description == '') {
+                        this.$message({message: '请填写备注信息!', type: 'warning'})
+                        return false
+                    }
+
+                    if (this.filelist_hdf.length == 0) {
+                        this.$message({message: '请上传音频原始数据!', type: 'warning'})
+                        return false
+                    }
+
 
                     this.loading = true;
                     let formData = new FormData();
-                    let soundSource = this.sound_source + "-" + this.supplyInfo;
+                    let soundSource = "整车-"+this.sound_source + "-" + this.supplyInfo;
                     formData.append('depict', this.detailed_description);
                     formData.append('source', soundSource);
                     formData.append('car_model', this.car_modal);

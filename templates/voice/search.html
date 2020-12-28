@@ -264,7 +264,7 @@
                     , {field: 'source', title: '声源', width: 130}
                     , {field: 'remark', title: '声音描述', width: 300}
                     , {field: 'depict', title: '备注信息'}
-                    , {field: 'reason', title: '上传人', width: 120, hide: true}
+                    , {field: 'author', title: '上传人', width: 120, hide: true}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
                 ]]
             });
@@ -303,7 +303,7 @@
                             obj.del();
                             layer.close(index);
                             $.ajax({
-                                url: 'http://192.168.43.230:8899/voice/' + obj.data.id + '/',
+                                url: '/voice/' + obj.data.id + '/',
                                 dataType: "json",
                                 type: "delete",
 
@@ -353,7 +353,7 @@
                         , {field: 'source', title: '声源', width: 100}
                         , {field: 'remark', title: '声音描述', width: 300}
                         , {field: 'depict', title: '备注信息'}
-                        , {field: 'reason', title: '上传人', width: 120, hide: true}
+                        , {field: 'author', title: '上传人', width: 120, hide: true}
                         , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 150}
                     ]]
                 });

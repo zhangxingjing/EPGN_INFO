@@ -28,6 +28,8 @@ def read_file(filepath):
 
 
 file_path = "Test1.hdf"
-attribution, rawdata = read_file(file_path)  # 返回值皆为二进制字典
+
+# TODO: 返回值皆为二进制字典
+attribution, rawdata = read_file(file_path)
 
 print(attribution.keys(), rawdata.keys())

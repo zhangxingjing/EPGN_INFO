@@ -35,9 +35,25 @@ class VoiceViewSet(ModelViewSet):
         car_model = Platform.objects.filter(id=request.POST.get("car_model")).first()
         status = request.POST.get("status")
         source = request.POST.get("source")
-        propulsion = PropulsionPower.objects.filter(num=request.POST.get("propulsion")).first()
-        gearbox = GearBox.objects.filter(id=(int(request.POST.get("gearbox")))).first()
-        power = PropulsionPower.objects.filter(num=request.POST.get("power")).first()
+
+        propulsion_id = request.POST.get("propulsion", None)
+        if propulsion_id:
+            propulsion = PropulsionPower.objects.filter(num=propulsion_id).first()
+        else:
+            propulsion = None
+
+        gearbox_id = request.POST.get("gearbox", None)
+        if gearbox_id:
+            gearbox = GearBox.objects.filter(id=int(gearbox_id)).first()
+        else:
+            gearbox = None
+
+        power_id = request.POST.get("power", None)
+        if power_id:
+            power = PropulsionPower.objects.filter(num=power_id).first()
+        else:
+            power = None
+
         depict = request.POST.get("depict", None)
         remark = request.POST.get("remark", None)
         hdf = request.FILES.get("conplain_file", None)  # 原始数据

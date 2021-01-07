@@ -55,12 +55,10 @@ class Voice(models.Model):
     propulsion = models.ForeignKey(PropulsionPower, on_delete=models.CASCADE, related_name="propulsion", verbose_name='发动机', max_length=255, null=True, blank=True, default=None)
     gearbox = models.ForeignKey(GearBox, on_delete=models.CASCADE, verbose_name="变速箱", max_length=255, null=True, blank=True, default=None)
     power = models.ForeignKey(PropulsionPower, on_delete=models.CASCADE, related_name="power", verbose_name='功率', max_length=255, null=True, blank=True, default=None)
-
     status = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='工况')
     source = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='声源')
     depict = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name="描述")
     remark = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name="备注")
-
     hdf = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='原始数据')
     img_1 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='特征图')
     img_2 = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='特征图')

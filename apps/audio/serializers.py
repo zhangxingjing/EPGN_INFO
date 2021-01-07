@@ -8,8 +8,7 @@ class AudioSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Audio  # 绑定对应的模型类
-        fields = ["id", "desc5666ription", "car_model", "propulsion", "power", "gearbox", "status",
-                  "author", "tire_model", "measures", "reason", "details", 'hdf', "img", "mp3", "ppt"]
+        fields = ["id", "description", "car_model", "propulsion", "power", "gearbox", "status", "author", "tire_model", "measures", "reason", "details", 'hdf', "img", "mp3", "ppt"]
 
 
 class AudioStatusSerializer(serializers.ModelSerializer):

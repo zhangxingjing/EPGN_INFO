@@ -56,9 +56,32 @@ def download(request):
     return response
 
 
+def change_file(request):
+    # if request.method == "GET":
+    #     return render(request, "script/change.html")
+    import socket
+
+    TCP_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    TCP_client.connect(('192.168.43.172', 21))
+
+    TCP_client.send('你好？'.encode())
+
+    print("数据已发送！")
+
+    recv_data = TCP_client.recv(1024)
+
+    print(recv_data.decode('gbk'))
+
+    TCP_client.close()
+    return JsonResponse({"file_path": recv_data.decode('gbk')})
+
+
 # 自定义404 500
 def pageNotFound(request, exception):
-    '''
+    """
     404、500处理函数
-    '''
+    :param request:
+    :param exception:
+    :return:
+    """
     return render(request, 'error/404time.html')

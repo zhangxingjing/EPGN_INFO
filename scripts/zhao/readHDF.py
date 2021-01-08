@@ -16,15 +16,17 @@ def read_file(filepath):
     :param filepath: hdf file path
     :return: file info
     """
+    # 加载配置文件
     hdf_path = filepath.encode(encoding="utf-8")
     dll_info = CDLL("./tdms_convert_dll_try.dll")
 
+    # 准备C变量
     len_ifn = len(hdf_path)
     ifn = create_string_buffer(len_ifn)
     ifn.raw = hdf_path
     ofn = create_string_buffer(256)
     dll_info.DLL_tdms_convert_try(ifn, ofn, 256)
-    return pytdms.read(ofn.value)
+    return pytdms.read(ofn.value)  # 返回读取hdf文件之后的数据
 
 
 file_path = "Test1.hdf"
